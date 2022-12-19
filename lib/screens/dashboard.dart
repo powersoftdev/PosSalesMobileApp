@@ -1,9 +1,33 @@
 import 'package:flutter/material.dart';
 import '../../Screens/login_screen.dart';
 import '../../Screens/select_item.dart';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
-class DashBoard extends StatelessWidget {
+class DashBoard extends StatefulWidget {
   const DashBoard({super.key});
+
+  @override
+  State<DashBoard> createState() => _DashBoardState();
+}
+
+class _DashBoardState extends State<DashBoard> {
+  String customerName = "";
+  late final SharedPreferences _prefs;
+
+  @override
+  void initState() {
+    getStringValuesSF();
+    super.initState();
+  }
+
+  getStringValuesSF() async {
+    _prefs = await SharedPreferences.getInstance();
+    setState(() {
+      customerName = _prefs.getString('customerName') ?? "";
+    });
+    return customerName;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -15,33 +39,20 @@ class DashBoard extends StatelessWidget {
       ),
       body: SafeArea(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.end,
+          mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-              height: 60,
-              width: 400,
-              color: Colors.white,
-              padding: const EdgeInsets.only(
-                top: 10.0,
-                left: 20.0,
-              ),
-              child: Text(
-                'Welcome ####',
-                style: TextStyle(
-                  fontSize: 30,
-                  color: Colors.blue[900],
-                ),
+            Text(
+              'Welcome ,$customerName',
+              style: TextStyle(
+                fontSize: 30,
+                color: Colors.blue[900],
               ),
             ),
-            Container(
-              height: 80,
-              // width: 100,
-              color: Colors.white,
-              padding: const EdgeInsets.only(
-                top: 25.0,
-                left: 90.0,
-              ),
+            SizedBox(
+              height: 30,
+            ),
+            Center(
               child: Text(
                 'Sales Bookings',
                 style: TextStyle(
@@ -50,6 +61,38 @@ class DashBoard extends StatelessWidget {
                 ),
               ),
             ),
+            // Container(
+            //   height: 60,
+            //   width: 400,
+            //   color: Colors.red,
+            //   padding: const EdgeInsets.only(
+            //     top: 10.0,
+            //     left: 20.0,
+            //   ),
+            //   child: Text(
+            //     'Welcome ,$customerName',
+            //     style: TextStyle(
+            //       fontSize: 30,
+            //       color: Colors.blue[900],
+            //     ),
+            //   ),
+            // ),
+            // Container(
+            //   height: 80,
+            //   // width: 100,
+            //   color: Colors.green,
+            //   padding: const EdgeInsets.only(
+            //     top: 25.0,
+            //     left: 90.0,
+            //   ),
+            //   child: Text(
+            //     'Sales Bookings',
+            //     style: TextStyle(
+            //       fontSize: 30,
+            //       color: Colors.blue[900],
+            //     ),
+            //   ),
+            // ),
             Stack(children: [
               Container(
                 height: 446,

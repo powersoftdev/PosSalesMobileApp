@@ -2,7 +2,7 @@ class Product {
   int? id;
   String? name;
   double? price;
-  int? qty;
+  dynamic qty;
   String? pic;
   double? totalPrice;
 //construcctor

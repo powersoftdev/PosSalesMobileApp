@@ -1,13 +1,18 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animated_button/flutter_animated_button.dart';
+import 'package:flutter_paystack/flutter_paystack.dart';
 import 'package:provider/provider.dart';
-import 'package:sales_order/Payment/paystackpayment.dart';
+import 'package:sales_order/Constant/pubkey.dart';
+
 import 'package:sales_order/Store/MyStore.dart';
-
-
+import 'package:sales_order/screens/paymentclass.dart';
 import 'package:sales_order/screens/size_config.dart';
+import '../Payment/paystackpayment.dart';
 import 'dashboard.dart';
+import 'paystackwebview.dart';
 import 'select_item.dart';
 
 enum PaymentOption { payOffline, payOnline }
@@ -58,6 +63,10 @@ Future<void> showInformationDialog(BuildContext context) async {
                                   ? null
                                   : 'Invalid field First Name';
                             },
+                            keyboardType: TextInputType.name,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.singleLineFormatter,
+                            ],
                           ),
                         ),
                         Padding(
@@ -77,6 +86,10 @@ Future<void> showInformationDialog(BuildContext context) async {
                                   ? null
                                   : 'Invalid field Last Name';
                             },
+                            keyboardType: TextInputType.name,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.singleLineFormatter,
+                            ],
                           ),
                         ),
                         Padding(
@@ -96,6 +109,10 @@ Future<void> showInformationDialog(BuildContext context) async {
                                   ? null
                                   : 'Invalid field Country/Region';
                             },
+                            keyboardType: TextInputType.name,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.singleLineFormatter,
+                            ],
                           ),
                         ),
                         Padding(
@@ -115,6 +132,10 @@ Future<void> showInformationDialog(BuildContext context) async {
                                   ? null
                                   : 'Invalid field Address';
                             },
+                            keyboardType: TextInputType.streetAddress,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.singleLineFormatter,
+                            ],
                           ),
                         ),
                         Padding(
@@ -134,6 +155,10 @@ Future<void> showInformationDialog(BuildContext context) async {
                                   ? null
                                   : 'Invalid field City';
                             },
+                            keyboardType: TextInputType.streetAddress,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.singleLineFormatter,
+                            ],
                           ),
                         ),
                         Padding(
@@ -153,6 +178,10 @@ Future<void> showInformationDialog(BuildContext context) async {
                                   ? null
                                   : 'Invalid field State';
                             },
+                            keyboardType: TextInputType.streetAddress,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.singleLineFormatter,
+                            ],
                           ),
                         ),
                         TextFormField(
@@ -192,6 +221,10 @@ Future<void> showInformationDialog(BuildContext context) async {
                                   ? null
                                   : 'Invalid field Phone';
                             },
+                            keyboardType: TextInputType.number,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly,
+                            ],
                           ),
                         ),
                       ],
@@ -240,71 +273,72 @@ class Checkout extends StatefulWidget {
   State<Checkout> createState() => _CheckoutState();
 }
 
-class Customer {
+class Custormer {
+  int? shippingCost = 0;
+  int? discount = 0;
   int? tax = 0;
-  int? total = 0;
-  int? amount = 500;
-  int? shipcost = 0;
-  int? disount = 0;
-  int? availiableCredit = 0;
   int? amountToPay = 0;
+  int? availiableCrd = 0;
+  int? total = 0;
 
-  // Product p = new Product();
-
-  Customer(
-      {this.tax,
-      this.total,
-      this.amount,
-      this.shipcost,
-      this.disount,
-      this.availiableCredit,
-      this.amountToPay});
+  Custormer(
+      {this.amountToPay,
+      this.availiableCrd,
+      this.discount,
+      this.shippingCost,
+      this.tax,
+      this.total});
 }
 
-String email = 'taiwooduwole0@gmail.com';
-int amount = 0;
-
-getShipCost() {
-  int shipcost = 0;
-  return shipcost;
+getTotal() {
+  int total = 0;
+  total = getSubtotal() + getShippingCost() - getdiscount() + getTax();
+  return total;
 }
 
-getAmount() {
-  int amount = 0;
-  return amount;
+getAmountToPay() {
+  int amountToPay = 0;
+  amountToPay = getTotal() - getAvailiableCrd();
+  return amountToPay;
 }
 
-getTax() {
-  int tax = 0;
-  return tax;
+getAvailiableCrd() {
+  int availiableCrd = 0;
+  return availiableCrd;
 }
 
-addAllItemToBasket(p) {
-  int allItem = p;
-  return allItem;
+getShippingCost() {
+  int shippingCost = 0;
+  return shippingCost;
 }
 
-getDiscount() {
+getdiscount() {
   int discount = 0;
   return discount;
 }
 
-getTotal(discount, tax, shipcost) {
-  total() {
-    discount - shipcost + tax;
-  }
-
-  return total;
+getTax() {
+  int tax = 15;
+  return tax;
 }
+
+getSubtotal() {
+  int subtotal = 0;
+  return subtotal;
+}
+
+// String email = 'taiwooduwole0@gmail.com';
+// int amount = 1500;
 
 class _CheckoutState extends State<Checkout> {
   PaymentOption _value = PaymentOption.payOffline;
   AddressInfo _values = AddressInfo.location;
 
+ 
   @override
   Widget build(BuildContext context) {
-    final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-       var store = Provider.of<MyStore>(context);
+    var store = Provider.of<MyStore>(context);
+    var payment = Provider.of<PaymentsData>(context);
     SizeConfig().init(context);
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
@@ -342,15 +376,15 @@ class _CheckoutState extends State<Checkout> {
           ),
           body: Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Center(
-                    child: SingleChildScrollView(
+            child: SingleChildScrollView(
+              child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Center(
                       child: Container(
-                        width: getProportionateScreenWidth(352),
-                        height: getProportionateScreenHeight(279),
+                        width: getProportionateScreenWidth(350),
+                        height: getProportionateScreenHeight(330),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(15.0),
                           color: Colors.white,
@@ -374,7 +408,7 @@ class _CheckoutState extends State<Checkout> {
                             ),
                             Padding(
                               padding:
-                                  const EdgeInsets.only(right: 300, top: 20),
+                                  const EdgeInsets.only(right: 290, top: 20),
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: const [
@@ -385,7 +419,7 @@ class _CheckoutState extends State<Checkout> {
                             Padding(
                               padding: const EdgeInsets.only(right: 140.0),
                               child: RadioListTile(
-                                subtitle: const Text('Lagos,LA,102216,NG'),
+                                subtitle: Text(''),
                                 value: AddressInfo.location,
                                 title: const Text('121 Ogba-Road'),
                                 groupValue: _values,
@@ -478,15 +512,13 @@ class _CheckoutState extends State<Checkout> {
                         ),
                       ),
                     ),
-                  ),
-                  SizedBox(
-                    height: getProportionateScreenHeight(15),
-                  ),
-                  Center(
-                    child: SingleChildScrollView(
+                    SizedBox(
+                      height: getProportionateScreenHeight(15),
+                    ),
+                    Center(
                       child: Container(
                         width: getProportionateScreenWidth(355),
-                        height: getProportionateScreenHeight(353),
+                        height: getProportionateScreenHeight(400),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(15.0),
                           color: Colors.white,
@@ -500,7 +532,6 @@ class _CheckoutState extends State<Checkout> {
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Form(
-                            key: _formKey,
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -508,18 +539,17 @@ class _CheckoutState extends State<Checkout> {
                                   padding: const EdgeInsets.only(bottom: 3.0),
                                   child: Row(
                                     children: [
-                                      Expanded(
-                                        child: Text(
-                                          'Subtotal:   ₦ ${store.allProduct!.totalPrice.toString()}',
-                                          style: const TextStyle(
-                                            fontSize: 20,
-                                          ),
+                                      Text(
+                                        'Subtotal:₦ ${store.getTotalAmount().toString()}',
+                                        style: const TextStyle(
+                                          fontSize: 20,
+                                          //color: Colors.green,
                                         ),
                                       ),
                                     ],
                                   ),
                                 ),
-                                const Text(
+                                Text(
                                   'Shipping Cost:',
                                   style: TextStyle(fontSize: 20),
                                 ),
@@ -531,17 +561,19 @@ class _CheckoutState extends State<Checkout> {
                                   'Tax:',
                                   style: TextStyle(fontSize: 20),
                                 ),
-                                const Text(
-                                  'Total:',
-                                  style: TextStyle(fontSize: 20),
+                                Text(
+                                  'Total: ₦${store.getTotalAmount() - getTotal()}',
+                                  style: const TextStyle(fontSize: 20),
+                                  //color: Colors.red),
                                 ),
-                                const Text(
-                                  'Available Credit:',
-                                  style: TextStyle(fontSize: 20),
+                                Text(
+                                  'Available Credit:${getAvailiableCrd()}',
+                                  style: const TextStyle(fontSize: 20),
                                 ),
-                                const Text(
-                                  'Amount to Pay:',
-                                  style: TextStyle(fontSize: 20),
+                                Text(
+                                  'Amount to Pay:${getTotal() + getAvailiableCrd()}',
+                                  style: const TextStyle(fontSize: 20),
+                                  //color: Colors.red),
                                 ),
                                 const Divider(
                                   color: Colors.grey,
@@ -577,55 +609,59 @@ class _CheckoutState extends State<Checkout> {
                         ),
                       ),
                     ),
-                  ),
-                  Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(
-                        20.0,
-                      ),
-                      child: AnimatedButton(
-                        height: getProportionateScreenHeight(46),
-                        width: getProportionateScreenWidth(126),
-                        text: 'Confirm',
-                        animationDuration: const Duration(seconds: 2),
-                        textStyle: const TextStyle(
-                          fontSize: 20,
-                          color: Colors.white,
+                    Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(
+                          20.0,
                         ),
-                        onPress: () {
-                          if (PaymentOption.payOffline == _value) {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const SelectItemScreen(),
-                              ),
-                            );
-                          } else {
-                            MakePayment(
-                                    ctx: context, email: email, amount: amount)
-                                .chargeCardAndMakePayment();
-                            // Navigator.push(
-                            //   context,
-                            //   MaterialPageRoute(
-                            //     builder: (context) => const DashBoard(),
-                            //   ),
-                            // );
-                          }
-                        },
-                        gradient: const LinearGradient(
-                          colors: [Colors.blueGrey, Colors.blue],
+                        child: AnimatedButton(
+                          height: getProportionateScreenHeight(46),
+                          width: getProportionateScreenWidth(136),
+                          text: 'Confirm',
+                          animationDuration: const Duration(seconds: 2),
+                          textStyle: const TextStyle(
+                            fontSize: 20,
+                            color: Colors.white,
+                          ),
+                          onPress: () {
+                            if (PaymentOption.payOffline == _value) {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const WebViewPayment(),
+                                ),
+                              );
+                              payment.getPostData();
+                            } else {
+                              // MakePayment(
+                              //         ctx: context,
+                              //         email: email,
+                              //         amount: amount,
+                              //         accessCode: accessCode)
+                              //     .chargeCardAndMakePayment();
+                              // Navigator.push(
+                              //   context,
+                              //   MaterialPageRoute(
+                              //     builder: (context) => const DashBoard(),
+                              //   ),
+                              // );
+                            }
+                          },
+                          gradient: const LinearGradient(
+                            colors: [Colors.blueGrey, Colors.blue],
+                          ),
+                          selectedGradientColor: const LinearGradient(
+                              colors: [Colors.blue, Colors.blueGrey]),
+                          selectedTextColor: Colors.black,
+                          transitionType: TransitionType.LEFT_BOTTOM_ROUNDER,
+                          isReverse: true,
+                          borderColor: Colors.white,
+                          borderRadius: 45,
                         ),
-                        selectedGradientColor: const LinearGradient(
-                            colors: [Colors.blue, Colors.blueGrey]),
-                        selectedTextColor: Colors.black,
-                        transitionType: TransitionType.LEFT_BOTTOM_ROUNDER,
-                        isReverse: true,
-                        borderColor: Colors.white,
-                        borderRadius: 45,
                       ),
                     ),
-                  ),
-                ]),
+                  ]),
+            ),
           ),
         ),
       ),

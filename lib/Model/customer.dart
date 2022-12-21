@@ -4,10 +4,10 @@
 
 import 'dart:convert';
 
-CustomerModel CustomerModelFromJson(String str) =>
+CustomerModel customerModelFromJson(String str) =>
     CustomerModel.fromJson(json.decode(str));
 
-String CustomerModelToJson(CustomerModel data) => json.encode(data.toJson());
+String customerModelToJson(CustomerModel data) => json.encode(data.toJson());
 
 class CustomerModel {
   CustomerModel({
@@ -56,7 +56,7 @@ class Datum {
     this.customerFax,
     this.customerEmail,
     this.customerWebPage,
-    this.CustomerModel,
+    this.customerModel,
     this.customerPassword,
     this.customerPasswordOld,
     this.customerPasswordDate,
@@ -191,7 +191,7 @@ class Datum {
   dynamic customerFax;
   dynamic customerEmail;
   dynamic customerWebPage;
-  dynamic CustomerModel;
+  dynamic customerModel;
   dynamic customerPassword;
   dynamic customerPasswordOld;
   dynamic customerPasswordDate;
@@ -326,7 +326,7 @@ class Datum {
         customerFax: json["customerFax"],
         customerEmail: json["customerEmail"],
         customerWebPage: json["customerWebPage"],
-        CustomerModel: json["CustomerModel"],
+        customerModel: json["CustomerModel"],
         customerPassword: json["customerPassword"],
         customerPasswordOld: json["customerPasswordOld"],
         customerPasswordDate: json["customerPasswordDate"],

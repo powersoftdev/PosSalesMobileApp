@@ -10,6 +10,7 @@ import 'package:sales_order/Constant/pubkey.dart';
 import 'package:sales_order/Store/MyStore.dart';
 import 'package:sales_order/screens/paymentclass.dart';
 import 'package:sales_order/screens/size_config.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../Payment/paystackpayment.dart';
 import 'dashboard.dart';
 import 'paystackwebview.dart';
@@ -273,23 +274,6 @@ class Checkout extends StatefulWidget {
   State<Checkout> createState() => _CheckoutState();
 }
 
-class Custormer {
-  int? shippingCost = 0;
-  int? discount = 0;
-  int? tax = 0;
-  int? amountToPay = 0;
-  int? availiableCrd = 0;
-  int? total = 0;
-
-  Custormer(
-      {this.amountToPay,
-      this.availiableCrd,
-      this.discount,
-      this.shippingCost,
-      this.tax,
-      this.total});
-}
-
 getTotal() {
   int total = 0;
   total = getSubtotal() + getShippingCost() - getdiscount() + getTax();
@@ -318,7 +302,7 @@ getdiscount() {
 }
 
 getTax() {
-  int tax = 15;
+  int tax = 0;
   return tax;
 }
 
@@ -327,14 +311,36 @@ getSubtotal() {
   return subtotal;
 }
 
-// String email = 'taiwooduwole0@gmail.com';
-// int amount = 1500;
-
 class _CheckoutState extends State<Checkout> {
   PaymentOption _value = PaymentOption.payOffline;
   AddressInfo _values = AddressInfo.location;
 
- 
+  String customerAddress1 = "";
+  String customerAddress2 = "";
+  String customerEmail = "";
+  int accountBalance = 0;
+  final emailcontroller = TextEditingController();
+
+  late final SharedPreferences _prefs;
+
+  @override
+  void initState() {
+    getStringValuesAddress();
+    super.initState();
+  }
+
+  getStringValuesAddress() async {
+    _prefs = await SharedPreferences.getInstance();
+    setState(() {
+      customerAddress1 = _prefs.getString('customerAddress1') ?? "";
+      customerAddress2 = _prefs.getString('customerAddress2') ?? "";
+      customerEmail = _prefs.getString('customerEmail') ?? "";
+      accountBalance = _prefs.getInt('accountBalance') ?? 0;
+      
+    });
+    return;
+  }
+
   @override
   Widget build(BuildContext context) {
     var store = Provider.of<MyStore>(context);
@@ -400,6 +406,8 @@ class _CheckoutState extends State<Checkout> {
                             Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: TextFormField(
+                                controller: emailcontroller
+                                  ..text = customerEmail,
                                 readOnly: true,
                                 decoration: const InputDecoration(
                                   hintText: 'Email',
@@ -419,9 +427,14 @@ class _CheckoutState extends State<Checkout> {
                             Padding(
                               padding: const EdgeInsets.only(right: 140.0),
                               child: RadioListTile(
-                                subtitle: Text(''),
+                                subtitle: Text(customerAddress2),
                                 value: AddressInfo.location,
-                                title: const Text('121 Ogba-Road'),
+                                title: Text(
+                                  customerAddress1,
+                                  style: const TextStyle(
+                                    fontSize: 18,
+                                  ),
+                                ),
                                 groupValue: _values,
                                 onChanged: (AddressInfo? val) {
                                   setState(() {
@@ -430,6 +443,15 @@ class _CheckoutState extends State<Checkout> {
                                 },
                               ),
                             ),
+                            //  Padding(
+                            //   padding: const EdgeInsets.only(left:9.0),
+                            //   child: Text ('My Address ,$customerAddress1',
+                            //   style: const TextStyle(
+                            //   fontSize: 18,
+                            //   ),
+                            //   ),
+                            // ),
+
                             GestureDetector(
                               child: Padding(
                                 padding: const EdgeInsets.only(left: 18.0),
@@ -518,7 +540,7 @@ class _CheckoutState extends State<Checkout> {
                     Center(
                       child: Container(
                         width: getProportionateScreenWidth(355),
-                        height: getProportionateScreenHeight(400),
+                        height: getProportionateScreenHeight(540),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(15.0),
                           color: Colors.white,
@@ -535,45 +557,218 @@ class _CheckoutState extends State<Checkout> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Padding(
-                                  padding: const EdgeInsets.only(bottom: 3.0),
-                                  child: Row(
-                                    children: [
-                                      Text(
-                                        'Subtotal:₦ ${store.getTotalAmount().toString()}',
-                                        style: const TextStyle(
+                                ListTile(
+                                  title: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: const [
+                                       Text(
+                                        'Subtotal:',
+                                        style: TextStyle(
                                           fontSize: 20,
                                           //color: Colors.green,
                                         ),
                                       ),
+                                     
                                     ],
                                   ),
+                                  trailing: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    children: [
+                                     Text('₦ ${store.getTotalAmount().toString()}',
+                                     style: const TextStyle(
+                                      color: Colors.green,
+                                      fontSize: 20,
+                                     ),
+                                     ),
+                                     
+                                    ],
+                                  ),
+                                  dense: false,
                                 ),
-                                Text(
-                                  'Shipping Cost:',
-                                  style: TextStyle(fontSize: 20),
+                                ListTile(
+                                 title: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: const [
+                                       Text(
+                                        'Shipping Cost:',
+                                        style: TextStyle(
+                                          fontSize: 20,
+                                        ),
+                                      ),
+                                     
+                                    ],
+                                  ),
+                                  trailing: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    children: [
+                                     Text('₦ ${getShippingCost()}',
+                                     style: const TextStyle(
+                                      color: Colors.red,
+                                      fontSize: 20,
+                                     ),
+                                     ),
+                                     
+                                    ],
+                                  ),
+                                  dense: false,
                                 ),
-                                const Text(
-                                  'Discount:',
-                                  style: TextStyle(fontSize: 20),
+                                
+                                ListTile(
+                                 title: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: const [
+                                       Text(
+                                        'Discount:',
+                                        style: TextStyle(
+                                          fontSize: 20,
+                                          //color: Colors.green,
+                                        ),
+                                      ),
+                                     
+                                    ],
+                                  ),
+                                  trailing: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    children: [
+                                     Text('₦ ${getdiscount()}',
+                                     style: const TextStyle(
+                                      color: Colors.red,
+                                      fontSize: 20,
+                                     ),
+                                     ),
+                                     
+                                    ],
+                                  ),
+                                  dense: false,
                                 ),
-                                const Text(
-                                  'Tax:',
-                                  style: TextStyle(fontSize: 20),
+                                 ListTile(
+                                  title: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: const [
+                                       Text(
+                                        'Tax:',
+                                        style: TextStyle(
+                                          fontSize: 20,
+                                          //color: Colors.green,
+                                        ),
+                                      ),
+                                     
+                                    ],
+                                  ),
+                                  trailing: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    children: [
+                                     Text('₦ ${getTax()}',
+                                     style: const TextStyle(
+                                      color: Colors.red,
+                                      fontSize: 20,
+                                     ),
+                                     ),
+                                     
+                                    ],
+                                  ),
+                                  dense: false,
                                 ),
-                                Text(
-                                  'Total: ₦${store.getTotalAmount() - getTotal()}',
-                                  style: const TextStyle(fontSize: 20),
-                                  //color: Colors.red),
+                                  ListTile(
+                                  title: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: const [
+                                       Text(
+                                        'Total:',
+                                        style: TextStyle(
+                                          fontSize: 20,
+                                       
+                                        ),
+                                      ),
+                                     
+                                    ],
+                                  ),
+                                  trailing: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    children: [
+                                     Text('₦${store.getTotalAmount() + getTotal()}',
+                                     style: const TextStyle(
+                                      color: Colors.green,
+                                      fontSize: 20,
+                                     ),
+                                     ),
+                                     
+                                    ],
+                                  ),
+                                  dense: false,
                                 ),
-                                Text(
-                                  'Available Credit:${getAvailiableCrd()}',
-                                  style: const TextStyle(fontSize: 20),
+                                      
+                               
+                                       ListTile(
+                                  title: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: const [
+                                       Text(
+                                        'Availiable Credit:',
+                                        style: TextStyle(
+                                          fontSize: 20,
+                                          //color: Colors.green,
+                                        ),
+                                      ),
+                                     
+                                    ],
+                                  ),
+                                  trailing: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    // ignore: prefer_const_literals_to_create_immutables
+                                    children: [
+                                     Text( accountBalance.toString(),
+                                     style: const TextStyle(
+                                      color: Colors.green,
+                                      fontSize: 20,
+                                     ),
+                                     ),
+                                     
+                                    ],
+                                  ),
+                                  dense: false,
                                 ),
-                                Text(
-                                  'Amount to Pay:${getTotal() + getAvailiableCrd()}',
-                                  style: const TextStyle(fontSize: 20),
-                                  //color: Colors.red),
+                                       ListTile(
+                                  title: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: const [
+                                       Text(
+                                        'Amount To Pay:',
+                                        style: TextStyle(
+                                          fontSize: 20,
+                                          //color: Colors.green,
+                                        ),
+                                      ),
+                                     
+                                    ],
+                                  ),
+                                  trailing: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    children: [
+                                     Text('₦${getTotal() + getAvailiableCrd()}',
+                                     style: const TextStyle(
+                                      color: Colors.green,
+                                      fontSize: 20,
+                                     ),
+                                     ),
+                                     
+                                    ],
+                                  ),
+                                  dense: false,
                                 ),
                                 const Divider(
                                   color: Colors.grey,

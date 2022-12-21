@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sales_order/screens/checkout.dart';
 import '../../Screens/login_screen.dart';
 import '../../Screens/select_item.dart';
 import 'package:http/http.dart' as http;
@@ -49,7 +50,7 @@ class _DashBoardState extends State<DashBoard> {
                 color: Colors.blue[900],
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 30,
             ),
             Center(
@@ -129,7 +130,7 @@ class _DashBoardState extends State<DashBoard> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const SelectItemScreen(),
+                          builder: (context) => const Checkout(),
                         ),
                       );
                     },

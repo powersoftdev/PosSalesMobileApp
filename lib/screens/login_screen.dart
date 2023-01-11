@@ -1,12 +1,13 @@
 // // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
-import 'dart:js';
-
 import 'package:flutter/material.dart';
 import 'package:sales_order/Screens/dashboard.dart';
 import '../Model/customer.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+
+
+
 
 
 class LoginScreen extends StatefulWidget {
@@ -17,36 +18,40 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-
   bool _obscureText = true;
+
+  void _toggle() {
+    setState(() {
+      _obscureText = !_obscureText;
+    });
+  }
 
   final emailcontroller = TextEditingController();
 
-   final passwordcontroller = TextEditingController();
+  final passwordcontroller = TextEditingController();
 
-   dynamic customerAddress1;
+  dynamic customerAddress1;
 
-   dynamic customerAddress2;
+  dynamic customerAddress2;
 
   dynamic customerEmail;
 
-   dynamic accountBalance;
+  dynamic accountBalance;
 
-   String? token;
+  String? token;
 
-   String password = '';
+  String password = '';
 
   //  late final SharedPreferences _prefs = await SharedPreferences.getInstance();
-   Future<void> callApi() async {
-     print(emailcontroller.text);
+  Future<void> callApi() async {
+    print(emailcontroller.text);
     print(passwordcontroller.text);
 
     showDialog(
-      context: context, 
-      builder: (context){
-        return Center(child: CircularProgressIndicator());
-      });
-
+        context: context,
+        builder: (context) {
+          return const Center(child: CircularProgressIndicator());
+        });
 
     var url = Uri.parse(
         'https://powersoftrd.com/PEMAPI/api/CustomerLoginEmail/741258?Email=' +
@@ -79,39 +84,41 @@ class _LoginScreenState extends State<LoginScreen> {
     var customerAddress2 = customerInformation.customerAddress2;
     var customerAddress3 = customerInformation.customerAddress3;
 
-   if (responseData.status == 'Success') {
+    if (responseData.status == 'Success') {
       final SharedPreferences prefs = await SharedPreferences.getInstance();
 
       print('Response status: ${response.statusCode}');
-       print('Response body: ${response.body}');
+      print('Response body: ${response.body}');
 
       await prefs.setString('customerEmail', emailcontroller.text);
       await prefs.setString('customerName', customerName);
       await prefs.setString('customerId', customerId);
       await prefs.setString('customerEmail', customerEmail);
       await prefs.setString('customerPhone', customerPhone);
-      await prefs.setString('accountBalance', accountBalance);
+      await prefs.setDouble('accountBalance', accountBalance);
       await prefs.setString('customerAddress1', customerAddress1);
       await prefs.setString('customerAddress2', customerAddress2);
       await prefs.setString('customerAddress3', customerAddress3);
       await prefs.setString('token', responseData.authToken);
       String? tokenFromSP = prefs.getString('token');
-      
 
-       print(customerName);
+      print(customerName);
       print('responseData.authToken: ' + responseData.authToken);
-     print('token from sp: ' + tokenFromSP!);
+      print('token from sp: ' + tokenFromSP!);
 
-     Navigator.of(context)
-     .push(MaterialPageRoute(builder: (context)=> DashBoard()));
-    }else if (responseData.status == 'Failed') {
-      showDialog(context: context, builder: (contex){
-      return AlertDialog(
-        content: Text(responseData.message),
-    );
-    });
+      Navigator.of(context)
+          .push(MaterialPageRoute(builder: (context) => const DashBoard()));
+    } else if (responseData.status == 'Failed') {
+      showDialog(
+          context: context,
+          builder: (contex) {
+            return AlertDialog(
+              content: Text(responseData.message),
+            );
+          });
     }
-   }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -132,7 +139,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       height: 180.0,
                       width: double.infinity,
                       color: Colors.white,
-                      padding: EdgeInsets.only(top: 5.0, left: 20.0),
+                      padding: const EdgeInsets.only(top: 5.0, left: 20.0),
                       child: Row(
                         children: [
                           Text(
@@ -142,10 +149,10 @@ class _LoginScreenState extends State<LoginScreen> {
                               color: Colors.blue.shade700,
                             ),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             width: 20,
                           ),
-                          CircleAvatar(
+                          const CircleAvatar(
                             radius: 80,
                             backgroundImage:
                                 AssetImage('lib/images/newPhone.jpg'),
@@ -159,7 +166,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           height: 660,
                           decoration: BoxDecoration(
                             color: Colors.blue.shade700,
-                            borderRadius: BorderRadius.only(
+                            borderRadius: const BorderRadius.only(
                               topLeft: Radius.circular(100),
                               topRight: Radius.circular(100),
                               bottomLeft: Radius.circular(0),
@@ -172,8 +179,8 @@ class _LoginScreenState extends State<LoginScreen> {
                             Container(
                               height: 300,
                               width: 500,
-                              margin: EdgeInsets.fromLTRB(20, 80, 20, 20),
-                              padding: EdgeInsets.only(
+                              margin: const EdgeInsets.fromLTRB(20, 80, 20, 20),
+                              padding: const EdgeInsets.only(
                                   top: 20.0, left: 15.0, right: 15.0),
                               decoration: BoxDecoration(
                                 color: Colors.white,
@@ -195,16 +202,16 @@ class _LoginScreenState extends State<LoginScreen> {
                                         ),
                                       ),
                                     ),
-                                    SizedBox(
+                                    const SizedBox(
                                       height: 15,
                                     ),
                                     TextFormField(
                                       controller: emailcontroller,
                                       autofocus: false,
                                       decoration: InputDecoration(
-                                        border: OutlineInputBorder(),
+                                        border: const OutlineInputBorder(),
                                         hintText: 'Email address',
-                                        prefixIcon: Padding(
+                                        prefixIcon: const Padding(
                                           padding: EdgeInsets.only(top: 0),
                                           child: Icon(Icons.email),
                                         ),
@@ -226,30 +233,27 @@ class _LoginScreenState extends State<LoginScreen> {
                                         return null;
                                       },
                                     ),
-                                    SizedBox(
+                                    const SizedBox(
                                       height: 15,
                                     ),
                                     TextFormField(
                                       controller: passwordcontroller,
+                                      obscureText: _obscureText,
                                       autofocus: false,
                                       decoration: InputDecoration(
-                                        border: OutlineInputBorder(),
+                                        border: const OutlineInputBorder(),
                                         hintText: 'Password',
-                                        prefixIcon: Padding(
+                                        prefixIcon: const Padding(
                                           padding: EdgeInsets.only(top: 0),
                                           child: Icon(Icons.lock),
                                         ),
-                                        suffixIcon: IconButton(
-                                          icon: Icon(
+                                        suffixIcon: InkWell(
+                                          onTap: _toggle,
+                                          child: Icon(
                                             _obscureText
                                                 ? Icons.visibility
                                                 : Icons.visibility_off,
                                           ),
-                                          onPressed: () {
-                                            setState(() {
-                                              _obscureText = !_obscureText;
-                                            });
-                                          },
                                         ),
                                         enabledBorder: OutlineInputBorder(
                                           borderSide: const BorderSide(
@@ -258,7 +262,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                               BorderRadius.circular(10),
                                         ),
                                       ),
-                                      obscureText: true,
+                                      //obscureText: true,
                                       // validator: (value) {
                                       //   if (value == null || value.isEmpty) {
                                       //     return 'Field is required.';
@@ -272,12 +276,12 @@ class _LoginScreenState extends State<LoginScreen> {
                                       //   return null;
                                       // },
                                     ),
-                                    SizedBox(
+                                    const SizedBox(
                                       height: 5,
                                     ),
                                     FloatingActionButton(
                                       onPressed: callApi,
-                                      child: Icon(Icons.forward),
+                                      child: const Icon(Icons.forward),
                                     ),
                                     Container(
                                       width: double.infinity,
@@ -286,7 +290,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 ),
                               ),
                             ),
-                            SizedBox(
+                            const SizedBox(
                               height: 20,
                               child: Text(
                                 'Forget your password? Click here',
@@ -310,3 +314,6 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 }
+
+
+

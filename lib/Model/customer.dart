@@ -4,10 +4,12 @@
 
 import 'dart:convert';
 
-CustomerModel customerModelFromJson(String str) =>
+// ignore: non_constant_identifier_names
+CustomerModel CustomerModelFromJson(String str) =>
     CustomerModel.fromJson(json.decode(str));
 
-String customerModelToJson(CustomerModel data) => json.encode(data.toJson());
+// ignore: non_constant_identifier_names
+String CustomerModelToJson(CustomerModel data) => json.encode(data.toJson());
 
 class CustomerModel {
   CustomerModel({

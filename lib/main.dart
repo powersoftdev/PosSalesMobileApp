@@ -3,10 +3,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'package:sales_order/Screens/login_screen.dart';
+
 import 'package:sales_order/Store/MyStore.dart';
 
-import 'package:sales_order/screens/paymentclass.dart';
+import 'package:sales_order/screens/splash.screen.dart';
 
 
 
@@ -14,14 +14,14 @@ void main() {
   return runApp(
     MultiProvider(providers: [
        ChangeNotifierProvider<MyStore>(create:  (_) => MyStore()),
-      ChangeNotifierProvider<PaymentsData>(create:  (_) => PaymentsData()),
+    //  ChangeNotifierProvider<PaymentsData>(create:  (_) => PaymentsData()),
 
     ],
       // create: (BuildContext context) {
       //   return MyStore();
       // },
       child: MaterialApp(
-        home: LoginScreen(),
+        home: SplashScreen(),        //LoginScreen
         debugShowCheckedModeBanner: false,
       ),
     ),

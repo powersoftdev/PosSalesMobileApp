@@ -3,12 +3,14 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
+import 'package:sales_order/Model/products.dart';
+
+
 import '../Store/MyStore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'basketPage.dart';
 
 import 'package:sqflite/sqflite.dart';
-import 'package:sales_order/Model/products.dart';
 
 class ProductDetailpage extends StatefulWidget {
   const ProductDetailpage({super.key});

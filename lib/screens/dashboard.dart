@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:sales_order/screens/orders.dart';
 import 'package:sales_order/screens/profileScreen.dart';
 import '../../Screens/login_screen.dart';
 import '../../Screens/select_item.dart';
-import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class DashBoard extends StatefulWidget {
@@ -38,106 +38,101 @@ class _DashBoardState extends State<DashBoard> {
         //resizeToAvoidBottomInset: false,
         // backgroundColor: Colors.white,
       ),
-      body: SafeArea(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              padding: const EdgeInsets.only(
-                top: 15,
-                left: 15,
-                right: 15,
-              ),
-              child: Text(
-                'Welcome ,$customerName',
-                style: TextStyle(
-                  fontSize: 26,
-                  color: Colors.blue[900],
-                ),
-              ),
-            ),
-            SizedBox(
-              height: 30,
-            ),
-            Center(
-              child: Text(
-                'Sales Bookings',
-                style: TextStyle(
-                  fontSize: 26,
-                  color: Colors.blue[900],
-                ),
-              ),
-            ),
-            // Container(
-            //   height: 60,
-            //   width: 400,
-            //   color: Colors.red,
-            //   padding: const EdgeInsets.only(
-            //     top: 10.0,
-            //     left: 20.0,
-            //   ),
-            //   child: Text(
-            //     'Welcome ,$customerName',
-            //     style: TextStyle(
-            //       fontSize: 30,
-            //       color: Colors.blue[900],
-            //     ),
-            //   ),
-            // ),
-            // Container(
-            //   height: 80,
-            //   // width: 100,
-            //   color: Colors.green,
-            //   padding: const EdgeInsets.only(
-            //     top: 25.0,
-            //     left: 90.0,
-            //   ),
-            //   child: Text(
-            //     'Sales Bookings',
-            //     style: TextStyle(
-            //       fontSize: 30,
-            //       color: Colors.blue[900],
-            //     ),
-            //   ),
-            // ),
-            Stack(children: [
+      body: SingleChildScrollView(
+        child: SafeArea(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
               Container(
-                height: 446,
-                //  width: 100,
-                decoration: BoxDecoration(
-                  color: Colors.blue[700],
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(100),
-                    topRight: Radius.circular(100),
-                    bottomLeft: Radius.circular(0),
-                    bottomRight: Radius.circular(0),
+                padding: const EdgeInsets.only(
+                  top: 15,
+                  left: 15,
+                  right: 15,
+                ),
+                child: Text(
+                  'Welcome ,$customerName',
+                  style: TextStyle(
+                    fontSize: 26,
+                    color: Colors.blue[900],
                   ),
                 ),
-                padding: const EdgeInsets.only(
-                    left: 60, right: 60, top: 25, bottom: 400),
-                //margin: const EdgeInsets.only(top: 80),
-                child: const Center(
-                  child: Text(
-                    'What would you like to do?',
-                    style: TextStyle(
-                      fontSize: 20,
-                      color: Colors.white,
+              ),
+              SizedBox(
+                height: 30,
+              ),
+              Center(
+                child: Text(
+                  'Sales Bookings',
+                  style: TextStyle(
+                    fontSize: 26,
+                    color: Colors.blue[900],
+                  ),
+                ),
+              ),
+              Stack(children: [
+                
+                   Container(
+                    height: 350,
+                    //  width: 100,
+                    decoration: BoxDecoration(
+                      color: Colors.blue[700],
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(100),
+                        topRight: Radius.circular(100),
+                        bottomLeft: Radius.circular(0),
+                        bottomRight: Radius.circular(0),
+                      ),
+                    ),
+                    padding: const EdgeInsets.only(
+                        left: 30, right: 30, top: 20, bottom: 300),
+                    //margin: const EdgeInsets.only(top: 80),
+                    child: const Center(
+                      child: Text(
+                        'What would you like to do?',
+                        style: TextStyle(
+                          fontSize: 20,
+                          color: Colors.white,
+                        ),
+                      ),
                     ),
                   ),
+                
+                Row(
+                  children: [
+                    const Padding(
+                      padding: EdgeInsets.only(left: 30, bottom: 400),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const SelectItemScreen(),
+                          ),
+                        );
+                      },
+                      child: const CircleAvatar(
+                        backgroundColor: Colors.white,
+                        radius: 70,
+                        child: Icon(
+                          Icons.local_offer_outlined,
+                          size: 60,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-              Row(
-                children: [
+                Row(children: [
                   const Padding(
-                    padding: EdgeInsets.only(left: 30, bottom: 400),
+                    padding: EdgeInsets.only(right: 210, bottom: 400),
                   ),
                   GestureDetector(
                     onTap: () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const Checkout(),
+                          builder: (context) => const profileScreen(),
                         ),
                       );
                     },
@@ -145,62 +140,39 @@ class _DashBoardState extends State<DashBoard> {
                       backgroundColor: Colors.white,
                       radius: 70,
                       child: Icon(
-                        Icons.local_offer_outlined,
+                        Icons.account_circle_sharp,
                         size: 60,
                       ),
                     ),
                   ),
-                ],
-              ),
-              Row(children: [
-                const Padding(
-                  padding: EdgeInsets.only(right: 210, bottom: 400),
-                ),
-                GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const profileScreen(),
+                ]),
+                const Center(
+                  child: Padding(
+                    padding: EdgeInsets.only(top: 300, left: 25, right: 200),
+                    child: Text(
+                      "View Catlog",
+                      style: TextStyle(
+                        fontSize: 20,
+                        color: Colors.white,
                       ),
-                    );
-                  },
-                  child: const CircleAvatar(
-                    backgroundColor: Colors.white,
-                    radius: 70,
-                    child: Icon(
-                      Icons.account_circle_sharp,
-                      size: 60,
+                    ),
+                  ),
+                ),
+                const Center(
+                  child: Padding(
+                    padding: EdgeInsets.only(top: 300, left: 190, right: 20),
+                    child: Text(
+                      "Profile",
+                      style: TextStyle(
+                        fontSize: 20,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
                 ),
               ]),
-              const Center(
-                child: Padding(
-                  padding: EdgeInsets.only(top: 300, left: 5, right: 200),
-                  child: Text(
-                    "View Catlog",
-                    style: TextStyle(
-                      fontSize: 20,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              ),
-              const Center(
-                child: Padding(
-                  padding: EdgeInsets.only(top: 300, left: 190, right: 20),
-                  child: Text(
-                    "Profile",
-                    style: TextStyle(
-                      fontSize: 20,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              ),
-            ]),
-          ],
+            ],
+          ),
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(
@@ -217,11 +189,15 @@ class _DashBoardState extends State<DashBoard> {
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.local_offer_outlined),
-            label: 'View Catlog',
+            label: 'Catlog',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.account_circle_sharp),
             label: 'Profile',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.history_outlined),
+            label: 'Order',
           ),
         ],
         onTap: (int index) {
@@ -232,7 +208,6 @@ class _DashBoardState extends State<DashBoard> {
                 MaterialPageRoute(builder: (context) => const LoginScreen()),
               );
               break;
-            default:
           }
           switch (index) {
             case 1:
@@ -242,18 +217,25 @@ class _DashBoardState extends State<DashBoard> {
                     builder: (context) => const SelectItemScreen()),
               );
               break;
-            default:
           }
           switch (index) {
             case 2:
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const profileScreen()),
+                MaterialPageRoute(
+                    builder: (context) => const profileScreen()),
               );
+              break;
+          }
+          switch (index) {
+            case 3:
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => const Orders()));
               break;
             default:
           }
         },
+        type: BottomNavigationBarType.fixed,
       ),
     );
   }

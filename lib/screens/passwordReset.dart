@@ -19,58 +19,58 @@ class _PasswordResetState extends State<PasswordReset> {
         ),
       ),
       body: Container(
-        padding: EdgeInsets.only(left: 10, right: 10),
+        padding: const EdgeInsets.only(left: 10, right: 10),
         child: Column(
           children: [
-            SizedBox(
+            const SizedBox(
               height: 30,
             ),
             TextFormField(
               decoration: InputDecoration(
-                contentPadding: EdgeInsets.only(left: 20),
+                contentPadding: const EdgeInsets.only(left: 20),
                 fillColor: Colors.white,
                 filled: true,
                 border: const OutlineInputBorder(),
                 labelText: 'Current Password',
                 enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(width: 2, color: Colors.blueAccent),
+                  borderSide: const BorderSide(width: 2, color: Colors.blueAccent),
                   borderRadius: BorderRadius.circular(20),
                 ),
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 30,
             ),
             TextFormField(
               decoration: InputDecoration(
-                contentPadding: EdgeInsets.only(left: 20),
+                contentPadding: const EdgeInsets.only(left: 20),
                 fillColor: Colors.white,
                 filled: true,
                 border: const OutlineInputBorder(),
                 labelText: 'Enter New Password',
                 enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(width: 2, color: Colors.blueAccent),
+                  borderSide: const BorderSide(width: 2, color: Colors.blueAccent),
                   borderRadius: BorderRadius.circular(20),
                 ),
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 30,
             ),
             TextFormField(
               decoration: InputDecoration(
-                contentPadding: EdgeInsets.only(left: 20),
+                contentPadding: const EdgeInsets.only(left: 20),
                 fillColor: Colors.white,
                 filled: true,
                 border: const OutlineInputBorder(),
                 labelText: 'Confirm New Password',
                 enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(width: 2, color: Colors.blueAccent),
+                  borderSide: const BorderSide(width: 2, color: Colors.blueAccent),
                   borderRadius: BorderRadius.circular(20),
                 ),
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 30,
             ),
             ElevatedButton(
@@ -85,7 +85,7 @@ class _PasswordResetState extends State<PasswordReset> {
                 ),
               ),
               onPressed: () {},
-              child: Text('Change Password'),
+              child: const Text('Change Password'),
             ),
           ],
         ),

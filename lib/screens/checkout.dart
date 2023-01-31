@@ -277,11 +277,7 @@ class Checkout extends StatefulWidget {
   State<Checkout> createState() => _CheckoutState();
 }
 
-
- 
-
 class _CheckoutState extends State<Checkout> {
-
   PaymentOption _value = PaymentOption.payOffline;
   AddressInfo _values = AddressInfo.location;
 
@@ -332,11 +328,11 @@ class _CheckoutState extends State<Checkout> {
 
   late final SharedPreferences _prefs;
 
-  // @override
-  // void initState() {
-  //   getStringValuesAddress();
-  //   super.initState();
-  // }
+  @override
+  void initState() {
+    getStringValuesAddress();
+    super.initState();
+  }
 
   getStringValuesAddress() async {
     _prefs = await SharedPreferences.getInstance();
@@ -347,6 +343,73 @@ class _CheckoutState extends State<Checkout> {
       accountBalance = _prefs.getDouble('accountBalance') ?? 0.0;
     });
     return;
+  }
+
+  final List<Payment> writersList = [];
+
+  String? authorizationUrl;
+  dynamic token;
+
+  //final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+  // void initState() {
+  //   super.initState();
+  // }
+
+  void callApi() async {
+    final SharedPreferences prefs = await _prefs;
+
+    // final customerID = prefs.getString('CustomerID') ?? "";
+    final customerEmail = prefs.getString('CustomerEmail') ?? "";
+    // final currencyId = prefs.getString('CurrencyId') ?? "";
+    // final premiumAmount = prefs.getDouble('premiumAmount') ?? "";
+    token = prefs.getString('token');
+
+    if (customerEmail != null && customerEmail != "")
+    // if (customerEmail != null && customerEmail != "")
+    {
+      // dynamic data = {};
+      var url = Uri.parse(
+          'https://powersoftrd.com/PEMApi/api/PaymentInitialization/741258');
+
+      var response = await http.post(url,
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Authorization': 'Bearer $token',
+          },
+          body: jsonEncode({
+            "email": customerEmail,
+            "amount": amountToPay,
+          }));
+
+      final Map<String, dynamic> responseData = json.decode(response.body);
+
+      if (responseData == null) {
+        showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                content: Text(responseData['Message']),
+              );
+            });
+      } else if (responseData != null && responseData['status'] == true) {
+        final paystackIntialize = paymentFromJson(response.body);
+        authorizationUrl = paystackIntialize.data!.authorizationUrl;
+
+        setState(() {
+          authorizationUrl = authorizationUrl == "" ? "" : authorizationUrl;
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) =>
+                      WebViewPayment(pageData: authorizationUrl)));
+        });
+        print(authorizationUrl);
+        // setState(() {
+        //   var initialUrl = authorizationUrl;
+        // });
+      }
+    }
   }
 
   @override
@@ -783,6 +846,7 @@ class _CheckoutState extends State<Checkout> {
                                   onChanged: (PaymentOption? val) {
                                     setState(() {
                                       _value = val!;
+                                      callApi;
                                     });
                                   },
                                 ),
@@ -793,6 +857,7 @@ class _CheckoutState extends State<Checkout> {
                                   onChanged: (PaymentOption? val) {
                                     setState(() {
                                       _value = val!;
+                                      callApi();
                                     });
                                   },
                                 ),
@@ -816,8 +881,8 @@ class _CheckoutState extends State<Checkout> {
                             fontSize: 20,
                             color: Colors.white,
                           ),
-                          onPress: (){
-                           
+                          onPress: () {
+                            callApi();
                             if (PaymentOption.payOffline == _value) {
                               Navigator.push(
                                 context,
@@ -834,7 +899,6 @@ class _CheckoutState extends State<Checkout> {
                               );
                             }
                           },
-                          
                           gradient: const LinearGradient(
                             colors: [Colors.blueGrey, Colors.blue],
                           ),

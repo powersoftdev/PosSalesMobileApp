@@ -58,7 +58,7 @@ class _SelectItemScreenState extends State<SelectItemScreen> {
           'Accept': 'application/json',
           'Authorization': 'Bearer $token',
         });
-    print('Response status: ${response.statusCode}');
+    print('Response status: ${response.  statusCode}');
     print('Response body: ${response.body}');
     print('token : ${token}');
 
@@ -131,12 +131,7 @@ class _SelectItemScreenState extends State<SelectItemScreen> {
               color: Colors.white,
             ),
           ),
-          // Text(
-          //   store.getBasketQty().toString(),
-          //   style: TextStyle(
-          //     color: Colors.white,
-          //   ),
-          // ),
+        
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
@@ -238,7 +233,7 @@ class _SelectItemScreenState extends State<SelectItemScreen> {
               },
             );
           } else {
-            return CircularProgressIndicator();
+            return Center(child: CircularProgressIndicator());
           }
         },
       ),

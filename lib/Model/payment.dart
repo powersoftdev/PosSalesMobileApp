@@ -10,38 +10,42 @@ String paymentToJson(Payment data) => json.encode(data.toJson());
 
 class Payment {
     Payment({
-         this.status,
-         this.message,
+        this.status,
+        this.message,
         this.data,
+        this.authToken,
     });
 
-    bool? status;
-    String? message;
-    Data? data;
+    final String? status;
+    final String? message;
+    final Data? data;
+    final dynamic authToken;
 
     factory Payment.fromJson(Map<String, dynamic> json) => Payment(
         status: json["status"],
         message: json["message"],
-        data: Data.fromJson(json["data"]),
+        data: json["data"] == null ? null : Data.fromJson(json["data"]),
+        authToken: json["auth_token"],
     );
 
     Map<String, dynamic> toJson() => {
         "status": status,
         "message": message,
-        "data": data!.toJson(),
+        "data": data?.toJson(),
+        "auth_token": authToken,
     };
 }
 
 class Data {
     Data({
-         this.authorizationUrl,
-         this.accessCode,
-         this.reference,
+        this.authorizationUrl,
+        this.accessCode,
+        this.reference,
     });
 
-    String? authorizationUrl;
-    String? accessCode;
-    String? reference;
+    final String? authorizationUrl;
+    final String? accessCode;
+    final String? reference;
 
     factory Data.fromJson(Map<String, dynamic> json) => Data(
         authorizationUrl: json["authorization_url"],

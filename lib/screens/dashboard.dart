@@ -35,8 +35,6 @@ class _DashBoardState extends State<DashBoard> {
     return Scaffold(
       appBar: AppBar(
         title: const Center(child: Text('DashBoard')),
-        //resizeToAvoidBottomInset: false,
-        // backgroundColor: Colors.white,
       ),
       body: SingleChildScrollView(
         child: SafeArea(
@@ -58,7 +56,7 @@ class _DashBoardState extends State<DashBoard> {
                   ),
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 30,
               ),
               Center(
@@ -101,7 +99,7 @@ class _DashBoardState extends State<DashBoard> {
                 Row(
                   children: [
                     const Padding(
-                      padding: EdgeInsets.only(left: 30, bottom: 400),
+                      padding: EdgeInsets.only(left: 20, bottom: 400),
                     ),
                     GestureDetector(
                       onTap: () {
@@ -160,7 +158,7 @@ class _DashBoardState extends State<DashBoard> {
                 ),
                 const Center(
                   child: Padding(
-                    padding: EdgeInsets.only(top: 300, left: 190, right: 20),
+                    padding: EdgeInsets.only(top: 300, left: 225, right: 20),
                     child: Text(
                       "Profile",
                       style: TextStyle(

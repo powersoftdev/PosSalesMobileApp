@@ -2,13 +2,13 @@
 //
 //     final CustomerModel = CustomerModelFromJson(jsonString);
 
+// ignore_for_file: non_constant_identifier_names
+
 import 'dart:convert';
 
-// ignore: non_constant_identifier_names
 CustomerModel CustomerModelFromJson(String str) =>
     CustomerModel.fromJson(json.decode(str));
 
-// ignore: non_constant_identifier_names
 String CustomerModelToJson(CustomerModel data) => json.encode(data.toJson());
 
 class CustomerModel {
@@ -58,7 +58,7 @@ class Datum {
     this.customerFax,
     this.customerEmail,
     this.customerWebPage,
-    this.customerModel,
+    this.CustomerModel,
     this.customerPassword,
     this.customerPasswordOld,
     this.customerPasswordDate,
@@ -193,7 +193,7 @@ class Datum {
   dynamic customerFax;
   dynamic customerEmail;
   dynamic customerWebPage;
-  dynamic customerModel;
+  dynamic CustomerModel;
   dynamic customerPassword;
   dynamic customerPasswordOld;
   dynamic customerPasswordDate;
@@ -328,7 +328,7 @@ class Datum {
         customerFax: json["customerFax"],
         customerEmail: json["customerEmail"],
         customerWebPage: json["customerWebPage"],
-        customerModel: json["CustomerModel"],
+        CustomerModel: json["CustomerModel"],
         customerPassword: json["customerPassword"],
         customerPasswordOld: json["customerPasswordOld"],
         customerPasswordDate: json["customerPasswordDate"],

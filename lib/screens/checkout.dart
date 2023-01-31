@@ -1,16 +1,22 @@
+import 'dart:convert';
+import 'dart:core';
+import 'dart:core';
 import 'dart:io';
-
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animated_button/flutter_animated_button.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:sales_order/Store/MyStore.dart';
+import 'package:sales_order/screens/paystackwebview.dart';
 import 'package:sales_order/screens/size_config.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../Model/payment.dart';
 import 'dashboard.dart';
 import 'login_screen.dart';
 import 'orders.dart';
+import 'paymentcheckout.dart';
 import 'select_item.dart';
 
 enum PaymentOption { payOffline, payOnline }
@@ -271,12 +277,16 @@ class Checkout extends StatefulWidget {
   State<Checkout> createState() => _CheckoutState();
 }
 
+
+ 
+
 class _CheckoutState extends State<Checkout> {
+
   PaymentOption _value = PaymentOption.payOffline;
   AddressInfo _values = AddressInfo.location;
 
   var value = NumberFormat("#,##0.00", "en_US");
-  
+
   getTotal() {
     int total = 0;
     total = getSubtotal() + getShippingCost() - getdiscount() + getTax();
@@ -322,11 +332,11 @@ class _CheckoutState extends State<Checkout> {
 
   late final SharedPreferences _prefs;
 
-  @override
-  void initState() {
-    getStringValuesAddress();
-    super.initState();
-  }
+  // @override
+  // void initState() {
+  //   getStringValuesAddress();
+  //   super.initState();
+  // }
 
   getStringValuesAddress() async {
     _prefs = await SharedPreferences.getInstance();
@@ -351,10 +361,9 @@ class _CheckoutState extends State<Checkout> {
     getAmountToPay(MyStore store) {
       var amountToPay = getAvailiableCrd();
       if (amountToPay <= 0) {
-        amountToPay = 0;
-        
-      } else {
         amountToPay = store.getTotalAmount() - getAvailiableCrd();
+      } else {
+        amountToPay = store.getTotalAmount() + getAvailiableCrd();
       }
 
       return amountToPay;
@@ -435,7 +444,7 @@ class _CheckoutState extends State<Checkout> {
                               ),
                             ),
                             Padding(
-                              padding: const EdgeInsets.only(right: 140.0),
+                              padding: const EdgeInsets.only(right: 120.0),
                               child: RadioListTile(
                                 subtitle: Text(customerAddress2),
                                 value: AddressInfo.location,
@@ -466,24 +475,24 @@ class _CheckoutState extends State<Checkout> {
                             //         Padding(
                             //           padding: const EdgeInsets.all(10.0),
                             //           child: GestureDetector(
-                                        // onTap: () async {
-                                        //   await showInformationDialog(context);
-                                        // },
-                                        // child: const Text(
-                                        //   'Use a diffrent address',
-                                        //   style: TextStyle(
-                                        //     fontSize: 16,
-                                        //     color: Colors.blue,
-                                        //   ),
-                                        // ),
-                              //         ),
-                              //       ),
-                              //     ],
-                              //   ),
-                              // ),
-                              // onTap: () async {
-                              //   await showInformationDialog(context);
-                              // },
+                            // onTap: () async {
+                            //   await showInformationDialog(context);
+                            // },
+                            // child: const Text(
+                            //   'Use a diffrent address',
+                            //   style: TextStyle(
+                            //     fontSize: 16,
+                            //     color: Colors.blue,
+                            //   ),
+                            // ),
+                            //         ),
+                            //       ),
+                            //     ],
+                            //   ),
+                            // ),
+                            // onTap: () async {
+                            //   await showInformationDialog(context);
+                            // },
                             //),
                             // const Divider(
                             //   color: Colors.grey,
@@ -719,7 +728,7 @@ class _CheckoutState extends State<Checkout> {
                                     crossAxisAlignment: CrossAxisAlignment.end,
                                     children: [
                                       Text(
-                                        '₦${value.format(getAvailiableCrd())}',
+                                        '₦ ${value.format(getAvailiableCrd())}',
                                         style: TextStyle(
                                           color: getAvailiableCrd() >= 0
                                               ? Colors.green
@@ -748,7 +757,7 @@ class _CheckoutState extends State<Checkout> {
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     crossAxisAlignment: CrossAxisAlignment.end,
                                     children: [
-                                      Text( 
+                                      Text(
                                         '₦${value.format(getAmountToPay(store))}',
                                         style: const TextStyle(
                                           color: Colors.green,
@@ -807,43 +816,25 @@ class _CheckoutState extends State<Checkout> {
                             fontSize: 20,
                             color: Colors.white,
                           ),
-                          onPress: () {
+                          onPress: (){
+                           
                             if (PaymentOption.payOffline == _value) {
-                              if (getAmountToPay(store) == 0) {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => const DashBoard(),
-                                  ),
-                                );
-                              } else {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => const Orders(),
-                                  ),
-                                );
-                              }
-                            }
-                            if (PaymentOption.payOnline == _value) {
-                              if (getAmountToPay(store) == 0) {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => const LoginScreen(),
-                                  ),
-                                );
-                              } else {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        const SelectItemScreen(),
-                                  ),
-                                );
-                              }
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const Orders(),
+                                ),
+                              );
+                            } else {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const WebViewPayment(),
+                                ),
+                              );
                             }
                           },
+                          
                           gradient: const LinearGradient(
                             colors: [Colors.blueGrey, Colors.blue],
                           ),

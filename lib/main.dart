@@ -10,7 +10,7 @@ import 'package:sales_order/screens/splash.screen.dart';
 
 
 
-void main() {
+void main() { 
   return runApp(
     MultiProvider(providers: [
        ChangeNotifierProvider<MyStore>(create:  (_) => MyStore()),

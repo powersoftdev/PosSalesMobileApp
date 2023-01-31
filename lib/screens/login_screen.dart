@@ -1,14 +1,11 @@
-// // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, avoid_print, prefer_interpolation_to_compose_strings, use_build_context_synchronously, prefer_typing_uninitialized_variables
 
 import 'package:flutter/material.dart';
 import 'package:sales_order/Screens/dashboard.dart';
 import '../Model/customer.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-
-
-
-
+import 'package:form_field_validator/form_field_validator.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -18,6 +15,7 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  GlobalKey<FormState> formkey = GlobalKey<FormState>();
   bool _obscureText = true;
 
   void _toggle() {
@@ -27,22 +25,12 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   final emailcontroller = TextEditingController();
-
   final passwordcontroller = TextEditingController();
-
-  dynamic customerAddress1;
-
-  dynamic customerAddress2;
-
-  dynamic customerEmail;
-
-  dynamic accountBalance;
 
   String? token;
 
   String password = '';
 
-  //  late final SharedPreferences _prefs = await SharedPreferences.getInstance();
   Future<void> callApi() async {
     print(emailcontroller.text);
     print(passwordcontroller.text);
@@ -50,7 +38,7 @@ class _LoginScreenState extends State<LoginScreen> {
     showDialog(
         context: context,
         builder: (context) {
-          return const Center(child: CircularProgressIndicator());
+          return Center(child: CircularProgressIndicator());
         });
 
     var url = Uri.parse(
@@ -63,32 +51,37 @@ class _LoginScreenState extends State<LoginScreen> {
     }).timeout(
       const Duration(seconds: 15),
       onTimeout: () {
-        return http.Response('Error', 408);
+        Navigator.of(context).pop();
+        return http.Response(
+            CustomerModelToJson(CustomerModel(
+                status: "Failed",
+                message: "Cannot Connect to Internet.",
+                data: [],
+                authToken: "")),
+            408);
       },
     );
     final CustomerModel responseData = CustomerModelFromJson(response.body);
-//     showDialog(
-//       context: context,
-//       builder: (context) {
-//         return Center(child: CircularProgressIndicator());
-//       },
-//     );
-
-    var customerInformation = responseData.data.first;
-    var customerName = customerInformation.customerName;
-    var customerId = customerInformation.customerId;
-    var customerEmail = customerInformation.customerEmail;
-    var customerPhone = customerInformation.customerPhone;
-    var accountBalance = customerInformation.accountBalance;
-    var customerAddress1 = customerInformation.customerAddress1;
-    var customerAddress2 = customerInformation.customerAddress2;
-    var customerAddress3 = customerInformation.customerAddress3;
 
     if (responseData.status == 'Success') {
       final SharedPreferences prefs = await SharedPreferences.getInstance();
 
       print('Response status: ${response.statusCode}');
       print('Response body: ${response.body}');
+
+      var customerInformation = responseData.data.first;
+      var customerName = customerInformation.customerName;
+      var customerId = customerInformation.customerId;
+      var customerEmail = customerInformation.customerEmail;
+      var customerPhone = customerInformation.customerPhone;
+      var accountBalance = customerInformation.accountBalance;
+      var customerAddress1 = customerInformation.customerAddress1;
+      var customerAddress2 = customerInformation.customerAddress2;
+      var customerAddress3 = customerInformation.customerAddress3;
+      var customerCity = customerInformation.customerCity;
+      var customerState = customerInformation.customerState;
+      var customerCountry = customerInformation.customerCountry;
+      var customerTypeId = customerInformation.customerTypeId;
 
       await prefs.setString('customerEmail', emailcontroller.text);
       await prefs.setString('customerName', customerName);
@@ -99,19 +92,24 @@ class _LoginScreenState extends State<LoginScreen> {
       await prefs.setString('customerAddress1', customerAddress1);
       await prefs.setString('customerAddress2', customerAddress2);
       await prefs.setString('customerAddress3', customerAddress3);
+      await prefs.setString('customerCity', customerCity);
+      await prefs.setString('customerTypeId', customerTypeId);
+      await prefs.setString('customerCountry', customerCountry);
+      await prefs.setString('customerState', customerState);
       await prefs.setString('token', responseData.authToken);
       String? tokenFromSP = prefs.getString('token');
 
-      print(customerName);
+      print(customerTypeId);
+      print(customerPhone);
       print('responseData.authToken: ' + responseData.authToken);
       print('token from sp: ' + tokenFromSP!);
 
       Navigator.of(context)
-          .push(MaterialPageRoute(builder: (context) => const DashBoard()));
+          .push(MaterialPageRoute(builder: (context) => DashBoard()));
     } else if (responseData.status == 'Failed') {
       showDialog(
           context: context,
-          builder: (contex) {
+          builder: (context) {
             return AlertDialog(
               content: Text(responseData.message),
             );
@@ -119,10 +117,15 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
+  // @override
+  // void initState() {
+  //   callApi();
+  //   super.initState();
+  // }
 
   @override
   Widget build(BuildContext context) {
-    var _formKey;
+    var formkey;
     return MaterialApp(
       home: Builder(
         builder: (context) => Scaffold(
@@ -139,7 +142,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       height: 180.0,
                       width: double.infinity,
                       color: Colors.white,
-                      padding: const EdgeInsets.only(top: 5.0, left: 20.0),
+                      padding: EdgeInsets.only(top: 5.0, left: 20.0),
                       child: Row(
                         children: [
                           Text(
@@ -149,10 +152,10 @@ class _LoginScreenState extends State<LoginScreen> {
                               color: Colors.blue.shade700,
                             ),
                           ),
-                          const SizedBox(
+                          SizedBox(
                             width: 20,
                           ),
-                          const CircleAvatar(
+                          CircleAvatar(
                             radius: 80,
                             backgroundImage:
                                 AssetImage('lib/images/newPhone.jpg'),
@@ -166,7 +169,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           height: 660,
                           decoration: BoxDecoration(
                             color: Colors.blue.shade700,
-                            borderRadius: const BorderRadius.only(
+                            borderRadius: BorderRadius.only(
                               topLeft: Radius.circular(100),
                               topRight: Radius.circular(100),
                               bottomLeft: Radius.circular(0),
@@ -179,15 +182,17 @@ class _LoginScreenState extends State<LoginScreen> {
                             Container(
                               height: 300,
                               width: 500,
-                              margin: const EdgeInsets.fromLTRB(20, 80, 20, 20),
-                              padding: const EdgeInsets.only(
+                              margin: EdgeInsets.fromLTRB(20, 80, 20, 20),
+                              padding: EdgeInsets.only(
                                   top: 20.0, left: 15.0, right: 15.0),
                               decoration: BoxDecoration(
                                 color: Colors.white,
                                 borderRadius: BorderRadius.circular(20),
                               ),
                               child: Form(
-                                key: _formKey,
+                                key: formkey,
+                                autovalidateMode:
+                                    AutovalidateMode.onUserInteraction,
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.end,
                                   children: [
@@ -202,16 +207,18 @@ class _LoginScreenState extends State<LoginScreen> {
                                         ),
                                       ),
                                     ),
-                                    const SizedBox(
+                                    SizedBox(
                                       height: 15,
                                     ),
                                     TextFormField(
                                       controller: emailcontroller,
                                       autofocus: false,
+                                      autovalidateMode:
+                                          AutovalidateMode.onUserInteraction,
                                       decoration: InputDecoration(
-                                        border: const OutlineInputBorder(),
+                                        border: OutlineInputBorder(),
                                         hintText: 'Email address',
-                                        prefixIcon: const Padding(
+                                        prefixIcon: Padding(
                                           padding: EdgeInsets.only(top: 0),
                                           child: Icon(Icons.email),
                                         ),
@@ -222,28 +229,28 @@ class _LoginScreenState extends State<LoginScreen> {
                                               BorderRadius.circular(15),
                                         ),
                                       ),
-                                      validator: (value) {
-                                        if (value == null || value.isEmpty) {
-                                          return 'E-mail is required.';
-                                        }
-                                        String pattern = r'\w+@\w+\.\w+';
-                                        if (!RegExp(pattern).hasMatch(value)) {
-                                          return 'Invalid E-mail Address format.';
-                                        }
-                                        return null;
-                                      },
+                                      validator: MultiValidator(
+                                        [
+                                          EmailValidator(
+                                              errorText: 'Not a valid Email'),
+                                          RequiredValidator(
+                                              errorText: 'Required'),
+                                        ],
+                                      ),
                                     ),
-                                    const SizedBox(
+                                    SizedBox(
                                       height: 15,
                                     ),
                                     TextFormField(
                                       controller: passwordcontroller,
+                                      autovalidateMode:
+                                          AutovalidateMode.onUserInteraction,
                                       obscureText: _obscureText,
                                       autofocus: false,
                                       decoration: InputDecoration(
-                                        border: const OutlineInputBorder(),
+                                        border: OutlineInputBorder(),
                                         hintText: 'Password',
-                                        prefixIcon: const Padding(
+                                        prefixIcon: Padding(
                                           padding: EdgeInsets.only(top: 0),
                                           child: Icon(Icons.lock),
                                         ),
@@ -251,8 +258,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                           onTap: _toggle,
                                           child: Icon(
                                             _obscureText
-                                                ? Icons.visibility
-                                                : Icons.visibility_off,
+                                                ? Icons.visibility_off
+                                                : Icons.visibility,
                                           ),
                                         ),
                                         enabledBorder: OutlineInputBorder(
@@ -262,26 +269,25 @@ class _LoginScreenState extends State<LoginScreen> {
                                               BorderRadius.circular(10),
                                         ),
                                       ),
-                                      //obscureText: true,
-                                      // validator: (value) {
-                                      //   if (value == null || value.isEmpty) {
-                                      //     return 'Field is required.';
-                                      //   }
-                                      //   String pattern =
-                                      //       r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*[0-9]).{8,}$';
-                                      //   if (!RegExp(pattern).hasMatch(value)) {
-                                      //     return 'Invalid Password format.';
-                                      //   }
-                                      //   // password most contain a uppercase letter,number,lowercase letter and it must be at least 8 characters
-                                      //   return null;
-                                      // },
+                                      validator: MultiValidator(
+                                        [
+                                          RequiredValidator(
+                                              errorText: 'Required'),
+                                          MaxLengthValidator(15,
+                                              errorText:
+                                                  'Not more than 15 Characters'),
+                                          MinLengthValidator(8,
+                                              errorText:
+                                                  'Should be at least 8 Characters')
+                                        ],
+                                      ),
                                     ),
-                                    const SizedBox(
+                                    SizedBox(
                                       height: 5,
                                     ),
                                     FloatingActionButton(
                                       onPressed: callApi,
-                                      child: const Icon(Icons.forward),
+                                      child: Icon(Icons.forward),
                                     ),
                                     Container(
                                       width: double.infinity,
@@ -290,7 +296,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 ),
                               ),
                             ),
-                            const SizedBox(
+                            SizedBox(
                               height: 20,
                               child: Text(
                                 'Forget your password? Click here',
@@ -314,6 +320,3 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 }
-
-
-

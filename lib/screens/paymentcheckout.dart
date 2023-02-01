@@ -12,44 +12,48 @@ import 'quote_listing.dart';
 
 
 
- String customerEmail = "";
-dynamic amount;
 
- Future<String?> getToken() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    token = prefs.getString('token');
-     customerEmail = prefs.getString('customerEmail') ?? "";
 
-    return null;
-  }
-Future<dynamic> callApi() async {
-    await getToken();
-    final response = await http.post(
-        Uri.parse(
-            'https://powersoftrd.com/PEMApi/api/PaymentInitialization/741258?' ),
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'Authorization': 'Bearer $token',
-        });
-        body:
-    jsonEncode({
-      "email": customerEmail,
-      "amount": amount,
-    });
-    print('Response status: ${response.statusCode}');
-    print('Response body: ${response.body}');
-    print('token : $token');
 
-    if (response.statusCode == 200) {
-      final result = json.decode(response.body);
 
-      var payment = Payment.fromJson(result);
-      return payment.data;
-    } else {
-      throw Exception('Failed to load data');
-    }
-  }
+//  String customerEmail = "";
+// dynamic amount;
+
+//  Future<String?> getToken() async {
+//     final SharedPreferences prefs = await SharedPreferences.getInstance();
+//     token = prefs.getString('token');
+//      customerEmail = prefs.getString('customerEmail') ?? "";
+
+//     return null;
+//   }
+// Future<dynamic> callApi() async {
+//     await getToken();
+//     final response = await http.post(
+//         Uri.parse(
+//             'https://powersoftrd.com/PEMApi/api/PaymentInitialization/741258?' ),
+//         headers: {
+//           'Content-Type': 'application/json',
+//           'Accept': 'application/json',
+//           'Authorization': 'Bearer $token',
+//         });
+//         body:
+//     jsonEncode({
+//       "email": customerEmail,
+//       "amount": amount,
+//     });
+//     print('Response status: ${response.statusCode}');
+//     print('Response body: ${response.body}');
+//     print('token : $token');
+
+//     if (response.statusCode == 200) {
+//       final result = json.decode(response.body);
+
+//       var payment = Payment.fromJson(result);
+//       return payment.data;
+//     } else {
+//       throw Exception('Failed to load data');
+//     }
+//   }
 
 // Future<dynamic> makePayment() async {
 //     final SharedPreferences prefs = await SharedPreferences.getInstance();

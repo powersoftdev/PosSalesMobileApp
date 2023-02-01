@@ -1,12 +1,25 @@
+import 'dart:convert';
+import 'dart:core';
+import 'dart:core';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animated_button/flutter_animated_button.dart';
-
+import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
+import 'package:sales_order/Store/MyStore.dart';
+import 'package:sales_order/screens/paystackwebview.dart';
 import 'package:sales_order/screens/size_config.dart';
 
 
 
 import 'dashboard.dart';
+import 'login_screen.dart';
+import 'orders.dart';
+
+import 'paymentcheckout.dart';
+import 'paymentcheckout.dart';
 import 'select_item.dart';
 
 enum PaymentOption { payOffline, payOnline }
@@ -20,217 +33,245 @@ String? addressvalue;
 // List of items in our dropdown menu
 var items = ['Door', 'Walk-In'];
 
-final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-Future<void> showInformationDialog(BuildContext context) async {
-  return await showDialog(
-      context: context,
-      builder: (context) {
-        return StatefulBuilder(builder: (context, setState) {
-          //  SizeConfig().init(context);
-          return Center(
-            child: AlertDialog(
-              title: const Text('Address Information'),
-              scrollable: true,
-              content: Column(
-                mainAxisSize: MainAxisSize.max,
-                children: [
-                  Form(
-                    key: _formKey,
-                    child: Column(
-                      // mainAxisSize: MainAxisSize.max,
+// final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+// Future<void> showInformationDialog(BuildContext context) async {
+//   return await showDialog(
+//       context: context,
+//       builder: (context) {
+//         return StatefulBuilder(builder: (context, setState) {
+//           //  SizeConfig().init(context);
+//           return Center(
+//             child: AlertDialog(
+//               title: const Text('Address Information'),
+//               scrollable: true,
+//               content: Column(
+//                 mainAxisSize: MainAxisSize.max,
+//                 children: [
+//                   Form(
+//                     key: _formKey,
+//                     child: Column(
+//                       // mainAxisSize: MainAxisSize.max,
 
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 10.0),
-                          child: TextFormField(
-                            autofocus: false,
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                              hintText: 'First Name',
-                              prefixIcon: Padding(
-                                padding: EdgeInsets.only(top: 0),
-                                child: Icon(Icons.account_box),
-                              ),
-                            ),
-                            validator: (value) {
-                              return value!.isNotEmpty
-                                  ? null
-                                  : 'Invalid field First Name';
-                            },
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 10.0),
-                          child: TextFormField(
-                            autofocus: false,
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                              hintText: 'Last Name',
-                              prefixIcon: Padding(
-                                padding: EdgeInsets.only(top: 0),
-                                child: Icon(Icons.account_box),
-                              ),
-                            ),
-                            validator: (value) {
-                              return value!.isNotEmpty
-                                  ? null
-                                  : 'Invalid field Last Name';
-                            },
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 10.0),
-                          child: TextFormField(
-                            autofocus: false,
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                              hintText: 'Country/Region',
-                              prefixIcon: Padding(
-                                padding: EdgeInsets.only(top: 0),
-                                child: Icon(Icons.flag),
-                              ),
-                            ),
-                            validator: (value) {
-                              return value!.isNotEmpty
-                                  ? null
-                                  : 'Invalid field Country/Region';
-                            },
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 10.0),
-                          child: TextFormField(
-                            autofocus: false,
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                              hintText: 'Address',
-                              prefixIcon: Padding(
-                                padding: EdgeInsets.only(top: 0),
-                                child: Icon(Icons.location_city_outlined),
-                              ),
-                            ),
-                            validator: (value) {
-                              return value!.isNotEmpty
-                                  ? null
-                                  : 'Invalid field Address';
-                            },
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 10.0),
-                          child: TextFormField(
-                            autofocus: false,
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                              hintText: 'City',
-                              prefixIcon: Padding(
-                                padding: EdgeInsets.only(top: 0),
-                                child: Icon(Icons.location_city_sharp),
-                              ),
-                            ),
-                            validator: (value) {
-                              return value!.isNotEmpty
-                                  ? null
-                                  : 'Invalid field City';
-                            },
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 10.0),
-                          child: TextFormField(
-                            autofocus: false,
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                              hintText: 'State',
-                              prefixIcon: Padding(
-                                padding: EdgeInsets.only(top: 0),
-                                child: Icon(Icons.satellite_alt_outlined),
-                              ),
-                            ),
-                            validator: (value) {
-                              return value!.isNotEmpty
-                                  ? null
-                                  : 'Invalid field State';
-                            },
-                          ),
-                        ),
-                        TextFormField(
-                          autofocus: false,
-                          decoration: const InputDecoration(
-                            border: OutlineInputBorder(),
-                            hintText: 'Postal Code',
-                            prefixIcon: Padding(
-                              padding: EdgeInsets.only(top: 0),
-                              child: Icon(Icons.add_call),
-                            ),
-                          ),
-                          validator: (value) {
-                            return value!.isNotEmpty
-                                ? null
-                                : 'Invalid field Postal Code';
-                          },
-                          keyboardType: TextInputType.number,
-                          inputFormatters: [
-                            FilteringTextInputFormatter.digitsOnly,
-                          ],
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 10.0),
-                          child: TextFormField(
-                            autofocus: false,
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                              hintText: 'Phone (optional)',
-                              prefixIcon: Padding(
-                                padding: EdgeInsets.only(top: 0),
-                                child: Icon(Icons.add_call),
-                              ),
-                            ),
-                            validator: (value) {
-                              return value!.isNotEmpty
-                                  ? null
-                                  : 'Invalid field Phone';
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    if (_formKey.currentState!.validate()) {
-                      _formKey.currentState!.save();
-                      Navigator.of(context).pop();
-                    }
-                  },
-                  child: const Text(
-                    'Save Address',
-                    style: TextStyle(fontSize: 20, color: Colors.green),
-                  ),
-                ),
-                TextButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const Checkout(),
-                      ),
-                    );
-                  },
-                  child: const Text(
-                    'Cancel',
-                    style: TextStyle(fontSize: 20, color: Colors.red),
-                  ),
-                ),
-              ],
-            ),
-          );
-        });
-      });
-}
+//                       children: [
+//                         Padding(
+//                           padding: const EdgeInsets.only(bottom: 10.0),
+//                           child: TextFormField(
+//                             autofocus: false,
+//                             decoration: const InputDecoration(
+//                               border: OutlineInputBorder(),
+//                               hintText: 'First Name',
+//                               prefixIcon: Padding(
+//                                 padding: EdgeInsets.only(top: 0),
+//                                 child: Icon(Icons.account_box),
+//                               ),
+//                             ),
+//                             validator: (value) {
+//                               return value!.isNotEmpty
+//                                   ? null
+//                                   : 'Invalid field First Name';
+//                             },
+//                             keyboardType: TextInputType.name,
+//                             inputFormatters: [
+//                               FilteringTextInputFormatter.singleLineFormatter,
+//                             ],
+//                           ),
+//                         ),
+//                         Padding(
+//                           padding: const EdgeInsets.only(bottom: 10.0),
+//                           child: TextFormField(
+//                             autofocus: false,
+//                             decoration: const InputDecoration(
+//                               border: OutlineInputBorder(),
+//                               hintText: 'Last Name',
+//                               prefixIcon: Padding(
+//                                 padding: EdgeInsets.only(top: 0),
+//                                 child: Icon(Icons.account_box),
+//                               ),
+//                             ),
+//                             validator: (value) {
+//                               return value!.isNotEmpty
+//                                   ? null
+//                                   : 'Invalid field Last Name';
+//                             },
+//                             keyboardType: TextInputType.name,
+//                             inputFormatters: [
+//                               FilteringTextInputFormatter.singleLineFormatter,
+//                             ],
+//                           ),
+//                         ),
+//                         Padding(
+//                           padding: const EdgeInsets.only(bottom: 10.0),
+//                           child: TextFormField(
+//                             autofocus: false,
+//                             decoration: const InputDecoration(
+//                               border: OutlineInputBorder(),
+//                               hintText: 'Country/Region',
+//                               prefixIcon: Padding(
+//                                 padding: EdgeInsets.only(top: 0),
+//                                 child: Icon(Icons.flag),
+//                               ),
+//                             ),
+//                             validator: (value) {
+//                               return value!.isNotEmpty
+//                                   ? null
+//                                   : 'Invalid field Country/Region';
+//                             },
+//                             keyboardType: TextInputType.name,
+//                             inputFormatters: [
+//                               FilteringTextInputFormatter.singleLineFormatter,
+//                             ],
+//                           ),
+//                         ),
+//                         Padding(
+//                           padding: const EdgeInsets.only(bottom: 10.0),
+//                           child: TextFormField(
+//                             autofocus: false,
+//                             decoration: const InputDecoration(
+//                               border: OutlineInputBorder(),
+//                               hintText: 'Address',
+//                               prefixIcon: Padding(
+//                                 padding: EdgeInsets.only(top: 0),
+//                                 child: Icon(Icons.location_city_outlined),
+//                               ),
+//                             ),
+//                             validator: (value) {
+//                               return value!.isNotEmpty
+//                                   ? null
+//                                   : 'Invalid field Address';
+//                             },
+//                             keyboardType: TextInputType.streetAddress,
+//                             inputFormatters: [
+//                               FilteringTextInputFormatter.singleLineFormatter,
+//                             ],
+//                           ),
+//                         ),
+//                         Padding(
+//                           padding: const EdgeInsets.only(bottom: 10.0),
+//                           child: TextFormField(
+//                             autofocus: false,
+//                             decoration: const InputDecoration(
+//                               border: OutlineInputBorder(),
+//                               hintText: 'City',
+//                               prefixIcon: Padding(
+//                                 padding: EdgeInsets.only(top: 0),
+//                                 child: Icon(Icons.location_city_sharp),
+//                               ),
+//                             ),
+//                             validator: (value) {
+//                               return value!.isNotEmpty
+//                                   ? null
+//                                   : 'Invalid field City';
+//                             },
+//                             keyboardType: TextInputType.streetAddress,
+//                             inputFormatters: [
+//                               FilteringTextInputFormatter.singleLineFormatter,
+//                             ],
+//                           ),
+//                         ),
+//                         Padding(
+//                           padding: const EdgeInsets.only(bottom: 10.0),
+//                           child: TextFormField(
+//                             autofocus: false,
+//                             decoration: const InputDecoration(
+//                               border: OutlineInputBorder(),
+//                               hintText: 'State',
+//                               prefixIcon: Padding(
+//                                 padding: EdgeInsets.only(top: 0),
+//                                 child: Icon(Icons.satellite_alt_outlined),
+//                               ),
+//                             ),
+//                             validator: (value) {
+//                               return value!.isNotEmpty
+//                                   ? null
+//                                   : 'Invalid field State';
+//                             },
+//                             keyboardType: TextInputType.streetAddress,
+//                             inputFormatters: [
+//                               FilteringTextInputFormatter.singleLineFormatter,
+//                             ],
+//                           ),
+//                         ),
+//                         TextFormField(
+//                           autofocus: false,
+//                           decoration: const InputDecoration(
+//                             border: OutlineInputBorder(),
+//                             hintText: 'Postal Code',
+//                             prefixIcon: Padding(
+//                               padding: EdgeInsets.only(top: 0),
+//                               child: Icon(Icons.add_call),
+//                             ),
+//                           ),
+//                           validator: (value) {
+//                             return value!.isNotEmpty
+//                                 ? null
+//                                 : 'Invalid field Postal Code';
+//                           },
+//                           keyboardType: TextInputType.number,
+//                           inputFormatters: [
+//                             FilteringTextInputFormatter.digitsOnly,
+//                           ],
+//                         ),
+//                         Padding(
+//                           padding: const EdgeInsets.only(bottom: 10.0),
+//                           child: TextFormField(
+//                             autofocus: false,
+//                             decoration: const InputDecoration(
+//                               border: OutlineInputBorder(),
+//                               hintText: 'Phone (optional)',
+//                               prefixIcon: Padding(
+//                                 padding: EdgeInsets.only(top: 0),
+//                                 child: Icon(Icons.add_call),
+//                               ),
+//                             ),
+//                             validator: (value) {
+//                               return value!.isNotEmpty
+//                                   ? null
+//                                   : 'Invalid field Phone';
+//                             },
+//                             keyboardType: TextInputType.number,
+//                             inputFormatters: [
+//                               FilteringTextInputFormatter.digitsOnly,
+//                             ],
+//                           ),
+//                         ),
+//                       ],
+//                     ),
+//                   ),
+//                 ],
+//               ),
+//               actions: [
+//                 TextButton(
+//                   onPressed: () {
+//                     if (_formKey.currentState!.validate()) {
+//                       _formKey.currentState!.save();
+//                       Navigator.of(context).pop();
+//                     }
+//                   },
+//                   child: const Text(
+//                     'Save Address',
+//                     style: TextStyle(fontSize: 20, color: Colors.green),
+//                   ),
+//                 ),
+//                 TextButton(
+//                   onPressed: () {
+//                     Navigator.push(
+//                       context,
+//                       MaterialPageRoute(
+//                         builder: (context) => const Checkout(),
+//                       ),
+//                     );
+//                   },
+//                   child: const Text(
+//                     'Cancel',
+//                     style: TextStyle(fontSize: 20, color: Colors.red),
+//                   ),
+//                 ),
+//               ],
+//             ),
+//           );
+//         });
+//       });
+// }
 
 class Checkout extends StatefulWidget {
   const Checkout({super.key});
@@ -239,76 +280,95 @@ class Checkout extends StatefulWidget {
   State<Checkout> createState() => _CheckoutState();
 }
 
-class Customer {
-  int? tax = 0;
-  int? total = 0;
-  int? amount = 500;
-  int? shipcost = 0;
-  int? disount = 0;
-  int? availiableCredit = 0;
-  int? amountToPay = 0;
-
-  // Product p = new Product();
-
-  Customer(
-      {this.tax,
-      this.total,
-      this.amount,
-      this.shipcost,
-      this.disount,
-      this.availiableCredit,
-      this.amountToPay});
-}
-
-String email = 'taiwooduwole0@gmail.com';
-int amount = 0;
-
-getShipCost() {
-  int shipcost = 0;
-  return shipcost;
-}
-
-getAmount() {
-  int amount = 0;
-  return amount;
-}
-
-getTax() {
-  int tax = 0;
-  return tax;
-}
-
-addAllItemToBasket(p) {
-  int allItem = p;
-  return allItem;
-}
-
-getDiscount() {
-  int discount = 0;
-  return discount;
-}
-
-getTotal(discount, tax, shipcost) {
-  total() {
-    discount - shipcost + tax;
-  }
-
-  return total;
-}
-
 class _CheckoutState extends State<Checkout> {
   PaymentOption _value = PaymentOption.payOffline;
   AddressInfo _values = AddressInfo.location;
 
+  var value = NumberFormat("#,##0.00", "en_US");
+
+  getTotal() {
+    int total = 0;
+    total = getSubtotal() + getShippingCost() - getdiscount() + getTax();
+    return total;
+  }
+
+  getAvailiableCrd() {
+    double availiableCrd = accountBalance * -1;
+    return availiableCrd;
+  }
+
+  getShippingCost() {
+    int shippingCost = 0;
+    return shippingCost;
+  }
+
+  getTotalAmount() {
+    int totalAmount = 0;
+    return totalAmount;
+  }
+
+  getdiscount() {
+    int discount = 0;
+    return discount;
+  }
+
+  getTax() {
+    int tax = 0;
+    return tax;
+  }
+
+  getSubtotal() {
+    int subtotal = 0;
+    return subtotal;
+  }
+
+  String customerAddress1 = "";
+  String customerAddress2 = "";
+  String customerEmail = "";
+  double accountBalance = 0;
+  double amountToPay = 0;
+  final emailcontroller = TextEditingController();
+
+  late final SharedPreferences _prefs;
+
+  @override
+  void initState() {
+    getStringValuesAddress();
+    super.initState();
+  }
+
+  getStringValuesAddress() async {
+    _prefs = await SharedPreferences.getInstance();
+    setState(() {
+      customerAddress1 = _prefs.getString('customerAddress1') ?? "";
+      customerAddress2 = _prefs.getString('customerAddress2') ?? "";
+      customerEmail = _prefs.getString('customerEmail') ?? "";
+      accountBalance = _prefs.getDouble('accountBalance') ?? 0.0;
+    });
+    return;
+  }
+
+
   @override
   Widget build(BuildContext context) {
-    final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-       var store = Provider.of<MyStore>(context);
+    var store = Provider.of<MyStore>(context);
+    //var payment = Provider.of<PaymentsData>(context);
     SizeConfig().init(context);
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
     ]);
+    getAmountToPay(MyStore store) {
+      var amountToPay = getAvailiableCrd();
+      if (amountToPay <= 0) {
+        amountToPay = store.getTotalAmount() - getAvailiableCrd();
+      } else {
+        amountToPay = store.getTotalAmount() + getAvailiableCrd();
+      }
+
+      return amountToPay;
+    }
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Builder(
@@ -341,15 +401,15 @@ class _CheckoutState extends State<Checkout> {
           ),
           body: Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Center(
-                    child: SingleChildScrollView(
+            child: SingleChildScrollView(
+              child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Center(
                       child: Container(
-                        width: getProportionateScreenWidth(352),
-                        height: getProportionateScreenHeight(279),
+                        width: getProportionateScreenWidth(350),
+                        height: getProportionateScreenHeight(320),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(15.0),
                           color: Colors.white,
@@ -365,6 +425,8 @@ class _CheckoutState extends State<Checkout> {
                             Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: TextFormField(
+                                controller: emailcontroller
+                                  ..text = customerEmail,
                                 readOnly: true,
                                 decoration: const InputDecoration(
                                   hintText: 'Email',
@@ -373,7 +435,7 @@ class _CheckoutState extends State<Checkout> {
                             ),
                             Padding(
                               padding:
-                                  const EdgeInsets.only(right: 300, top: 20),
+                                  const EdgeInsets.only(right: 290, top: 20),
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: const [
@@ -382,11 +444,16 @@ class _CheckoutState extends State<Checkout> {
                               ),
                             ),
                             Padding(
-                              padding: const EdgeInsets.only(right: 140.0),
+                              padding: const EdgeInsets.only(right: 120.0),
                               child: RadioListTile(
-                                subtitle: const Text('Lagos,LA,102216,NG'),
+                                subtitle: Text(customerAddress2),
                                 value: AddressInfo.location,
-                                title: const Text('121 Ogba-Road'),
+                                title: Text(
+                                  customerAddress1,
+                                  style: const TextStyle(
+                                    fontSize: 18,
+                                  ),
+                                ),
                                 groupValue: _values,
                                 onChanged: (AddressInfo? val) {
                                   setState(() {
@@ -395,42 +462,42 @@ class _CheckoutState extends State<Checkout> {
                                 },
                               ),
                             ),
-                            GestureDetector(
-                              child: Padding(
-                                padding: const EdgeInsets.only(left: 18.0),
-                                child: Row(
-                                  children: [
-                                    const Icon(
-                                      Icons.add,
-                                      size: 27,
-                                      color: Colors.blue,
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.all(10.0),
-                                      child: GestureDetector(
-                                        onTap: () async {
-                                          await showInformationDialog(context);
-                                        },
-                                        child: const Text(
-                                          'Use a diffrent address',
-                                          style: TextStyle(
-                                            fontSize: 16,
-                                            color: Colors.blue,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              onTap: () async {
-                                await showInformationDialog(context);
-                              },
-                            ),
-                            const Divider(
-                              color: Colors.grey,
-                              thickness: 1,
-                            ),
+                            // GestureDetector(
+                            //   child: Padding(
+                            //     padding: const EdgeInsets.only(left: 18.0),
+                            //     child: Row(
+                            //       children: [
+                            //         const Icon(
+                            //           Icons.add,
+                            //           size: 27,
+                            //           color: Colors.blue,
+                            //         ),
+                            //         Padding(
+                            //           padding: const EdgeInsets.all(10.0),
+                            //           child: GestureDetector(
+                            // onTap: () async {
+                            //   await showInformationDialog(context);
+                            // },
+                            // child: const Text(
+                            //   'Use a diffrent address',
+                            //   style: TextStyle(
+                            //     fontSize: 16,
+                            //     color: Colors.blue,
+                            //   ),
+                            // ),
+                            //         ),
+                            //       ),
+                            //     ],
+                            //   ),
+                            // ),
+                            // onTap: () async {
+                            //   await showInformationDialog(context);
+                            // },
+                            //),
+                            // const Divider(
+                            //   color: Colors.grey,
+                            //   thickness: 1,
+                            // ),
                             Column(
                               children: [
                                 DropdownButton(
@@ -477,15 +544,13 @@ class _CheckoutState extends State<Checkout> {
                         ),
                       ),
                     ),
-                  ),
-                  SizedBox(
-                    height: getProportionateScreenHeight(15),
-                  ),
-                  Center(
-                    child: SingleChildScrollView(
+                    SizedBox(
+                      height: getProportionateScreenHeight(15),
+                    ),
+                    Center(
                       child: Container(
                         width: getProportionateScreenWidth(355),
-                        height: getProportionateScreenHeight(353),
+                        height: getProportionateScreenHeight(656),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(15.0),
                           color: Colors.white,
@@ -499,48 +564,209 @@ class _CheckoutState extends State<Checkout> {
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Form(
-                            key: _formKey,
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Padding(
-                                  padding: const EdgeInsets.only(bottom: 3.0),
-                                  child: Row(
-                                    children: [
-                                      Expanded(
-                                        child: Text(
-                                          'Subtotal:   ₦ ${store.allProduct!.totalPrice.toString()}',
-                                          style: const TextStyle(
-                                            fontSize: 20,
-                                          ),
+                                ListTile(
+                                  title: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: const [
+                                      Text(
+                                        'Subtotal:',
+                                        style: TextStyle(
+                                          fontSize: 20,
+                                          //color: Colors.green,
                                         ),
                                       ),
                                     ],
                                   ),
+                                  trailing: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    children: [
+                                      Text(
+                                        '₦${value.format(store.getTotalAmount())}',
+                                        style: const TextStyle(
+                                          color: Colors.green,
+                                          fontSize: 20,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  dense: false,
                                 ),
-                                const Text(
-                                  'Shipping Cost:',
-                                  style: TextStyle(fontSize: 20),
+                                ListTile(
+                                  title: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: const [
+                                      Text(
+                                        'Shipping Cost:',
+                                        style: TextStyle(
+                                          fontSize: 20,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  trailing: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    children: [
+                                      Text(
+                                        '₦ ${value.format(getShippingCost())}',
+                                        style: const TextStyle(
+                                          color: Colors.red,
+                                          fontSize: 20,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  dense: false,
                                 ),
-                                const Text(
-                                  'Discount:',
-                                  style: TextStyle(fontSize: 20),
+                                ListTile(
+                                  title: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: const [
+                                      Text(
+                                        'Tax:',
+                                        style: TextStyle(
+                                          fontSize: 20,
+                                          //color: Colors.green,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  trailing: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    children: [
+                                      Text(
+                                        '₦ ${value.format(getTax())}',
+                                        style: const TextStyle(
+                                          color: Colors.red,
+                                          fontSize: 20,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  dense: false,
                                 ),
-                                const Text(
-                                  'Tax:',
-                                  style: TextStyle(fontSize: 20),
+                                ListTile(
+                                  title: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: const [
+                                      Text(
+                                        'Discount:',
+                                        style: TextStyle(
+                                          fontSize: 20,
+                                          //color: Colors.green,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  trailing: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    children: [
+                                      Text(
+                                        '₦ ${value.format(getdiscount())}',
+                                        style: const TextStyle(
+                                          color: Colors.red,
+                                          fontSize: 20,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  dense: false,
                                 ),
-                                const Text(
-                                  'Total:',
-                                  style: TextStyle(fontSize: 20),
+                                ListTile(
+                                  title: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: const [
+                                      Text(
+                                        'Total:',
+                                        style: TextStyle(
+                                          fontSize: 20,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  trailing: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    children: [
+                                      Text(
+                                        '₦${value.format(store.getTotalAmount() + getTotal())}',
+                                        style: const TextStyle(
+                                          color: Colors.green,
+                                          fontSize: 20,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  dense: false,
                                 ),
-                                const Text(
-                                  'Available Credit:',
-                                  style: TextStyle(fontSize: 20),
+                                ListTile(
+                                  title: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: const [
+                                      Text(
+                                        'Account Balance:',
+                                        style: TextStyle(
+                                          fontSize: 20,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  trailing: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    children: [
+                                      Text(
+                                        '₦ ${value.format(getAvailiableCrd())}',
+                                        style: TextStyle(
+                                          color: getAvailiableCrd() >= 0
+                                              ? Colors.green
+                                              : Colors.red,
+                                          fontSize: 20,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  dense: false,
                                 ),
-                                const Text(
-                                  'Amount to Pay:',
-                                  style: TextStyle(fontSize: 20),
+                                ListTile(
+                                  title: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: const [
+                                      Text(
+                                        'Amount To Pay:',
+                                        style: TextStyle(
+                                          fontSize: 20,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  trailing: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    children: [
+                                      Text(
+                                        '₦${value.format(getAmountToPay(store))}',
+                                        style: const TextStyle(
+                                          color: Colors.green,
+                                          fontSize: 20,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  dense: false,
                                 ),
                                 const Divider(
                                   color: Colors.grey,
@@ -557,6 +783,7 @@ class _CheckoutState extends State<Checkout> {
                                   onChanged: (PaymentOption? val) {
                                     setState(() {
                                       _value = val!;
+                                     
                                     });
                                   },
                                 ),
@@ -567,6 +794,7 @@ class _CheckoutState extends State<Checkout> {
                                   onChanged: (PaymentOption? val) {
                                     setState(() {
                                       _value = val!;
+                                      // callApi();
                                     });
                                   },
                                 ),
@@ -576,55 +804,53 @@ class _CheckoutState extends State<Checkout> {
                         ),
                       ),
                     ),
-                  ),
-                  Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(
-                        20.0,
-                      ),
-                      child: AnimatedButton(
-                        height: getProportionateScreenHeight(46),
-                        width: getProportionateScreenWidth(126),
-                        text: 'Confirm',
-                        animationDuration: const Duration(seconds: 2),
-                        textStyle: const TextStyle(
-                          fontSize: 20,
-                          color: Colors.white,
+                    Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(
+                          20.0,
                         ),
-                        onPress: () {
-                          if (PaymentOption.payOffline == _value) {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const SelectItemScreen(),
-                              ),
-                            );
-                          } else {
-                            MakePayment(
-                                    ctx: context, email: email, amount: amount)
-                                .chargeCardAndMakePayment();
-                            // Navigator.push(
-                            //   context,
-                            //   MaterialPageRoute(
-                            //     builder: (context) => const DashBoard(),
-                            //   ),
-                            // );
-                          }
-                        },
-                        gradient: const LinearGradient(
-                          colors: [Colors.blueGrey, Colors.blue],
+                        child: AnimatedButton(
+                          height: getProportionateScreenHeight(46),
+                          width: getProportionateScreenWidth(136),
+                          text: 'Confirm',
+                          animationDuration: const Duration(seconds: 2),
+                          textStyle: const TextStyle(
+                            fontSize: 20,
+                            color: Colors.white,
+                          ),
+                          onPress: () {
+                           // callApi();
+                            if (PaymentOption.payOffline == _value) {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const Orders(),
+                                ),
+                              );
+                            } else {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const WebViewPayment(),
+                                ),
+                              );
+                            }
+                          },
+                          gradient: const LinearGradient(
+                            colors: [Colors.blueGrey, Colors.blue],
+                          ),
+                          selectedGradientColor: const LinearGradient(
+                              colors: [Colors.blue, Colors.blueGrey]),
+                          selectedTextColor: Colors.black,
+                          transitionType: TransitionType.LEFT_BOTTOM_ROUNDER,
+                          isReverse: true,
+                          borderColor: Colors.white,
+                          borderRadius: 45,
                         ),
-                        selectedGradientColor: const LinearGradient(
-                            colors: [Colors.blue, Colors.blueGrey]),
-                        selectedTextColor: Colors.black,
-                        transitionType: TransitionType.LEFT_BOTTOM_ROUNDER,
-                        isReverse: true,
-                        borderColor: Colors.white,
-                        borderRadius: 45,
                       ),
                     ),
-                  ),
-                ]),
+                  ]),
+            ),
           ),
         ),
       ),

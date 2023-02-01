@@ -2,12 +2,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
-import 'package:intl/intl.dart';
 import 'package:sales_order/Store/MyStore.dart';
-
-
-
+import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'checkout.dart';
 
 class BasketPage extends StatefulWidget {
@@ -19,6 +16,25 @@ class BasketPage extends StatefulWidget {
 
 class _BasketPageState extends State<BasketPage> {
   final DateFormat formatter = DateFormat('MM-dd-yyyy');
+
+  String pickeddate = "";
+  late final SharedPreferences _prefs;
+
+  @override
+  void initState() {
+    getStringValuesSF();
+    super.initState();
+  }
+
+  getStringValuesSF() async {
+    _prefs = await SharedPreferences.getInstance();
+    setState(() {
+      pickeddate = _prefs.getString('pickeddate') ?? "";
+    });
+    return pickeddate;
+  }
+
+  var value = NumberFormat('#,##0.00');
 
   @override
   Widget build(BuildContext context) {
@@ -56,11 +72,11 @@ class _BasketPageState extends State<BasketPage> {
             ),
             onPressed: () {
               Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const Checkout(),
-                        ),
-                      );
+                context,
+                MaterialPageRoute(
+                  builder: (context) =>  Checkout(),
+                ),
+              );
             },
             child: Text('Check Out'),
           ),
@@ -114,12 +130,11 @@ class _BasketPageState extends State<BasketPage> {
                   // ignore: sized_box_for_whitespace
                   Container(
                     height: 30,
-                    child:
-                        Text("Order Date :${formatter.format(DateTime.now())}"),
+                    child: Text("Shipping Date :$pickeddate"),
                   ),
                   Container(
                     height: 40,
-                    padding: EdgeInsets.only(left: 100),
+                    padding: EdgeInsets.only(left: 40),
                     child: Row(
                       children: [
                         IconButton(
@@ -130,11 +145,11 @@ class _BasketPageState extends State<BasketPage> {
                           iconSize: 32,
                           color: Colors.redAccent,
                         ),
-                        SizedBox(width: 15),
+                        SizedBox(width: 10),
                         // ignore: sized_box_for_whitespace
                         Container(
                           height: 20,
-                          width: 40,
+                          width: 50,
                           child: TextFormField(
                             controller: TextEditingController()
                               ..text = store.baskets[i].qty.toString()
@@ -150,7 +165,7 @@ class _BasketPageState extends State<BasketPage> {
                             ),
                           ),
                         ),
-                        // SizedBox(width: 5),
+
                         IconButton(
                           onPressed: () {
                             store.addOneItemToBasket(store.baskets[i]);
@@ -159,13 +174,15 @@ class _BasketPageState extends State<BasketPage> {
                           iconSize: 30,
                           color: Colors.greenAccent,
                         ),
-                        SizedBox(width: 15),
+                        SizedBox(
+                          width: 20,
+                        ),
                         // ignore: avoid_unnecessary_containers
                         Container(
                           child: Text(
-                            ('₦ ${store.baskets[i].totalPrice.toString()}'),
+                            ('₦${value.format(store.baskets[i].totalPrice)}'),
                             style: TextStyle(
-                              fontSize: 22,
+                              fontSize: 20,
                             ),
                           ),
                         ),

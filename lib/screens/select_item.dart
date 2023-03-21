@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors
+// ignore_for_file: prefer_const_constructors, non_constant_identifier_names
 
 import 'dart:convert';
 import 'package:flutter/material.dart';
@@ -15,6 +15,7 @@ import '../Store/MyStore.dart';
 import '../Screens/basketPage.dart';
 import '../Screens/dashboard.dart';
 import '../Model/item.dart';
+import 'orders.dart';
 
 class SelectItemScreen extends StatefulWidget {
   const SelectItemScreen({super.key});
@@ -28,7 +29,7 @@ class _SelectItemScreenState extends State<SelectItemScreen> {
   TextEditingController txtQuery = new TextEditingController();
 
   var itemId;
-  late int minimumQty;
+  late double minimumQty;
   late String itemName;
   late double price;
   late String pictureurl;
@@ -41,6 +42,7 @@ class _SelectItemScreenState extends State<SelectItemScreen> {
   @override
   void initState() {
     productListAPIResult = callApi();
+
     super.initState();
   }
 
@@ -52,13 +54,14 @@ class _SelectItemScreenState extends State<SelectItemScreen> {
   Future<List<Datum>> callApi() async {
     await getToken();
     final response = await http.get(
-        Uri.parse('http://powersoftrd.com/PEMAPI/api/GetInventoryItems/741258'),
+        Uri.parse(
+            'https://powersoftrd.com/PEMAPI/api/GetInventoryCatalog/741258'),
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
           'Authorization': 'Bearer $token',
         });
-    print('Response status: ${response.  statusCode}');
+    print('Response status: ${response.statusCode}');
     print('Response body: ${response.body}');
     print('token : ${token}');
 
@@ -68,7 +71,6 @@ class _SelectItemScreenState extends State<SelectItemScreen> {
       var itemModel = ItemModel.fromJson(result);
       return itemModel.data;
       // return ItemModels.map((e) => ItemModelFromJson(e)).toList();
-
     } else {
       throw Exception('Failed to load data');
     }
@@ -93,7 +95,13 @@ class _SelectItemScreenState extends State<SelectItemScreen> {
               color: Colors.blue[50],
             ),
             child: TextField(
-              // onChanged: search,
+              onSubmitted: ((value) async {
+                var myTemp = await SearchApi(value);
+                productListAPIResult = Future.value(myTemp);
+                setState(() {
+                  productListAPIResult;
+                });
+              }),
               controller: txtQuery,
               decoration: InputDecoration(
                 border: InputBorder.none,
@@ -106,11 +114,12 @@ class _SelectItemScreenState extends State<SelectItemScreen> {
                 suffixIcon: IconButton(
                   icon: Icon(Icons.clear),
                   onPressed: () {
-                    //   txtQuery.text = '';
-                    //   search(txtQuery.text);
+                    txtQuery.clear();
+                    // search(txtQuery.text);
                   },
                 ),
               ),
+              textInputAction: TextInputAction.search,
             ),
           ),
         ),
@@ -131,7 +140,6 @@ class _SelectItemScreenState extends State<SelectItemScreen> {
               color: Colors.white,
             ),
           ),
-        
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
@@ -148,7 +156,11 @@ class _SelectItemScreenState extends State<SelectItemScreen> {
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.local_offer_outlined),
-            label: 'View Catlog',
+            label: 'Catlog',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.history_outlined),
+            label: 'Order',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.account_circle_sharp),
@@ -180,12 +192,23 @@ class _SelectItemScreenState extends State<SelectItemScreen> {
             case 2:
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const profileScreen()),
+                MaterialPageRoute(builder: (context) => const Orders()),
               );
               break;
             default:
           }
+
+          switch (index) {
+            case 3:
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const profileScreen()));
+              break;
+            default:
+          }
         },
+        type: BottomNavigationBarType.fixed,
       ),
       body: FutureBuilder<List<Datum>>(
         future: productListAPIResult,
@@ -213,7 +236,7 @@ class _SelectItemScreenState extends State<SelectItemScreen> {
                             id: data[index].ItemId,
                             name: data[index].ItemName,
                             price: data[index].price,
-                            qty: _getQty(data[index].ItemId, store),
+                            qty: _getQty(data[index].ItemId, store).toInt(),
                             // qty: store.activeProduct!.qty ?? 1,
                             totalPrice: 0),
                       );
@@ -241,7 +264,7 @@ class _SelectItemScreenState extends State<SelectItemScreen> {
   }
 
   ProductDetailpage _popupProductDetails() => ProductDetailpage();
-  int _getQty(dynamic itemId, MyStore store) {
+  num _getQty(dynamic itemId, MyStore store) {
     var baskets = store.baskets;
     if (store.baskets.isNotEmpty) {
       var product =
@@ -253,5 +276,25 @@ class _SelectItemScreenState extends State<SelectItemScreen> {
     }
 
     return 0; // if basket is empty return 0
+  }
+
+  Future<List<Datum>> SearchApi(String searchParam) async {
+    final response = await http.get(
+        Uri.parse(
+            'https://powersoftrd.com/PEMAPI/api/GetInventoryItemByName/741258?itemName=$searchParam'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        });
+
+    if (response.statusCode == 200) {
+      final result = json.decode(response.body);
+      // final itemModels = result["data"];
+      var itemModel = ItemModel.fromJson(result);
+      return itemModel.data;
+      // return ItemModels.map((e) => ItemModelFromJson(e)).toList();
+    } else {
+      throw Exception('Failed to load data');
+    }
   }
 }

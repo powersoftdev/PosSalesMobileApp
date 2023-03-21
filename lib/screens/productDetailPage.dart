@@ -1,16 +1,13 @@
-// ignore_for_file: prefer_const_constructors, sized_box_for_whitespace
+// ignore_for_file: prefer_const_constructors, sized_box_for_whitespace, must_call_super
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
-import 'package:sales_order/Model/products.dart';
-
-
+import 'package:sales_order/screens/checkout.dart';
 import '../Store/MyStore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'basketPage.dart';
-
-import 'package:sqflite/sqflite.dart';
+import 'package:sales_order/Model/products.dart';
 
 class ProductDetailpage extends StatefulWidget {
   const ProductDetailpage({super.key});
@@ -232,8 +229,10 @@ class _ProductDetailpageState extends State<ProductDetailpage> {
                     45,
                   ),
                 ),
-                onPressed: () {},
-                //Navigate to the checkout page
+                onPressed: () {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => Checkout()));
+                },
                 child: Text('Place Order'),
               ),
               SizedBox(

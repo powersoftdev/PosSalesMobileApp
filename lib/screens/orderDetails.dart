@@ -1,19 +1,78 @@
+// ignore: file_names
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, prefer_final_fields, non_constant_identifier_names
+
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:sales_order/Screens/dashboard.dart';
 import 'package:sales_order/Screens/select_item.dart';
 import 'package:sales_order/screens/profileScreen.dart';
-import 'package:sales_order/screens/quoteDetails.dart';
 import 'package:sales_order/screens/orderPopup.dart';
+import 'package:sales_order/screens/rmePage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'basketPage.dart';
+import 'checkout.dart';
+import 'orders.dart';
 
 // ignore: must_be_immutable
-class OrderDetails extends StatelessWidget {
+class OrderDetails extends StatefulWidget {
   String? orderNumber;
   dynamic total;
   dynamic orderDate;
+  List? orderDetails;
+  String? paymentMethodId;
+  double? subtotal;
+  double? taxAmount;
+  double? discountAmount;
 
-  OrderDetails({super.key, this.orderDate, this.orderNumber, this.total});
+  OrderDetails({super.key, 
+    this.orderNumber,
+    this.total,
+    this.orderDate,
+    this.orderDetails,
+    this.paymentMethodId,
+    this.subtotal,
+    this.taxAmount,
+    this.discountAmount,
+  });
+
+  @override
+  State<OrderDetails> createState() => _OrderDetailsState();
+}
+
+class _OrderDetailsState extends State<OrderDetails> {
+  var value = NumberFormat('#,##0.00');
+
+  String customerName = "";
+  dynamic customerAddress1;
+  dynamic customerAddress2;
+  dynamic customerAddress3;
+  dynamic customerCity;
+  dynamic customerState;
+  dynamic customerCountry;
+  dynamic customerPhone;
+
+  late final SharedPreferences _prefs;
+
+  @override
+  void initState() {
+    super.initState();
+    getStringValuesSF();
+  }
+
+  getStringValuesSF() async {
+    _prefs = await SharedPreferences.getInstance();
+    setState(() {
+      customerName = _prefs.getString('customerName') ?? "";
+      customerAddress1 = _prefs.getString('customerAddress1') ?? "";
+      customerAddress2 = _prefs.getString('customerAddress2') ?? "";
+      customerAddress3 = _prefs.getString('customerAddress3') ?? "";
+      customerCity = _prefs.getString('customerCity') ?? "";
+      customerState = _prefs.getString('customerState') ?? "";
+      customerCountry = _prefs.getString('customerCountry') ?? "";
+      customerPhone = _prefs.getString('customerPhone') ?? "";
+    });
+    return;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,15 +96,11 @@ class OrderDetails extends StatelessWidget {
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.local_offer_outlined),
-            label: 'View Catlog',
+            label: 'Catlog',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.account_circle_sharp),
             label: 'Profile',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.history_outlined),
-            label: 'Quote',
           ),
         ],
         onTap: (int index) {
@@ -74,16 +129,6 @@ class OrderDetails extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => const profileScreen()),
-              );
-              break;
-            default:
-          }
-
-          switch (index) {
-            case 3:
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => QuoteDetails()),
               );
               break;
             default:
@@ -118,13 +163,13 @@ class OrderDetails extends StatelessWidget {
                       leading: Text(
                         'OrderID ',
                         style: TextStyle(
-                          fontSize: 20,
+                          fontSize: 18,
                         ),
                       ),
                       trailing: Text(
-                        '$orderNumber',
+                        '${widget.orderNumber}',
                         style: TextStyle(
-                          fontSize: 20,
+                          fontSize: 18,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -133,13 +178,13 @@ class OrderDetails extends StatelessWidget {
                       leading: Text(
                         'Order date ',
                         style: TextStyle(
-                          fontSize: 20,
+                          fontSize: 18,
                         ),
                       ),
                       trailing: Text(
-                        '$orderDate',
+                        '${widget.orderDate}',
                         style: TextStyle(
-                          fontSize: 20,
+                          fontSize: 18,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -148,7 +193,7 @@ class OrderDetails extends StatelessWidget {
                       leading: Text(
                         'Status',
                         style: TextStyle(
-                          fontSize: 20,
+                          fontSize: 18,
                         ),
                       ),
                       trailing: SizedBox(
@@ -165,7 +210,7 @@ class OrderDetails extends StatelessWidget {
                               border: OutlineInputBorder(),
                               hintText: 'Order Received',
                               hintStyle: TextStyle(
-                                fontSize: 19,
+                                fontSize: 18,
                                 fontWeight: FontWeight.bold,
                               ),
                               enabledBorder: OutlineInputBorder(
@@ -180,41 +225,46 @@ class OrderDetails extends StatelessWidget {
                       height: 30,
                     ),
                     Container(
-                      color: Colors.grey[200],
-                      child: ListTile(
-                        leading: Icon(
-                          Icons.print,
-                          size: 34,
-                        ),
-                        title: Text(
-                          'Print order details ',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 20,
+                      height: 60,
+                      color: Colors.grey[100],
+                      child: Row(
+                        children: [
+                          ElevatedButton(
+                            onPressed: () {},
+                            child: Text('Print Order Details'),
                           ),
-                        ),
-                      ),
-                    ),
-                    ListTile(
-                      trailing: InkWell(
-                        child: Text(
-                          'View Status History',
-                          style: TextStyle(
-                            color: Colors.blue[300],
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
+                          SizedBox(
+                            width: 30,
                           ),
-                        ),
-                        onTap: () {
-                          showModalBottomSheet<void>(
-                            context: context,
-                            isScrollControlled: true,
-                            builder: (context) => SizedBox(
-                              height: 400,
-                              child: _popupOrderPopup(),
-                            ),
-                          );
-                        },
+                          Column(
+                            children: [
+                              InkWell(
+                                child: Text(
+                                  'View Status History',
+                                  style: TextStyle(
+                                    color: Colors.blue[300],
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                onTap: () {
+                                  showModalBottomSheet<void>(
+                                    context: context,
+                                    isScrollControlled: true,
+                                    builder: (context) => SizedBox(
+                                      height: 400,
+                                      child: _popupOrderPopup(),
+                                    ),
+                                  );
+                                },
+                              ),
+                              SizedBox(
+                                height: 10,
+                              ),
+                             
+                            ],
+                          ),
+                        ],
                       ),
                     ),
                     ListTile(
@@ -226,31 +276,46 @@ class OrderDetails extends StatelessWidget {
                         ),
                       ),
                     ),
-                    ListTile(
-                      leading: Text(
-                        'Name ',
-                        style: TextStyle(
-                          fontSize: 20,
-                        ),
-                      ),
-                      trailing: Text(
-                        '',
-                        style: TextStyle(
-                          fontSize: 20,
-                        ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 15),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          Padding(
+                            padding: const EdgeInsets.only(right: 12),
+                            child: Text(
+                              "Name",
+                              style: TextStyle(
+                                fontSize: 18,
+                              ),
+                            ),
+                          ),
+                          Flexible(
+                            child: Container(
+                              alignment: Alignment.centerRight,
+                              child: Text(
+                                customerName,
+                                style: TextStyle(
+                                  fontSize: 18,
+                                ),
+                                textWidthBasis: TextWidthBasis.longestLine,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                     ListTile(
                       leading: Text(
                         'Phone ',
                         style: TextStyle(
-                          fontSize: 20,
+                          fontSize: 18,
                         ),
                       ),
                       trailing: Text(
-                        '',
+                        "$customerPhone",
                         style: TextStyle(
-                          fontSize: 20,
+                          fontSize: 18,
                         ),
                       ),
                     ),
@@ -264,7 +329,7 @@ class OrderDetails extends StatelessWidget {
                             child: Text(
                               "Address",
                               style: TextStyle(
-                                fontSize: 20,
+                                fontSize: 18,
                               ),
                             ),
                           ),
@@ -272,9 +337,22 @@ class OrderDetails extends StatelessWidget {
                             child: Container(
                               alignment: Alignment.centerRight,
                               child: Text(
-                                '',
+                                '$customerAddress1'
+                                ','
+                                ' '
+                                '$customerAddress2'
+                                ','
+                                ' '
+                                '$customerCity'
+                                ','
+                                ' '
+                                '$customerState '
+                                ','
+                                ' '
+                                '$customerCountry'
+                                '.',
                                 style: TextStyle(
-                                  fontSize: 20,
+                                  fontSize: 18,
                                 ),
                                 textWidthBasis: TextWidthBasis.longestLine,
                               ),
@@ -287,13 +365,13 @@ class OrderDetails extends StatelessWidget {
                       leading: Text(
                         'Delivery Option',
                         style: TextStyle(
-                          fontSize: 20,
+                          fontSize: 18,
                         ),
                       ),
                       trailing: Text(
                         '',
                         style: TextStyle(
-                          fontSize: 20,
+                          fontSize: 18,
                         ),
                       ),
                     ),
@@ -312,7 +390,7 @@ class OrderDetails extends StatelessWidget {
                     ListView.builder(
                         physics: NeverScrollableScrollPhysics(),
                         shrinkWrap: true,
-                        itemCount: 3,
+                        itemCount: widget.orderDetails!.length,
                         itemBuilder: (context, index) {
                           return Card(
                             child: ListTile(
@@ -323,21 +401,21 @@ class OrderDetails extends StatelessWidget {
                                 ),
                               ),
                               title: Text(
-                                'Product Name',
+                                widget.orderDetails![index].itemId,
                                 style: TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
                               subtitle: Text(
-                                'Qty: ',
+                                widget.orderDetails![index].orderQty.toString(),
                                 style: TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
                               trailing: Text(
-                                '',
+                                '₦${value.format(widget.orderDetails?[index].total)}',
                                 style: TextStyle(
                                   fontSize: 18,
                                 ),
@@ -361,14 +439,14 @@ class OrderDetails extends StatelessWidget {
                       leading: Text(
                         'Payment method',
                         style: TextStyle(
-                          fontSize: 20,
+                          fontSize: 18,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       trailing: Text(
-                        'Pay Online',
+                        '${widget.paymentMethodId}',
                         style: TextStyle(
-                          fontSize: 20,
+                          fontSize: 18,
                         ),
                       ),
                     ),
@@ -380,13 +458,13 @@ class OrderDetails extends StatelessWidget {
                       leading: Text(
                         'Subtotal',
                         style: TextStyle(
-                          fontSize: 20,
+                          fontSize: 18,
                         ),
                       ),
                       trailing: Text(
-                        '',
+                        '₦${value.format(widget.subtotal)}',
                         style: TextStyle(
-                          fontSize: 20,
+                          fontSize: 18,
                         ),
                       ),
                     ),
@@ -395,13 +473,13 @@ class OrderDetails extends StatelessWidget {
                       leading: Text(
                         'Tax',
                         style: TextStyle(
-                          fontSize: 20,
+                          fontSize: 18,
                         ),
                       ),
                       trailing: Text(
-                        '',
+                        '₦${value.format(widget.taxAmount)}',
                         style: TextStyle(
-                          fontSize: 20,
+                          fontSize: 18,
                         ),
                       ),
                     ),
@@ -410,13 +488,13 @@ class OrderDetails extends StatelessWidget {
                       leading: Text(
                         'Discount',
                         style: TextStyle(
-                          fontSize: 20,
+                          fontSize: 18,
                         ),
                       ),
                       trailing: Text(
-                        '',
+                        '₦${value.format(widget.discountAmount)}',
                         style: TextStyle(
-                          fontSize: 20,
+                          fontSize: 18,
                         ),
                       ),
                     ),
@@ -425,13 +503,13 @@ class OrderDetails extends StatelessWidget {
                       leading: Text(
                         'Shipping Fee',
                         style: TextStyle(
-                          fontSize: 20,
+                          fontSize: 18,
                         ),
                       ),
                       trailing: Text(
-                        '',
+                        '₦${value.format(000)}',
                         style: TextStyle(
-                          fontSize: 20,
+                          fontSize: 18,
                         ),
                       ),
                     ),
@@ -440,13 +518,13 @@ class OrderDetails extends StatelessWidget {
                       leading: Text(
                         'Total',
                         style: TextStyle(
-                          fontSize: 20,
+                          fontSize: 18,
                         ),
                       ),
                       trailing: Text(
-                        '$total',
+                        '₦${value.format(widget.total)}',
                         style: TextStyle(
-                          fontSize: 20,
+                          fontSize: 18,
                         ),
                       ),
                     ),
@@ -458,6 +536,116 @@ class OrderDetails extends StatelessWidget {
               ),
             ],
           ),
+        ),
+      ),
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            DrawerHeader(
+              decoration: BoxDecoration(color: Colors.blue),
+              child: Center(
+                child: Text(
+                  'Sales Mobile',
+                  style: TextStyle(fontSize: 30),
+                ),
+              ),
+            ),
+            ListTile(
+              title: Text('DashBoard'),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const DashBoard()),
+                );
+              },
+            ),
+            Divider(
+              color: Colors.black54,
+            ),
+            ListTile(
+              title: Text('Catlog'),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const SelectItemScreen()),
+                );
+              },
+            ),
+            Divider(
+              color: Colors.black54,
+            ),
+            ListTile(
+              title: Text('Profile'),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const profileScreen()),
+                );
+              },
+            ),
+            Divider(
+              color: Colors.black54,
+            ),
+            ListTile(
+              title: Text('Cart'),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const BasketPage()),
+                );
+              },
+            ),
+            Divider(
+              color: Colors.black54,
+            ),
+            ListTile(
+              title: Text('Checkout'),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => Checkout()),
+                );
+              },
+            ),
+            Divider(
+              color: Colors.black54,
+            ),
+            ListTile(
+              title: Text('Order Management'),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const Orders()),
+                );
+              },
+            ),
+            Divider(
+              color: Colors.black54,
+            ),
+            ListTile(
+              title: Text('Return Merchandise'),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => ReturnRMA()),
+                );
+              },
+            ),
+            Divider(
+              color: Colors.black54,
+            ),
+          ],
         ),
       ),
     );

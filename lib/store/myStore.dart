@@ -86,9 +86,6 @@ class MyStore extends ChangeNotifier {
     notifyListeners();
   }
 
-  // setAllProduct(Product v) {
-  //   _allProduct = v;
-  // }
 
   increaseItemQuantity(int? quantity, Product p) {
     if (_baskets.length > 0) {

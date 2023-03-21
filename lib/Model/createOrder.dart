@@ -1,46 +1,47 @@
-// ignore: duplicate_ignore
-// To parse this JSON data, do
+// // To parse this JSON data, do
 //
-//     final CustormerOrder = CustormerOrderFromJson(jsonString);
-
-// ignore_for_file: constant_identifier_names, duplicate_ignore
+//     final CreateOrder = welcomeFromJson(jsonString);
 
 import 'dart:convert';
 
-CustormerOrder custormerOrderFromJson(String str) => CustormerOrder.fromJson(json.decode(str));
+CreateOrder createOrderFromJson(String str) => CreateOrder.fromJson(json.decode(str));
 
-String custormerOrderToJson(CustormerOrder data) => json.encode(data.toJson());
+String createOrderToJson(CreateOrder data) => json.encode(data.toJson());
 
-class CustormerOrder {
-    CustormerOrder({
+class CreateOrder {
+    CreateOrder({
         this.status,
         this.message,
+        this.metadata,
         this.data,
         this.authToken,
     });
 
     final String? status;
     final String? message;
-    final List<Datum>? data;
+    final dynamic metadata;
+    final List<Order>? data;
     final dynamic authToken;
 
-    factory CustormerOrder.fromJson(Map<String, dynamic> json) => CustormerOrder(
+    factory CreateOrder.fromJson(Map<String, dynamic> json) => CreateOrder(
         status: json["status"],
         message: json["message"],
-        data: json["data"] == null ? [] : List<Datum>.from(json["data"]!.map((x) => Datum.fromJson(x))),
+        metadata: json["metadata"],
+        data: json["data"] == null ? [] : List<Order>.from(json["data"]!.map((x) => Order.fromJson(x))),
         authToken: json["auth_token"],
     );
 
     Map<String, dynamic> toJson() => {
         "status": status,
         "message": message,
+        "metadata": metadata,
         "data": data == null ? [] : List<dynamic>.from(data!.map((x) => x.toJson())),
         "auth_token": authToken,
     };
 }
 
-class Datum {
-    Datum({
+class Order {
+    Order({
         this.companyId,
         this.divisionId,
         this.departmentId,
@@ -204,47 +205,47 @@ class Datum {
     final String? orderNumber;
     final String? transactionTypeId;
     final String? orderTypeId;
-    late final DateTime? orderDate;
+    final DateTime? orderDate;
     final DateTime? orderDueDate;
     final DateTime? orderShipDate;
     final DateTime? orderCancelDate;
     final DateTime? systemDate;
     final bool? memorize;
-    final dynamic purchaseOrderNumber;
-    final dynamic taxExemptId;
-    final Id? taxGroupId;
-    late final String? customerId;
-    final dynamic termsId;
+    final String? purchaseOrderNumber;
+    final String? taxExemptId;
+    final String? taxGroupId;
+    final String? customerId;
+    final String? termsId;
     final String? currencyId;
     final int? currencyExchangeRate;
     final double? subtotal;
     final int? discountPers;
-    final double? discountAmount;
-    final dynamic taxPercent;
-    final double? taxAmount;
-    final double? taxableSubTotal;
-    final double? freight;
+    final int? discountAmount;
+    final int? taxPercent;
+    final int? taxAmount;
+    final int? taxableSubTotal;
+    final int? freight;
     final bool? taxFreight;
-    final double? handling;
-    final double? advertising;
+    final int? handling;
+    final int? advertising;
     final double? total;
-    final String? employeeId;
-    final double? commission;
-    final double? commissionableSales;
-    final double? comissionalbleCost;
+    final dynamic employeeId;
+    final int? commission;
+    final int? commissionableSales;
+    final int? comissionalbleCost;
     final bool? customerDropShipment;
-    final String? shipMethodId;
+    final dynamic shipMethodId;
     final String? warehouseId;
     final String? shipForId;
     final String? shipToId;
-    late final String? shippingName;
-    late final String? shippingAddress1;
-    final String? shippingAddress2;
-    final String? shippingAddress3;
-    final String? shippingCity;
-    final String? shippingState;
-    final String? shippingZip;
-    final String? shippingCountry;
+    final dynamic shippingName;
+    final dynamic shippingAddress1;
+    final dynamic shippingAddress2;
+    final dynamic shippingAddress3;
+    final dynamic shippingCity;
+    final dynamic shippingState;
+    final dynamic shippingZip;
+    final dynamic shippingCountry;
     final dynamic scheduledStartDate;
     final dynamic scheduledEndDate;
     final dynamic serviceStartDate;
@@ -252,19 +253,19 @@ class Datum {
     final dynamic performedBy;
     final dynamic glsalesAccount;
     final dynamic glcogaccount;
-    final String? paymentMethodId;
-    final double? amountPaid;
-    final double? balanceDue;
+    final dynamic paymentMethodId;
+    final int? amountPaid;
+    final dynamic balanceDue;
     final dynamic undistributedAmount;
-    final String? checkNumber;
+    final dynamic checkNumber;
     final dynamic checkDate;
-    final String? creditCardTypeId;
-    final String? creditCardName;
-    final String? creditCardNumber;
+    final dynamic creditCardTypeId;
+    final dynamic creditCardName;
+    final dynamic creditCardNumber;
     final dynamic creditCardExpDate;
-    final String? creditCardCsvnumber;
-    final String? creditCardBillToZip;
-    final String? creditCardValidationCode;
+    final dynamic creditCardCsvnumber;
+    final dynamic creditCardBillToZip;
+    final dynamic creditCardValidationCode;
     final dynamic creditCardApprovalNumber;
     final bool? backordered;
     final bool? picked;
@@ -277,30 +278,30 @@ class Datum {
     final bool? billed;
     final dynamic billedDate;
     final bool? invoiced;
-    final String? invoiceNumber;
+    final dynamic invoiceNumber;
     final DateTime? invoiceDate;
     final bool? posted;
     final DateTime? postedDate;
-    final int? allowanceDiscountPerc;
+    final dynamic allowanceDiscountPerc;
     final dynamic cashTendered;
-    final String? masterBillOfLading;
+    final dynamic masterBillOfLading;
     final dynamic masterBillOfLadingDate;
-    final String? trailerNumber;
-    final String? trailerPrefix;
-    final String? headerMemo1;
-    final String? headerMemo2;
-    final String? headerMemo3;
-    final String? headerMemo4;
-    final String? headerMemo5;
-    final String? headerMemo6;
-    final String? headerMemo7;
-    final HeaderMemo8? headerMemo8;
-    final HeaderMemo9? headerMemo9;
-    final bool? approved;
+    final dynamic trailerNumber;
+    final dynamic trailerPrefix;
+    final dynamic headerMemo1;
+    final dynamic headerMemo2;
+    final dynamic headerMemo3;
+    final dynamic headerMemo4;
+    final dynamic headerMemo5;
+    final dynamic headerMemo6;
+    final dynamic headerMemo7;
+    final dynamic headerMemo8;
+    final dynamic headerMemo9;
+    final dynamic approved;
     final dynamic approvedBy;
     final dynamic approvedDate;
     final dynamic enteredBy;
-    final String? signature;
+    final dynamic signature;
     final dynamic signaturePassword;
     final dynamic supervisorSignature;
     final dynamic supervisorPassword;
@@ -314,7 +315,7 @@ class Datum {
     final dynamic deliveryNumber;
     final dynamic headerMemo10;
     final dynamic headerMemo11;
-    final dynamic headerMemo12;
+    final String? headerMemo12;
     final dynamic ullage1;
     final dynamic ullage2;
     final dynamic ullage3;
@@ -327,7 +328,7 @@ class Datum {
     final dynamic ullage10;
     final dynamic ullage11;
     final dynamic ullage12;
-    final String? branchCode;
+    final dynamic branchCode;
     final dynamic merged;
     final dynamic created;
     final dynamic financeApproved;
@@ -354,7 +355,7 @@ class Datum {
     final dynamic cooapprovedBy;
     final List<OrderDetail>? orderDetail;
 
-    factory Datum.fromJson(Map<String, dynamic> json) => Datum(
+    factory Order.fromJson(Map<String, dynamic> json) => Order(
         companyId: json["companyId"],
         divisionId: json["divisionId"],
         departmentId: json["departmentId"],
@@ -367,11 +368,11 @@ class Datum {
         orderCancelDate: json["orderCancelDate"] == null ? null : DateTime.parse(json["orderCancelDate"]),
         systemDate: json["systemDate"] == null ? null : DateTime.parse(json["systemDate"]),
         memorize: json["memorize"],
-        purchaseOrderNumber: purchaseOrderNumberValues.map[json["purchaseOrderNumber"]],
-        taxExemptId: purchaseOrderNumberValues.map[json["taxExemptId"]],
-        taxGroupId: idValues.map[json["taxGroupId"]],
+        purchaseOrderNumber: json["purchaseOrderNumber"],
+        taxExemptId: json["taxExemptId"],
+        taxGroupId: json["taxGroupId"],
         customerId: json["customerId"],
-        termsId: termsIdValues.map[json["termsId"]],
+        termsId: json["termsId"],
         currencyId: json["currencyId"],
         currencyExchangeRate: json["currencyExchangeRate"],
         subtotal: json["subtotal"],
@@ -430,7 +431,7 @@ class Datum {
         printedDate: json["printedDate"] == null ? null : DateTime.parse(json["printedDate"]),
         shipped: json["shipped"],
         shipDate: json["shipDate"] == null ? null : DateTime.parse(json["shipDate"]),
-        trackingNumber: trackingNumberValues.map[json["trackingNumber"]],
+        trackingNumber: json["trackingNumber"],
         billed: json["billed"],
         billedDate: json["billedDate"],
         invoiced: json["invoiced"],
@@ -451,8 +452,8 @@ class Datum {
         headerMemo5: json["headerMemo5"],
         headerMemo6: json["headerMemo6"],
         headerMemo7: json["headerMemo7"],
-        headerMemo8: headerMemo8Values.map[json["headerMemo8"]],
-        headerMemo9: headerMemo9Values.map[json["headerMemo9"]],
+        headerMemo8: json["headerMemo8"],
+        headerMemo9: json["headerMemo9"],
         approved: json["approved"],
         approvedBy: json["approvedBy"],
         approvedDate: json["approvedDate"],
@@ -513,24 +514,24 @@ class Datum {
     );
 
     Map<String, dynamic> toJson() => {
-        "companyId": companyIdValues.reverse[companyId],
-        "divisionId": idValues.reverse[divisionId],
-        "departmentId": idValues.reverse[departmentId],
+        "companyId": companyId,
+        "divisionId": divisionId,
+        "departmentId": departmentId,
         "orderNumber": orderNumber,
-        "transactionTypeId": typeIdValues.reverse[transactionTypeId],
-        "orderTypeId": typeIdValues.reverse[orderTypeId],
+        "transactionTypeId": transactionTypeId,
+        "orderTypeId": orderTypeId,
         "orderDate": orderDate?.toIso8601String(),
         "orderDueDate": orderDueDate?.toIso8601String(),
         "orderShipDate": orderShipDate?.toIso8601String(),
         "orderCancelDate": orderCancelDate?.toIso8601String(),
         "systemDate": systemDate?.toIso8601String(),
         "memorize": memorize,
-        "purchaseOrderNumber": purchaseOrderNumberValues.reverse[purchaseOrderNumber],
-        "taxExemptId": purchaseOrderNumberValues.reverse[taxExemptId],
-        "taxGroupId": idValues.reverse[taxGroupId],
-        "customerId": customerIdValues.reverse[customerId],
-        "termsId": termsIdValues.reverse[termsId],
-        "currencyId": currencyIdValues.reverse[currencyId],
+        "purchaseOrderNumber": purchaseOrderNumber,
+        "taxExemptId": taxExemptId,
+        "taxGroupId": taxGroupId,
+        "customerId": customerId,
+        "termsId": termsId,
+        "currencyId": currencyId,
         "currencyExchangeRate": currencyExchangeRate,
         "subtotal": subtotal,
         "discountPers": discountPers,
@@ -543,16 +544,16 @@ class Datum {
         "handling": handling,
         "advertising": advertising,
         "total": total,
-        "employeeId": employeeIdValues.reverse[employeeId],
+        "employeeId": employeeId,
         "commission": commission,
         "commissionableSales": commissionableSales,
         "comissionalbleCost": comissionalbleCost,
         "customerDropShipment": customerDropShipment,
         "shipMethodId": shipMethodId,
-        "warehouseId": idValues.reverse[warehouseId],
-        "shipForId": shipIdValues.reverse[shipForId],
-        "shipToId": shipIdValues.reverse[shipToId],
-        "shippingName": shippingNameValues.reverse[shippingName],
+        "warehouseId": warehouseId,
+        "shipForId": shipForId,
+        "shipToId": shipToId,
+        "shippingName": shippingName,
         "shippingAddress1": shippingAddress1,
         "shippingAddress2": shippingAddress2,
         "shippingAddress3": shippingAddress3,
@@ -588,7 +589,7 @@ class Datum {
         "printedDate": printedDate?.toIso8601String(),
         "shipped": shipped,
         "shipDate": shipDate?.toIso8601String(),
-        "trackingNumber": trackingNumberValues.reverse[trackingNumber],
+        "trackingNumber": trackingNumber,
         "billed": billed,
         "billedDate": billedDate,
         "invoiced": invoiced,
@@ -609,8 +610,8 @@ class Datum {
         "headerMemo5": headerMemo5,
         "headerMemo6": headerMemo6,
         "headerMemo7": headerMemo7,
-        "headerMemo8": headerMemo8Values.reverse[headerMemo8],
-        "headerMemo9": headerMemo9Values.reverse[headerMemo9],
+        "headerMemo8": headerMemo8,
+        "headerMemo9": headerMemo9,
         "approved": approved,
         "approvedBy": approvedBy,
         "approvedDate": approvedDate,
@@ -670,53 +671,6 @@ class Datum {
         "orderDetail": orderDetail == null ? [] : List<dynamic>.from(orderDetail!.map((x) => x.toJson())),
     };
 }
-
-// ignore: constant_identifier_names
-enum CompanyId { VintAGE_PRESS_LTD }
-
-final companyIdValues = EnumValues({
-    "VintAGE PRESS LTD": CompanyId.VintAGE_PRESS_LTD
-});
-
-enum CurrencyId { NGN }
-
-final currencyIdValues = EnumValues({
-    "NGN": CurrencyId.NGN
-});
-
-enum CustomerId { COMMPRint_036 }
-
-final customerIdValues = EnumValues({
-    "COMMPRint 036": CustomerId.COMMPRint_036
-});
-
-enum Id { DEFAULT, LAGOS_STORE }
-
-final idValues = EnumValues({
-    "DEFAULT": Id.DEFAULT,
-    "LAGOS STORE": Id.LAGOS_STORE
-});
-
-enum EmployeeId { ACCOUNT3_LAGOS, EMPTY }
-
-final employeeIdValues = EnumValues({
-    "ACCOUNT3/LAGOS": EmployeeId.ACCOUNT3_LAGOS,
-    "": EmployeeId.EMPTY
-});
-
-enum HeaderMemo8 { EMPTY, ON_185 }
-
-final headerMemo8Values = EnumValues({
-    "": HeaderMemo8.EMPTY,
-    "ON/185": HeaderMemo8.ON_185
-});
-
-enum HeaderMemo9 { EMPTY, COMMPRint_036_NGN_MAR_320221224_PM }
-
-final headerMemo9Values = EnumValues({
-    "COMMPRint 036NGNMar  3 2022 12:24PM": HeaderMemo9.COMMPRint_036_NGN_MAR_320221224_PM,
-    "": HeaderMemo9.EMPTY
-});
 
 class OrderDetail {
     OrderDetail({
@@ -800,9 +754,9 @@ class OrderDetail {
     final String? itemId;
     final dynamic itemUpccode;
     final String? warehouseId;
-    final String? warehouseBinId;
-    final String? serialNumber;
-    final String? description;
+    final dynamic warehouseBinId;
+    final dynamic serialNumber;
+    final dynamic description;
     final int? orderQty;
     final bool? backOrdered;
     final int? backOrderQyyty;
@@ -811,16 +765,16 @@ class OrderDetail {
     final int? discountPerc;
     final bool? taxable;
     final dynamic currencyId;
-    final int? currencyExchangeRate;
-    final double? itemCost;
+    final dynamic currencyExchangeRate;
+    final int? itemCost;
     final double? itemUnitPrice;
     final dynamic taxGroupId;
-    final double? taxAmount;
+    final dynamic taxAmount;
     final dynamic taxPercent;
     final double? subTotal;
     final double? total;
     final int? totalWeight;
-    final String? glsalesAccount;
+    final dynamic glsalesAccount;
     final dynamic glcogaccount;
     final String? projectId;
     final dynamic trackingNumber;
@@ -838,8 +792,8 @@ class OrderDetail {
     final dynamic detailMemo1;
     final dynamic detailMemo2;
     final dynamic detailMemo3;
-    final HeaderMemo8? detailMemo4;
-    final HeaderMemo9? detailMemo5;
+    final dynamic detailMemo4;
+    final dynamic detailMemo5;
     final dynamic lockedBy;
     final dynamic lockTs;
     final bool? invoiced;
@@ -852,14 +806,14 @@ class OrderDetail {
     final dynamic multipleDiscountGroupId;
     final dynamic multipleDiscountAmount;
     final dynamic multipleDiscountPercent;
-    final double? discountAmount;
-    final bool? markUponCost;
+    final dynamic discountAmount;
+    final dynamic markUponCost;
     final dynamic markUpRate;
     final dynamic itemUnitCost;
-    final String? branchCode;
+    final dynamic branchCode;
     final dynamic productTypeId;
     final dynamic advertTypeId;
-    final bool? backOrderBooked;
+    final dynamic backOrderBooked;
     final dynamic backOrderBookedDate;
     final dynamic backOrderBookedBy;
 
@@ -910,8 +864,8 @@ class OrderDetail {
         detailMemo1: json["detailMemo1"],
         detailMemo2: json["detailMemo2"],
         detailMemo3: json["detailMemo3"],
-        detailMemo4: headerMemo8Values.map[json["detailMemo4"]],
-        detailMemo5: headerMemo9Values.map[json["detailMemo5"]],
+        detailMemo4: json["detailMemo4"],
+        detailMemo5: json["detailMemo5"],
         lockedBy: json["lockedBy"],
         lockTs: json["lockTs"],
         invoiced: json["invoiced"],
@@ -937,21 +891,21 @@ class OrderDetail {
     );
 
     Map<String, dynamic> toJson() => {
-        "companyId": companyIdValues.reverse[companyId],
-        "divisionId": idValues.reverse[divisionId],
-        "departmentId": idValues.reverse[departmentId],
+        "companyId": companyId,
+        "divisionId": divisionId,
+        "departmentId": departmentId,
         "orderNumber": orderNumber,
         "orderLineNumber": orderLineNumber,
-        "itemId": trackingNumberValues.reverse[itemId],
+        "itemId": itemId,
         "itemUpccode": itemUpccode,
-        "warehouseId": idValues.reverse[warehouseId],
-        "warehouseBinId": branchCodeValues.reverse[warehouseBinId],
+        "warehouseId": warehouseId,
+        "warehouseBinId": warehouseBinId,
         "serialNumber": serialNumber,
-        "description": trackingNumberValues.reverse[description],
+        "description": description,
         "orderQty": orderQty,
         "backOrdered": backOrdered,
         "backOrderQyyty": backOrderQyyty,
-        "itemUom": itemUomValues.reverse[itemUom],
+        "itemUom": itemUom,
         "itemWeight": itemWeight,
         "discountPerc": discountPerc,
         "taxable": taxable,
@@ -959,7 +913,7 @@ class OrderDetail {
         "currencyExchangeRate": currencyExchangeRate,
         "itemCost": itemCost,
         "itemUnitPrice": itemUnitPrice,
-        "taxGroupId": taxGroupIdValues.reverse[taxGroupId],
+        "taxGroupId": taxGroupId,
         "taxAmount": taxAmount,
         "taxPercent": taxPercent,
         "subTotal": subTotal,
@@ -967,7 +921,7 @@ class OrderDetail {
         "totalWeight": totalWeight,
         "glsalesAccount": glsalesAccount,
         "glcogaccount": glcogaccount,
-        "projectId": idValues.reverse[projectId],
+        "projectId": projectId,
         "trackingNumber": trackingNumber,
         "warehouseBinZone": warehouseBinZone,
         "palletLevel": palletLevel,
@@ -983,8 +937,8 @@ class OrderDetail {
         "detailMemo1": detailMemo1,
         "detailMemo2": detailMemo2,
         "detailMemo3": detailMemo3,
-        "detailMemo4": headerMemo8Values.reverse[detailMemo4],
-        "detailMemo5": headerMemo9Values.reverse[detailMemo5],
+        "detailMemo4": detailMemo4,
+        "detailMemo5": detailMemo5,
         "lockedBy": lockedBy,
         "lockTs": lockTs,
         "invoiced": invoiced,
@@ -1001,83 +955,11 @@ class OrderDetail {
         "markUponCost": markUponCost,
         "markUpRate": markUpRate,
         "itemUnitCost": itemUnitCost,
-        "branchCode": branchCodeValues.reverse[branchCode],
+        "branchCode": branchCode,
         "productTypeId": productTypeId,
         "advertTypeId": advertTypeId,
         "backOrderBooked": backOrderBooked,
         "backOrderBookedDate": backOrderBookedDate,
         "backOrderBookedBy": backOrderBookedBy,
     };
-}
-
-enum BranchCode { LAGOS, OVERFLOW }
-
-final branchCodeValues = EnumValues({
-    "LAGOS": BranchCode.LAGOS,
-    "Overflow": BranchCode.OVERFLOW
-});
-
-enum TrackingNumber { EMPTY, COMMERCIAL_PLATE, COMMERCIAL_IMPRESSION, COMMERCIAL_NEWSPRint }
-
-final trackingNumberValues = EnumValues({
-    "COMMERCIAL-IMPRESSION": TrackingNumber.COMMERCIAL_IMPRESSION,
-    "COMMERCIAL-NEWSPRint": TrackingNumber.COMMERCIAL_NEWSPRint,
-    "COMMERCIAL-PLATE": TrackingNumber.COMMERCIAL_PLATE,
-    "": TrackingNumber.EMPTY
-});
-
-enum ItemUom { EACH }
-
-final itemUomValues = EnumValues({
-    "Each": ItemUom.EACH
-});
-
-enum TaxGroupId { EMPTY, VAT7_5 }
-
-final taxGroupIdValues = EnumValues({
-    "": TaxGroupId.EMPTY,
-    "VAT7.5": TaxGroupId.VAT7_5
-});
-
-enum TypeId { ORDER, QUOTE }
-
-final typeIdValues = EnumValues({
-    "Order": TypeId.ORDER,
-    "Quote": TypeId.QUOTE
-});
-
-enum PurchaseOrderNumber { NONE }
-
-final purchaseOrderNumberValues = EnumValues({
-    "None": PurchaseOrderNumber.NONE
-});
-
-enum ShipId { SAME }
-
-final shipIdValues = EnumValues({
-    "SAME": ShipId.SAME
-});
-
-enum ShippingName { MONEY_CENTRAL }
-
-final shippingNameValues = EnumValues({
-    "MONEY CENTRAL": ShippingName.MONEY_CENTRAL
-});
-
-enum TermsId { NET_DUE }
-
-final termsIdValues = EnumValues({
-    "Net Due": TermsId.NET_DUE
-});
-
-class EnumValues<T> {
-    Map<String, T> map;
-    late Map<T, String> reverseMap;
-
-    EnumValues(this.map);
-
-    Map<T, String> get reverse {
-        reverseMap = map.map((k, v) => MapEntry(v, k));
-        return reverseMap;
-    }
 }

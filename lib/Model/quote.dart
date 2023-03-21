@@ -109,8 +109,8 @@ class QuotesOrders {
         this.backordered,
         this.picked,
         this.pickedDate,
-        this.prdoubleed,
-        this.prdoubleedDate,
+        this.printed,
+        this.printedDate,
         this.shipped,
         this.shipDate,
         this.trackingNumber,
@@ -213,11 +213,11 @@ class QuotesOrders {
     final String? customerId;
     final dynamic termsId;
     final String? currencyId;
-    final double? currencyExchangeRate;
+    final int? currencyExchangeRate;
     final double? subtotal;
-    final double? discountPers;
+    final int? discountPers;
     final double? discountAmount;
-    final double? taxPercent;
+    final dynamic taxPercent;
     final double? taxAmount;
     final double? taxableSubTotal;
     final double? freight;
@@ -266,8 +266,8 @@ class QuotesOrders {
     final bool? backordered;
     final bool? picked;
     final DateTime? pickedDate;
-    final bool? prdoubleed;
-    final DateTime? prdoubleedDate;
+    final bool? printed;
+    final DateTime? printedDate;
     final bool? shipped;
     final DateTime? shipDate;
     final String? trackingNumber;
@@ -278,7 +278,7 @@ class QuotesOrders {
     final DateTime? invoiceDate;
     final bool? posted;
     final DateTime? postedDate;
-    final double? allowanceDiscountPerc;
+    final int? allowanceDiscountPerc;
     final dynamic cashTendered;
     final String? masterBillOfLading;
     final dynamic masterBillOfLadingDate;
@@ -349,7 +349,7 @@ class QuotesOrders {
     final dynamic commercialApprovedBy;
     final dynamic financeApprovedBy;
     final dynamic cooapprovedBy;
-    final List<OrderDetail>? orderDetail;
+    final List<QuoteDetail>? orderDetail;
 
     factory QuotesOrders.fromJson(Map<String, dynamic> json) => QuotesOrders(
         companyId: json["companyId"],
@@ -375,13 +375,13 @@ class QuotesOrders {
         discountPers: json["discountPers"],
         discountAmount: json["discountAmount"],
         taxPercent: json["taxPercent"],
-        taxAmount: json["taxAmount"]?.toDouble(),
+        taxAmount: json["taxAmount"],
         taxableSubTotal: json["taxableSubTotal"],
         freight: json["freight"],
         taxFreight: json["taxFreight"],
         handling: json["handling"],
         advertising: json["advertising"],
-        total: json["total"]?.toDouble(),
+        total: json["total"],
         employeeId: json["employeeId"],
         commission: json["commission"],
         commissionableSales: json["commissionableSales"],
@@ -408,7 +408,7 @@ class QuotesOrders {
         glcogaccount: json["glcogaccount"],
         paymentMethodId: json["paymentMethodId"],
         amountPaid: json["amountPaid"],
-        balanceDue: json["balanceDue"]?.toDouble(),
+        balanceDue: json["balanceDue"],
         undistributedAmount: json["undistributedAmount"],
         checkNumber: json["checkNumber"],
         checkDate: json["checkDate"],
@@ -423,8 +423,8 @@ class QuotesOrders {
         backordered: json["backordered"],
         picked: json["picked"],
         pickedDate: json["pickedDate"] == null ? null : DateTime.parse(json["pickedDate"]),
-        prdoubleed: json["prdoubleed"],
-        prdoubleedDate: json["prdoubleedDate"] == null ? null : DateTime.parse(json["prdoubleedDate"]),
+        printed: json["printed"],
+        printedDate: json["printedDate"] == null ? null : DateTime.parse(json["printedDate"]),
         shipped: json["shipped"],
         shipDate: json["shipDate"] == null ? null : DateTime.parse(json["shipDate"]),
         trackingNumber: json["trackingNumber"],
@@ -506,7 +506,7 @@ class QuotesOrders {
         commercialApprovedBy: json["commercialApprovedBy"],
         financeApprovedBy: json["financeApprovedBy"],
         cooapprovedBy: json["cooapprovedBy"],
-        orderDetail: json["orderDetail"] == null ? [] : List<OrderDetail>.from(json["orderDetail"]!.map((x) => OrderDetail.fromJson(x))),
+        orderDetail: json["orderDetail"] == null ? [] : List<QuoteDetail>.from(json["orderDetail"]!.map((x) => QuoteDetail.fromJson(x))),
     );
 
     Map<String, dynamic> toJson() => {
@@ -581,8 +581,8 @@ class QuotesOrders {
         "backordered": backordered,
         "picked": picked,
         "pickedDate": pickedDate?.toIso8601String(),
-        "prdoubleed": prdoubleed,
-        "prdoubleedDate": prdoubleedDate?.toIso8601String(),
+        "printed": printed,
+        "printedDate": printedDate?.toIso8601String(),
         "shipped": shipped,
         "shipDate": shipDate?.toIso8601String(),
         "trackingNumber": trackingNumber,
@@ -668,8 +668,8 @@ class QuotesOrders {
     };
 }
 
-class OrderDetail {
-    OrderDetail({
+class QuoteDetail {
+    QuoteDetail({
         this.companyId,
         this.divisionId,
         this.departmentId,
@@ -746,30 +746,30 @@ class OrderDetail {
     final String? divisionId;
     final String? departmentId;
     final String? orderNumber;
-    final double? orderLineNumber;
+    final int? orderLineNumber;
     final String? itemId;
     final dynamic itemUpccode;
     final String? warehouseId;
     final String? warehouseBinId;
     final dynamic serialNumber;
     final String? description;
-    final double? orderQty;
+    final int? orderQty;
     final bool? backOrdered;
-    final double? backOrderQyyty;
+    final int? backOrderQyyty;
     final String? itemUom;
-    final double? itemWeight;
-    final double? discountPerc;
+    final int? itemWeight;
+    final int? discountPerc;
     final bool? taxable;
     final dynamic currencyId;
-    final dynamic currencyExchangeRate;
+    final int? currencyExchangeRate;
     final double? itemCost;
     final double? itemUnitPrice;
     final String? taxGroupId;
     final double? taxAmount;
-    final double? taxPercent;
+    final dynamic taxPercent;
     final double? subTotal;
     final double? total;
-    final double? totalWeight;
+    final int? totalWeight;
     final String? glsalesAccount;
     final dynamic glcogaccount;
     final String? projectId;
@@ -794,7 +794,7 @@ class OrderDetail {
     final dynamic lockTs;
     final bool? invoiced;
     final DateTime? invoicedDate;
-    final double? invoicedQty;
+    final int? invoicedQty;
     final dynamic deliveryNumber;
     final dynamic glanalysisType1;
     final dynamic glanalysisType2;
@@ -802,7 +802,7 @@ class OrderDetail {
     final dynamic multipleDiscountGroupId;
     final dynamic multipleDiscountAmount;
     final dynamic multipleDiscountPercent;
-    final dynamic discountAmount;
+    final double? discountAmount;
     final bool? markUponCost;
     final dynamic markUpRate;
     final dynamic itemUnitCost;
@@ -813,7 +813,7 @@ class OrderDetail {
     final dynamic backOrderBookedDate;
     final dynamic backOrderBookedBy;
 
-    factory OrderDetail.fromJson(Map<String, dynamic> json) => OrderDetail(
+    factory QuoteDetail.fromJson(Map<String, dynamic> json) => QuoteDetail(
         companyId: json["companyId"],
         divisionId: json["divisionId"],
         departmentId: json["departmentId"],
@@ -837,10 +837,10 @@ class OrderDetail {
         itemCost: json["itemCost"],
         itemUnitPrice: json["itemUnitPrice"],
         taxGroupId: json["taxGroupId"],
-        taxAmount: json["taxAmount"]?.toDouble(),
-        taxPercent: json["taxPercent"]?.toDouble(),
+        taxAmount: json["taxAmount"],
+        taxPercent: json["taxPercent"],
         subTotal: json["subTotal"],
-        total: json["total"]?.toDouble(),
+        total: json["total"],
         totalWeight: json["totalWeight"],
         glsalesAccount: json["glsalesAccount"],
         glcogaccount: json["glcogaccount"],

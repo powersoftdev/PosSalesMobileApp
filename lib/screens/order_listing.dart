@@ -1,8 +1,8 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-
 // import 'package:sales_order/screens/orders.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
@@ -42,7 +42,9 @@ class _OrderdetailsState extends State<Orderdetails> {
           'Accept': 'application/json',
           'Authorization': 'Bearer $token',
         });
-    print('Response status: ${response.statusCode}');
+    if (kDebugMode) {
+      print('Response status: ${response.statusCode}');
+    }
     print('Response body: ${response.body}');
     print('token : $token');
 
@@ -56,17 +58,15 @@ class _OrderdetailsState extends State<Orderdetails> {
     }
   }
 
-  String? orderNumber = '';
-  String? orderTypeId = '';
-  String? status = '';
-  String? customerId = '';
-  String? paymentMethodId = '';
-  double? subtotal = 0.0;
-  double? taxAmount = 0.0;
-  double? discountAmount = 0.0;
-  dynamic total = '';
-  double? orderQty = 0.0;
-  dynamic itemId = 0;
+  String? orderNumber;
+  String? orderTypeId;
+  String? status;
+  String? customerId;
+  String? paymentMethodId;
+  double? subtotal;
+  int? taxAmount;
+  dynamic total;
+  int? orderQty;
   dynamic orderDate;
   String? token;
 
@@ -76,9 +76,11 @@ class _OrderdetailsState extends State<Orderdetails> {
     _prefs = await SharedPreferences.getInstance();
     setState(() {
       orderNumber = (_prefs.getString('orderNumber') ?? "");
-      total = (_prefs.getDouble('total') ?? 0);
-      orderQty = (_prefs.getDouble('total') ?? 0);
+      total = (_prefs.getInt('total') ?? 0);
+      orderQty = (_prefs.getInt('orderQty') ?? 0);
       orderDate = (_prefs.getString('orderdate') ?? "");
+      paymentMethodId = (_prefs.getString('paymentMethodId') ?? "");
+      //itemId = (_prefs.getString('itemId') ?? "");
     });
     return;
   }
@@ -103,17 +105,24 @@ class _OrderdetailsState extends State<Orderdetails> {
                   height: 100,
                   child: GestureDetector(
                     onTap: () {
-                      Navigator.of(context).push(
+                      Navigator.push(
+                        context,
                         MaterialPageRoute(
                           builder: (context) => OrderDetails(
                             orderNumber: data[index].orderNumber.toString(),
                             total: data[index].total,
                             orderDate: data[index].orderDate.toString(),
+                            orderDetails: data[index].orderDetail,
+                            paymentMethodId: data[index].paymentMethodId,
+                            subtotal: data[index].subtotal,
+                            taxAmount: data[index].taxAmount,
+                            discountAmount: data[index].discountAmount,
                           ),
                         ),
                       );
                     },
                     child: Card(
+                      
                       elevation: 1,
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(15)),

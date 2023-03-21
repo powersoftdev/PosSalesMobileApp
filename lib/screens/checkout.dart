@@ -1,25 +1,25 @@
-import 'dart:convert';
 import 'dart:core';
-import 'dart:core';
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animated_button/flutter_animated_button.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:sales_order/Model/rme.dart';
 import 'package:sales_order/Store/MyStore.dart';
+import 'package:sales_order/screens/createCustomerQuote.dart';
+import 'package:sales_order/screens/createCustormerOrd.dart';
 import 'package:sales_order/screens/paystackwebview.dart';
 import 'package:sales_order/screens/size_config.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../Model/createOrder.dart';
+import '../Model/products.dart';
 
-
+import '../Model/quote.dart';
 import 'dashboard.dart';
-import 'login_screen.dart';
-import 'orders.dart';
 
-import 'paymentcheckout.dart';
+import 'orders.dart';
 import 'paymentcheckout.dart';
 import 'select_item.dart';
 
@@ -282,10 +282,18 @@ class Checkout extends StatefulWidget {
 }
 
 class _CheckoutState extends State<Checkout> {
-  PaymentOption _value = PaymentOption.payOffline;
+  @override
+  void initState() {
+    getStringValuesAddress();
+    super.initState();
+  }
+
+  PaymentOption _value = PaymentOption.payOnline;
   AddressInfo _values = AddressInfo.location;
 
   var value = NumberFormat("#,##0.00", "en_US");
+
+  //Product get p => Product();
 
   getTotal() {
     int total = 0;
@@ -294,7 +302,7 @@ class _CheckoutState extends State<Checkout> {
   }
 
   getAvailiableCrd() {
-    double availiableCrd = accountBalance * -1;
+    int? availiableCrd = accountBalance! * -1;
     return availiableCrd;
   }
 
@@ -326,17 +334,19 @@ class _CheckoutState extends State<Checkout> {
   String customerAddress1 = "";
   String customerAddress2 = "";
   String customerEmail = "";
-  double accountBalance = 0;
-  double amountToPay = 0;
+  String customerId = '';
+  String companyId = '';
+  String transactionTypeId = '';
+  String customerName = '';
+  String divisionId = '';
+  String departmentId = '';
+  int? accountBalance = 0;
+  var authorizationUrl = '';
+  var reference = '';
+
   final emailcontroller = TextEditingController();
 
   late final SharedPreferences _prefs;
-
-  @override
-  void initState() {
-    getStringValuesAddress();
-    super.initState();
-  }
 
   getStringValuesAddress() async {
     _prefs = await SharedPreferences.getInstance();
@@ -344,29 +354,147 @@ class _CheckoutState extends State<Checkout> {
       customerAddress1 = _prefs.getString('customerAddress1') ?? "";
       customerAddress2 = _prefs.getString('customerAddress2') ?? "";
       customerEmail = _prefs.getString('customerEmail') ?? "";
-      accountBalance = _prefs.getDouble('accountBalance') ?? 0.0;
+      accountBalance = _prefs.getInt('accountBalance');
+      customerId = _prefs.getString('customerId') ?? "";
+      customerName = _prefs.getString('customerName') ?? "";
+      companyId = _prefs.getString('companyId') ?? "";
+      departmentId = _prefs.getString('departmentId') ?? "";
+      divisionId = _prefs.getString('divisionId') ?? "";
     });
     return;
   }
 
+  getBasketItm(MyStore store) {
+    var totalBasket = store.baskets;
+    var orderDetails = [];
+
+    for (Product item in totalBasket) {
+      var orderDetail = <String, dynamic>{
+        'ItemID': item.id,
+        'OrderQty': item.qty,
+      };
+      orderDetails.add(orderDetail);
+    }
+
+    final orderDTO = <String, dynamic>{
+      "orderDetail": orderDetails
+    };
+    return orderDTO;
+  }
+
+  getOrderCreated(MyStore store) {
+    var totalBasket = store.baskets;
+    var orderDetails = <OrderDetail>[];
+
+    for (Product item in totalBasket) {
+      var myorderDetail = OrderDetail(
+        companyId: companyId,
+        divisionId: divisionId,
+        orderLineNumber: 0,
+        itemId: item.id,
+        orderQty: item.qty,
+        departmentId: departmentId,
+        itemUnitPrice: item.price,
+        subTotal: item.totalPrice,
+        total: item.totalPrice,
+      );
+      orderDetails.add(myorderDetail);
+    }
+    var orderDate = DateTime.now();
+
+    var total = store.getTotalAmount() - getAvailiableCrd();
+    var subtotal = store.getTotalAmount();
+
+    final orderCreated = Order  (
+      companyId: companyId,
+      orderDate: orderDate,
+      total: total,
+      subtotal: subtotal,
+      customerId: customerId,
+      divisionId: divisionId,
+      departmentId: departmentId,
+      orderDetail: orderDetails,
+    ).toJson();
+    return orderCreated;
+  }
+
+ getQuoteCreated(MyStore store) {
+    var totalBasket = store.baskets;
+    var orderDetails = <QuoteDetail>[];
+
+    for (Product item in totalBasket) {
+      var myorderDetail = QuoteDetail(
+        companyId: companyId,
+        divisionId: divisionId,
+        orderLineNumber: 0,
+        itemId: item.id,
+        orderQty: item.qty,
+        departmentId: departmentId,
+        itemUnitPrice: item.price,
+        subTotal: item.totalPrice,
+        total: item.totalPrice,
+      );
+      orderDetails.add(myorderDetail);
+    }
+    var orderDate = DateTime.now();
+
+    var total = store.getTotalAmount() - getAvailiableCrd();
+    var subtotal = store.getTotalAmount();
+
+    final quoteCreated = QuotesOrders(
+      companyId: companyId,
+      transactionTypeId: transactionTypeId,
+      orderDate: orderDate,
+      total: total,
+      subtotal: subtotal,
+      customerId: customerId,
+      divisionId: divisionId,
+      departmentId: departmentId,
+      orderDetail: orderDetails,
+    ).toJson();
+    return quoteCreated;
+  }
+
+  
 
   @override
   Widget build(BuildContext context) {
     var store = Provider.of<MyStore>(context);
-    //var payment = Provider.of<PaymentsData>(context);
     SizeConfig().init(context);
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
     ]);
-    getAmountToPay(MyStore store) {
-      var amountToPay = getAvailiableCrd();
-      if (amountToPay <= 0) {
+    dynamic getAmountToPay(MyStore store) {
+      num amountToPay = getAvailiableCrd();
+      // if (amountToPay <= 0) {
+      //   amountToPay = store.getTotalAmount() + getAvailiableCrd();
+      // } else {
+      //   if ((store.getTotalAmount() - getAvailiableCrd()) < 0) {
+      //     amountToPay = 0;
+      //   } else {
+      //     amountToPay = store.getTotalAmount() - getAvailiableCrd();
+      //   }
+      // }
+      if (amountToPay <= 0) {                   
+        
         amountToPay = store.getTotalAmount() - getAvailiableCrd();
-      } else {
-        amountToPay = store.getTotalAmount() + getAvailiableCrd();
       }
-
+     else if((store.getTotalAmount() - getAvailiableCrd()) < 0) {
+        amountToPay = 0;
+      }
+      else if(amountToPay > store.getTotalAmount()) {
+        amountToPay = 0;
+      }
+      else if(store.getTotalAmount() < 0){
+         amountToPay = 0;
+      }
+      //  else if(store.getTotalAmount() > getAvailiableCrd()){
+      //    amountToPay = store.getTotalAmount() + getAvailiableCrd();
+      // }
+      else{
+    amountToPay =  amountToPay = store.getTotalAmount() + getAvailiableCrd();
+      }
       return amountToPay;
     }
 
@@ -385,7 +513,20 @@ class _CheckoutState extends State<Checkout> {
                 );
               },
               icon: const Icon(Icons.arrow_back, size: 25),
-            ),
+            ),actions: [
+          IconButton(
+            icon: const Icon(Icons.shopping_cart),
+            onPressed: () {
+                Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const SelectItemScreen(),
+                          ),
+                        );
+                      },
+            iconSize: 40,
+          ),
+            ],
             title: const Center(
               child: Center(
                 child: Padding(
@@ -399,6 +540,7 @@ class _CheckoutState extends State<Checkout> {
                 ),
               ),
             ),
+            
           ),
           body: Padding(
             padding: const EdgeInsets.all(8.0),
@@ -463,42 +605,6 @@ class _CheckoutState extends State<Checkout> {
                                 },
                               ),
                             ),
-                            // GestureDetector(
-                            //   child: Padding(
-                            //     padding: const EdgeInsets.only(left: 18.0),
-                            //     child: Row(
-                            //       children: [
-                            //         const Icon(
-                            //           Icons.add,
-                            //           size: 27,
-                            //           color: Colors.blue,
-                            //         ),
-                            //         Padding(
-                            //           padding: const EdgeInsets.all(10.0),
-                            //           child: GestureDetector(
-                            // onTap: () async {
-                            //   await showInformationDialog(context);
-                            // },
-                            // child: const Text(
-                            //   'Use a diffrent address',
-                            //   style: TextStyle(
-                            //     fontSize: 16,
-                            //     color: Colors.blue,
-                            //   ),
-                            // ),
-                            //         ),
-                            //       ),
-                            //     ],
-                            //   ),
-                            // ),
-                            // onTap: () async {
-                            //   await showInformationDialog(context);
-                            // },
-                            //),
-                            // const Divider(
-                            //   color: Colors.grey,
-                            //   thickness: 1,
-                            // ),
                             Column(
                               children: [
                                 DropdownButton(
@@ -509,7 +615,7 @@ class _CheckoutState extends State<Checkout> {
                                   dropdownColor: Colors.white,
                                   icon: const Icon(
                                     Icons.arrow_drop_down,
-                                    color: Colors.blue,
+                                    color: Colors.blue, 
                                   ),
                                   iconSize: 36,
 
@@ -784,7 +890,6 @@ class _CheckoutState extends State<Checkout> {
                                   onChanged: (PaymentOption? val) {
                                     setState(() {
                                       _value = val!;
-                                     
                                     });
                                   },
                                 ),
@@ -795,7 +900,6 @@ class _CheckoutState extends State<Checkout> {
                                   onChanged: (PaymentOption? val) {
                                     setState(() {
                                       _value = val!;
-                                      // callApi();
                                     });
                                   },
                                 ),
@@ -820,21 +924,51 @@ class _CheckoutState extends State<Checkout> {
                             color: Colors.white,
                           ),
                           onPress: () {
-                           // callApi();
+                            var basket = getBasketItm(store);
                             if (PaymentOption.payOffline == _value) {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => const Orders(),
-                                ),
+                                var amount = getAmountToPay(store);
+                               var quote = getQuoteCreated(store);
+                              createQuote(quote);
+                            }
+                            else if(store.getTotalAmount() == 0 ){
+                               var powersoftdemos = const SnackBar(
+                              content:  Text('Please select an item in the catalog before placing an order'),
+                              backgroundColor:Colors.red,
+                              behavior: SnackBarBehavior.floating,
+                               margin: EdgeInsets.all(5),
                               );
-                            } else {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => const WebViewPayment(),
-                                ),
-                              );
+                               ScaffoldMessenger.of(context).showSnackBar(powersoftdemos);
+                            }
+                            
+                            // else if(getAvailiableCrd() > store.getTotalAmount()){
+                            //   createData(amount, basket);
+                            //  var powersoftdemo = const SnackBar(
+                            //   content:  Text('Your order has been created'),
+                            //   backgroundColor:Colors.green,
+                            //   behavior: SnackBarBehavior.floating,
+                            //    margin: EdgeInsets.all(5),
+                            //   );
+                            //    ScaffoldMessenger.of(context).showSnackBar(powersoftdemo);
+                            // }
+                             else {
+                               Map<String,dynamic>order = getOrderCreated(store);
+                              var amount = getAmountToPay(store);
+                              createData(amount, basket).then((value) => {
+                                   reference =  value.reference.toString(),
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            WebViewPayment(data: value),
+                                      ),
+                                    ).then((value) => {
+                                          if (reference != "")
+                                            createOrder(reference, order)
+                                          // else{
+                                          //   print('Order not created'),
+                                          // }
+                                        })
+                                  });
                             }
                           },
                           gradient: const LinearGradient(

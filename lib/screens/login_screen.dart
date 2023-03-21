@@ -82,18 +82,25 @@ class _LoginScreenState extends State<LoginScreen> {
       var customerState = customerInformation.customerState;
       var customerCountry = customerInformation.customerCountry;
       var customerTypeId = customerInformation.customerTypeId;
+      var companyId = customerInformation.companyId;
+      var departmentId = customerInformation.departmentId;
+      var divisionId = customerInformation.divisionId;
+
 
       await prefs.setString('customerEmail', emailcontroller.text);
       await prefs.setString('customerName', customerName);
       await prefs.setString('customerId', customerId);
       await prefs.setString('customerEmail', customerEmail);
       await prefs.setString('customerPhone', customerPhone);
-      await prefs.setDouble('accountBalance', accountBalance);
+      await prefs.setInt('accountBalance', accountBalance!);
       await prefs.setString('customerAddress1', customerAddress1);
       await prefs.setString('customerAddress2', customerAddress2);
       await prefs.setString('customerAddress3', customerAddress3);
       await prefs.setString('customerCity', customerCity);
       await prefs.setString('customerTypeId', customerTypeId);
+      await prefs.setString('companyId', companyId);
+      await prefs.setString('divisionId', divisionId);
+      await prefs.setString('departmentId', departmentId);
       await prefs.setString('customerCountry', customerCountry);
       await prefs.setString('customerState', customerState);
       await prefs.setString('token', responseData.authToken);

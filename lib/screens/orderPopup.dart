@@ -16,7 +16,7 @@ class _OrderPopupState extends State<OrderPopup> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
+      body: SizedBox(
         width: MediaQuery.of(context).size.width,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -25,14 +25,14 @@ class _OrderPopupState extends State<OrderPopup> {
             TimelineTile(
               axis: TimelineAxis.vertical,
               indicatorStyle: IndicatorStyle(
-                color: Colors.blue,
+                color: Colors.amber,
                 height: 50,
                 width: 50,
                 iconStyle:
                     IconStyle(color: Colors.white, iconData: Icons.check),
               ),
               isFirst: true,
-              afterLineStyle: LineStyle(color: Colors.blue),
+              afterLineStyle: LineStyle(color: Colors.amber),
               alignment: TimelineAlign.manual,
               lineXY: 0.15,
               endChild: Row(
@@ -50,7 +50,7 @@ class _OrderPopupState extends State<OrderPopup> {
                           child: Text(
                             'Order Recieved',
                             style: TextStyle(
-                              color: Colors.blue,
+                              color: Colors.amber,
                               fontSize: 22,
                               fontWeight: FontWeight.bold,
                             ),
@@ -79,9 +79,9 @@ class _OrderPopupState extends State<OrderPopup> {
                 height: 50,
                 width: 50,
                 iconStyle:
-                    IconStyle(color: Colors.white, iconData: Icons.check),
+                    IconStyle(color: Colors.white, iconData: Icons.circle),
               ),
-              beforeLineStyle: LineStyle(color: Colors.blue),
+              beforeLineStyle: LineStyle(color: Colors.amber),
               afterLineStyle: LineStyle(color: Colors.blue),
               alignment: TimelineAlign.manual,
               lineXY: 0.15,
@@ -115,6 +115,8 @@ class _OrderPopupState extends State<OrderPopup> {
             TimelineTile(
               axis: TimelineAxis.vertical,
               indicatorStyle: IndicatorStyle(
+                iconStyle:
+                    IconStyle(color: Colors.white, iconData: Icons.circle),
                 color: Colors.green,
                 height: 50,
                 width: 50,
@@ -127,7 +129,6 @@ class _OrderPopupState extends State<OrderPopup> {
                 children: [
                   Container(
                     margin: EdgeInsets.only(top: 30, bottom: 30),
-                    // color: Colors.amber[100],
                     height: 60,
                     width: 200,
                     child: Column(

@@ -2,29 +2,25 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:sales_order/Screens/basketPage.dart';
-
-
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:http/http.dart' as http;
-
-import '../Model/custormerorder.dart';
+import 'package:sales_order/screens/rmePage.dart';
+import 'checkout.dart';
+import 'dashboard.dart';
 import 'order_listing.dart';
+import 'passwordReset.dart';
+import 'profileScreen.dart';
 import 'quote_listing.dart';
+import 'select_item.dart';
 
 class Orders extends StatefulWidget {
   const Orders({super.key});
-
 
   @override
   State<Orders> createState() => _OrdersState();
 }
 
-
-// late final String? orderNumber;
-
+late final String? orderNumber;
 
 class _OrdersState extends State<Orders> {
-
   // Future<List<Datum?>?> custormerListAPIResult =
   //     Future.value(List<Datum>.from([Datum()]));
 
@@ -79,19 +75,19 @@ class _OrdersState extends State<Orders> {
   //   });
   //   return;
   // }
- 
+
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
       length: 2,
       child: Scaffold(
         appBar: AppBar(
-          leading: IconButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            icon: const Icon(Icons.arrow_back, size: 25),
-          ),
+          // leading: IconButton(
+          //   onPressed: () {
+          //     Navigator.pop(context);
+          //   },
+          //   icon: const Icon(Icons.arrow_back, size: 25),
+          // ),
           title: const Center(
             child: Center(
               child: Padding(
@@ -122,15 +118,110 @@ class _OrdersState extends State<Orders> {
             Tab(text: 'Quotes'),
           ]),
         ),
-        body: 
-           const TabBarView(
+        body: const TabBarView(
+          children: [
+            Orderdetails(),
+            Quotes(),
+          ],
+        ),
+        drawer: Drawer(
+          child: ListView(
+            padding: EdgeInsets.zero,
             children: [
-              Orderdetails(),
-              Quotes(),
+              const DrawerHeader(
+                decoration: BoxDecoration(color: Colors.blue),
+                child: Center(
+                  child: Text(
+                    'Sales Mobile',
+                    style: TextStyle(fontSize: 30),
+                  ),
+                ),
+              ),
+              ListTile(
+                title: const Text('DashBoard'),
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const DashBoard()),
+                  );
+                },
+              ),
+              const Divider(
+                color: Colors.black54,
+              ),
+              ListTile(
+                title: const Text('Catlog'),
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const SelectItemScreen()),
+                  );
+                },
+              ),
+              const Divider(
+                color: Colors.black54,
+              ),
+              ListTile(
+                title: const Text('Profile'),
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const profileScreen()),
+                  );
+                },
+              ),
+              const Divider(
+                color: Colors.black54,
+              ),
+              ListTile(
+                title: const Text('Cart'),
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const BasketPage()),
+                  );
+                },
+              ),
+              const Divider(
+                color: Colors.black54,
+              ),
+              ListTile(
+                title: const Text('Checkout'),
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => Checkout()),
+                  );
+                },
+              ),
+              const Divider(
+                color: Colors.black54,
+              ),
+              ListTile(
+                title: const Text('Return Merchandise'),
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const ReturnRMA()),
+                  );
+                },
+              ),
+              const Divider(
+                color: Colors.black54,
+              ),
             ],
           ),
         ),
-      
+      ),
     );
   }
 }

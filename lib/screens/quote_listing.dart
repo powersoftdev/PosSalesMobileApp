@@ -2,10 +2,9 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-
+import 'package:sales_order/screens/orderDetails.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
-
 import '../Model/quote.dart';
 import 'quoteDetails.dart';
 
@@ -17,7 +16,7 @@ class Quotes extends StatefulWidget {
 }
 
 String? token;
-
+ 
 class _QuotesState extends State<Quotes> {
   Future<List<QuotesOrders>?> quoteListAPIResult =
       Future.value(List<QuotesOrders>.from([QuotesOrders()]));
@@ -58,10 +57,16 @@ class _QuotesState extends State<Quotes> {
     }
   }
 
-  String? orderNumber = '';
-  dynamic total = '';
-  double? orderQty = 0.0;
-  dynamic itemId = 0;
+  String? orderNumber;
+  String? orderTypeId;
+  String? status;
+  String? customerId;
+  String? paymentMethodId;
+  double? subtotal;
+  int? taxAmount;
+  int? discountAmount;
+  dynamic total;
+  int? orderQty;
   dynamic orderDate;
   String? token;
 
@@ -71,9 +76,12 @@ class _QuotesState extends State<Quotes> {
     _prefs = await SharedPreferences.getInstance();
     setState(() {
       orderNumber = (_prefs.getString('orderNumber') ?? "");
-      total = (_prefs.getDouble('total') ?? 0);
-      orderQty = (_prefs.getDouble('total') ?? 0);
+      total = (_prefs.getInt('total') ?? 0);
+      orderQty = (_prefs.getInt('total') ?? 0);
       orderDate = (_prefs.getString('orderdate') ?? "");
+      paymentMethodId = (_prefs.getString('paymentMethodId') ?? "");
+      // subtotal = (_prefs.getString('subtotal') ?? "");
+
     });
     return;
   }
@@ -98,12 +106,18 @@ class _QuotesState extends State<Quotes> {
                   height: 100,
                   child: GestureDetector(
                     onTap: () {
-                      Navigator.of(context).push(
+                      Navigator.push(
+                        context,
                         MaterialPageRoute(
                           builder: (context) => QuoteDetails(
                             orderNumber: data[index].orderNumber.toString(),
                             total: data[index].total,
-                            orderDate: data[index].orderDate,
+                            orderDate: data[index].orderDate.toString(),
+                            orderDetails: data[index].orderDetail,
+                            paymentMethodId: data[index].paymentMethodId,
+                            subtotal: data[index].subtotal,
+                            taxAmount: data[index].taxAmount,
+                            discountAmount: data[index].discountAmount,
                           ),
                         ),
                       );

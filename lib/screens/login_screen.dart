@@ -17,6 +17,7 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   GlobalKey<FormState> formkey = GlobalKey<FormState>();
   bool _obscureText = true;
+  double viewHeight = 0;
 
   void _toggle() {
     setState(() {
@@ -86,7 +87,6 @@ class _LoginScreenState extends State<LoginScreen> {
       var departmentId = customerInformation.departmentId;
       var divisionId = customerInformation.divisionId;
 
-
       await prefs.setString('customerEmail', emailcontroller.text);
       await prefs.setString('customerName', customerName);
       await prefs.setString('customerId', customerId);
@@ -132,197 +132,217 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    var formkey;
-    return MaterialApp(
-      home: Builder(
-        builder: (context) => Scaffold(
-          resizeToAvoidBottomInset: false,
-          backgroundColor: Colors.white,
-          body: SingleChildScrollView(
-            child: SafeArea(
-              child: SingleChildScrollView(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      height: 180.0,
-                      width: double.infinity,
-                      color: Colors.white,
-                      padding: EdgeInsets.only(top: 5.0, left: 20.0),
-                      child: Row(
-                        children: [
-                          Text(
-                            'Login',
-                            style: TextStyle(
-                              fontSize: 30,
-                              color: Colors.blue.shade700,
-                            ),
-                          ),
-                          SizedBox(
-                            width: 20,
-                          ),
-                          CircleAvatar(
-                            radius: 80,
-                            backgroundImage:
-                                AssetImage('lib/images/newPhone.jpg'),
-                          ),
-                        ],
-                      ),
+    return
+        // MaterialApp(
+        //   home: Builder(builder: (context) =>
+        Scaffold(
+      // resizeToAvoidBottomInset: false,
+      backgroundColor: Colors.white,
+      body: Builder(builder: (context) {
+        return SafeArea(
+          child: LayoutBuilder(builder: (context, constraint) {
+            return _buildLogIn(context, constraint.biggest);
+          }),
+        );
+      }),
+    );
+    //   ),
+    // );
+  }
+
+  Widget _buildLogIn(BuildContext context, Size size) {
+    viewHeight = viewHeight > 0 ? viewHeight : size.height;
+
+    return SingleChildScrollView(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        // mainAxisSize: MainAxisSize.min,
+        children: [
+          SizedBox(
+            height: 180,
+            child: Container(
+              height: 180.0,
+              width: double.infinity,
+              color: Colors.white,
+              padding: EdgeInsets.only(top: 5.0, left: 20.0),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'Login',
+                    style: TextStyle(
+                      fontSize: 30,
+                      color: Colors.blue.shade700,
                     ),
-                    Stack(
-                      children: [
-                        Container(
-                          height: 660,
-                          decoration: BoxDecoration(
-                            color: Colors.blue.shade700,
-                            borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(100),
-                              topRight: Radius.circular(100),
-                              bottomLeft: Radius.circular(0),
-                              bottomRight: Radius.circular(0),
-                            ),
-                          ),
-                        ),
-                        Column(
-                          children: [
-                            Container(
-                              height: 300,
-                              width: 500,
-                              margin: EdgeInsets.fromLTRB(20, 80, 20, 20),
-                              padding: EdgeInsets.only(
-                                  top: 20.0, left: 15.0, right: 15.0),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              child: Form(
-                                key: formkey,
-                                autovalidateMode:
-                                    AutovalidateMode.onUserInteraction,
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.end,
-                                  children: [
-                                    Center(
-                                      child: Text(
-                                        'Please sign in to continue',
-                                        textAlign: TextAlign.center,
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.blue.shade700,
-                                          fontSize: 20,
-                                        ),
-                                      ),
-                                    ),
-                                    SizedBox(
-                                      height: 15,
-                                    ),
-                                    TextFormField(
-                                      controller: emailcontroller,
-                                      autofocus: false,
-                                      autovalidateMode:
-                                          AutovalidateMode.onUserInteraction,
-                                      decoration: InputDecoration(
-                                        border: OutlineInputBorder(),
-                                        hintText: 'Email address',
-                                        prefixIcon: Padding(
-                                          padding: EdgeInsets.only(top: 0),
-                                          child: Icon(Icons.email),
-                                        ),
-                                        enabledBorder: OutlineInputBorder(
-                                          borderSide: const BorderSide(
-                                              width: 3, color: Colors.blue),
-                                          borderRadius:
-                                              BorderRadius.circular(15),
-                                        ),
-                                      ),
-                                      validator: MultiValidator(
-                                        [
-                                          EmailValidator(
-                                              errorText: 'Not a valid Email'),
-                                          RequiredValidator(
-                                              errorText: 'Required'),
-                                        ],
-                                      ),
-                                    ),
-                                    SizedBox(
-                                      height: 15,
-                                    ),
-                                    TextFormField(
-                                      controller: passwordcontroller,
-                                      autovalidateMode:
-                                          AutovalidateMode.onUserInteraction,
-                                      obscureText: _obscureText,
-                                      autofocus: false,
-                                      decoration: InputDecoration(
-                                        border: OutlineInputBorder(),
-                                        hintText: 'Password',
-                                        prefixIcon: Padding(
-                                          padding: EdgeInsets.only(top: 0),
-                                          child: Icon(Icons.lock),
-                                        ),
-                                        suffixIcon: InkWell(
-                                          onTap: _toggle,
-                                          child: Icon(
-                                            _obscureText
-                                                ? Icons.visibility_off
-                                                : Icons.visibility,
-                                          ),
-                                        ),
-                                        enabledBorder: OutlineInputBorder(
-                                          borderSide: const BorderSide(
-                                              width: 3, color: Colors.blue),
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                        ),
-                                      ),
-                                      validator: MultiValidator(
-                                        [
-                                          RequiredValidator(
-                                              errorText: 'Required'),
-                                          MaxLengthValidator(15,
-                                              errorText:
-                                                  'Not more than 15 Characters'),
-                                          MinLengthValidator(8,
-                                              errorText:
-                                                  'Should be at least 8 Characters')
-                                        ],
-                                      ),
-                                    ),
-                                    SizedBox(
-                                      height: 5,
-                                    ),
-                                    FloatingActionButton(
-                                      onPressed: callApi,
-                                      child: Icon(Icons.forward),
-                                    ),
-                                    Container(
-                                      width: double.infinity,
-                                    )
-                                  ],
-                                ),
-                              ),
-                            ),
-                            SizedBox(
-                              height: 20,
-                              child: Text(
-                                'Forget your password? Click here',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 18,
-                                ),
-                              ),
-                            )
-                          ],
-                        )
-                      ],
-                    ),
-                  ],
-                ),
+                  ),
+                  SizedBox(
+                    width: 20,
+                  ),
+                  CircleAvatar(
+                    radius: 80,
+                    backgroundImage: AssetImage('lib/images/newPhone.jpg'),
+                  ),
+                ],
               ),
             ),
           ),
-        ),
+          ConstrainedBox(
+            constraints: BoxConstraints(
+                minHeight: viewHeight - 180, maxHeight: viewHeight - 180),
+            child: Stack(
+              children: [
+                Container(
+                  // height: 660,
+                  decoration: BoxDecoration(
+                    color: Colors.blue.shade700,
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(100),
+                      topRight: Radius.circular(100),
+                      bottomLeft: Radius.circular(0),
+                      bottomRight: Radius.circular(0),
+                    ),
+                  ),
+                ),
+                Center(
+                  child: Column(
+                    children: [
+                      Container(
+                        // height: 300,
+                        width: 500,
+                        constraints:
+                            BoxConstraints(minHeight: 0, maxHeight: 300),
+                        margin: EdgeInsets.fromLTRB(20, 80, 20, 20),
+                        padding:
+                            EdgeInsets.only(top: 20.0, left: 15.0, right: 15.0),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Form(
+                          key: formkey,
+                          autovalidateMode: AutovalidateMode.onUserInteraction,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              Center(
+                                child: Text(
+                                  'Please sign in to continue',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.blue.shade700,
+                                    fontSize: 20,
+                                  ),
+                                ),
+                              ),
+                              SizedBox(
+                                height: 15,
+                              ),
+                              Flexible(
+                                child: TextFormField(
+                                  controller: emailcontroller,
+                                  autofocus: false,
+                                  autovalidateMode:
+                                      AutovalidateMode.onUserInteraction,
+                                  decoration: InputDecoration(
+                                    border: OutlineInputBorder(),
+                                    hintText: 'Email address',
+                                    prefixIcon: Padding(
+                                      padding: EdgeInsets.only(top: 0),
+                                      child: Icon(Icons.email),
+                                    ),
+                                    enabledBorder: OutlineInputBorder(
+                                      borderSide: const BorderSide(
+                                          width: 3, color: Colors.blue),
+                                      borderRadius: BorderRadius.circular(15),
+                                    ),
+                                  ),
+                                  validator: MultiValidator(
+                                    [
+                                      EmailValidator(
+                                          errorText: 'Not a valid Email'),
+                                      RequiredValidator(errorText: 'Required'),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              SizedBox(
+                                height: 15,
+                              ),
+                              Flexible(
+                                child: TextFormField(
+                                  controller: passwordcontroller,
+                                  autovalidateMode:
+                                      AutovalidateMode.onUserInteraction,
+                                  obscureText: _obscureText,
+                                  autofocus: false,
+                                  decoration: InputDecoration(
+                                    border: OutlineInputBorder(),
+                                    hintText: 'Password',
+                                    prefixIcon: Padding(
+                                      padding: EdgeInsets.only(top: 0),
+                                      child: Icon(Icons.lock),
+                                    ),
+                                    suffixIcon: InkWell(
+                                      onTap: _toggle,
+                                      child: Icon(
+                                        _obscureText
+                                            ? Icons.visibility_off
+                                            : Icons.visibility,
+                                      ),
+                                    ),
+                                    enabledBorder: OutlineInputBorder(
+                                      borderSide: const BorderSide(
+                                          width: 3, color: Colors.blue),
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                  ),
+                                  validator: MultiValidator(
+                                    [
+                                      RequiredValidator(errorText: 'Required'),
+                                      MaxLengthValidator(15,
+                                          errorText:
+                                              'Not more than 15 Characters'),
+                                      MinLengthValidator(8,
+                                          errorText:
+                                              'Should be at least 8 Characters')
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              SizedBox(
+                                height: 5,
+                              ),
+                              FloatingActionButton(
+                                onPressed: callApi,
+                                child: Icon(Icons.forward),
+                              ),
+                              // Container(
+                              //   width: double.infinity,
+                              // )
+                            ],
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 24,
+                        child: Text(
+                          'Forgot your password? Click here',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                )
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

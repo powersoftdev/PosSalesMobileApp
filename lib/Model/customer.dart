@@ -2,6 +2,8 @@
 //
 //     final CustomerModel = CustomerModelFromJson(jsonString);
 
+// ignore_for_file: non_constant_identifier_names
+
 import 'dart:convert';
 
 CustomerModel CustomerModelFromJson(String str) =>
@@ -211,8 +213,8 @@ class Datum {
   dynamic termsStart;
   dynamic employeeId;
   dynamic taxGroupId;
-  dynamic priceMatrix;
-  dynamic priceMatrixCurrent;
+  String? priceMatrix;
+  String? priceMatrixCurrent;
   dynamic creditRating;
   dynamic creditLimit;
   dynamic creditComments;
@@ -302,7 +304,7 @@ class Datum {
   dynamic primaryInterest;
   dynamic lockedBy;
   dynamic lockTs;
-  dynamic accountBalance;
+  int? accountBalance;
   dynamic branchCode;
   dynamic knowYourCustomer;
   dynamic smsalert;
@@ -347,7 +349,7 @@ class Datum {
         employeeId: json["employeeId"],
         taxGroupId: json["taxGroupId"],
         priceMatrix: json["priceMatrix"],
-        priceMatrixCurrent: DateTime.parse(json["priceMatrixCurrent"]),
+        priceMatrixCurrent: json["priceMatrixCurrent"],
         creditRating: json["creditRating"],
         creditLimit: json["creditLimit"],
         creditComments: json["creditComments"],
@@ -482,8 +484,8 @@ class Datum {
         "termsStart": termsStart,
         "employeeId": employeeId,
         "taxGroupId": taxGroupId,
-        "priceMatrix": priceMatrix,
-        "priceMatrixCurrent": priceMatrixCurrent.toIso8601String(),
+        "priceMatrix": priceMatrix!,
+        "priceMatrixCurrent": priceMatrixCurrent,
         "creditRating": creditRating,
         "creditLimit": creditLimit,
         "creditComments": creditComments,
@@ -573,7 +575,7 @@ class Datum {
         "primaryInterest": primaryInterest,
         "lockedBy": lockedBy,
         "lockTs": lockTs,
-        "accountBalance": accountBalance,
+        "accountBalance": accountBalance!,
         "branchCode": branchCode,
         "knowYourCustomer": knowYourCustomer,
         "smsalert": smsalert,

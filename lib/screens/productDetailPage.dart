@@ -1,12 +1,13 @@
-// ignore_for_file: prefer_const_constructors, sized_box_for_whitespace
+// ignore_for_file: prefer_const_constructors, sized_box_for_whitespace, must_call_super
 
 import 'package:flutter/material.dart';
-
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
-
+import 'package:sales_order/screens/checkout.dart';
 import '../Store/MyStore.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'basketPage.dart';
+import 'package:sales_order/Model/products.dart';
 
 class ProductDetailpage extends StatefulWidget {
   const ProductDetailpage({super.key});
@@ -17,11 +18,33 @@ class ProductDetailpage extends StatefulWidget {
 
 class _ProductDetailpageState extends State<ProductDetailpage> {
   final _date = TextEditingController();
+  final _qtyCtrl = TextEditingController();
+  String qtyStr = '';
+  late String price;
+  String itemName = "";
+  late final SharedPreferences _prefs;
+
+  @override
+  void dispose() {
+    _date.dispose();
+    _qtyCtrl.dispose();
+    super.initState();
+  }
+
+  getStringValuesSF() async {
+    _prefs = await SharedPreferences.getInstance();
+    setState(() {
+      itemName = _prefs.getString('itemName') ?? "";
+    });
+
+    return itemName;
+  }
 
   @override
   Widget build(BuildContext context) {
     var store = Provider.of<MyStore>(context);
-    String qtyStr = store.activeProduct!.qty.toString();
+    // String qtyStr = store.activeProduct!.qty.toString();
+    qtyStr = _getQty(store);
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Container(
@@ -99,10 +122,13 @@ class _ProductDetailpageState extends State<ProductDetailpage> {
                   if (pickeddate != null) {
                     setState(
                       () {
-                        _date.text =
-                            DateFormat('MM-dd-yyyy').format(pickeddate);
+                        _date.text = DateFormat.yMMMEd().format(pickeddate);
                       },
                     );
+
+                    final SharedPreferences prefs =
+                        await SharedPreferences.getInstance();
+                    await prefs.setString('pickeddate', _date.text);
                   }
                 },
               ),
@@ -115,6 +141,11 @@ class _ProductDetailpageState extends State<ProductDetailpage> {
                   children: [
                     IconButton(
                       onPressed: () {
+                        setState(() {
+                          _qtyCtrl.text =
+                              ((int.tryParse(_qtyCtrl.text) ?? 0) - 1)
+                                  .toString();
+                        });
                         store.removeOneItemFromBasket(store.activeProduct!);
                       },
                       icon: Icon(Icons.remove),
@@ -134,6 +165,9 @@ class _ProductDetailpageState extends State<ProductDetailpage> {
                           ..selection =
                               TextSelection.collapsed(offset: qtyStr.length),
                         onChanged: (text) {
+                          // setState(() {
+                          //   qtyStr = '10';
+                          // });
                           store.increaseItemQuantity(
                               (int.tryParse(text) ?? 0), store.activeProduct!);
                         },
@@ -148,6 +182,11 @@ class _ProductDetailpageState extends State<ProductDetailpage> {
                     ),
                     IconButton(
                       onPressed: () {
+                        setState(() {
+                          _qtyCtrl.text =
+                              ((int.tryParse(_qtyCtrl.text) ?? 0) + 1)
+                                  .toString();
+                        });
                         store.addOneItemToBasket(store.activeProduct!);
                       },
                       icon: Icon(Icons.add),
@@ -190,8 +229,10 @@ class _ProductDetailpageState extends State<ProductDetailpage> {
                     45,
                   ),
                 ),
-                onPressed: () {},
-                //Navigate to the checkout page
+                onPressed: () {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => Checkout()));
+                },
                 child: Text('Place Order'),
               ),
               SizedBox(
@@ -218,5 +259,21 @@ class _ProductDetailpageState extends State<ProductDetailpage> {
         ),
       ),
     );
+  }
+
+  String _getQty(MyStore store) {
+    var baskets = store.baskets;
+    var activeItem = store.activeProduct;
+    if (store.baskets.isNotEmpty) {
+      var product = baskets.firstWhere((a) => a.id == activeItem!.id,
+          orElse: () => Product());
+      if (product.qty != null) {
+        return product.qty!
+            .toString(); // return current product qty if it exists.
+      }
+      return '0'; // if basket is not empty but product not found, return 0
+    }
+
+    return '0'; // if basket is empty return 0
   }
 }

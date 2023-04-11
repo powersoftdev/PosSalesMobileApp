@@ -1,9 +1,14 @@
+// ignore: duplicate_ignore
+// ignore: duplicate_ignore
 // To parse this JSON data, do
 //
 //     final ItemModel = ItemModelFromJson(jsonString);
 
+// ignore_for_file: non_constant_identifier_names, duplicate_ignore
+
 import 'dart:convert';
 
+// ignore: non_constant_identifier_names
 ItemModel ItemModelFromJson(String str) => ItemModel.fromJson(json.decode(str));
 
 String ItemModelToJson(ItemModel data) => json.encode(data.toJson());
@@ -265,7 +270,7 @@ class Datum {
         companyId: json["companyId"],
         divisionId: json["divisionId"],
         departmentId: json["departmentId"],
-        ItemId: json["itemModelId"],
+        ItemId: json["itemId"],
         isActive: json["isActive"],
         ItemTypeId: json["ItemTypeId"],
         ItemName: json["itemName"],
@@ -303,9 +308,7 @@ class Datum {
         ItemUom: json["ItemModelUom"],
         glItemSalesAccount: json["glItemSalesAccount"],
         glItemCogsaccount: json["glItemCogsaccount"],
-        glItemInventoryAccount: json["glItemInventoryAccount"] == null
-            ? null
-            : json["glItemInventoryAccount"],
+        glItemInventoryAccount: json["glItemInventoryAccount"],
         packId: json["packId"],
         currencyId: json["currencyId"],
         currencyExchangeRate: json["currencyExchangeRate"],
@@ -319,8 +322,8 @@ class Datum {
         leadTime: json["leadTime"],
         leadTimeUnit: json["leadTimeUnit"],
         reOrderLevel:
-            json["reOrderLevel"] == null ? null : json["reOrderLevel"],
-        reOrderQty: json["reOrderQty"] == null ? null : json["reOrderQty"],
+            json["reOrderLevel"],
+        reOrderQty: json["reOrderQty"],
         buildTime: json["buildTime"],
         buildTimeUnit: json["buildTimeUnit"],
         useageRate: json["useageRate"],
@@ -332,17 +335,19 @@ class Datum {
         isAssembly: json["isAssembly"],
         ItemAssembly: json["ItemModelAssembly"],
         lifo: json["lifo"],
-        lifovalue: json["lifovalue"] == null ? null : json["lifovalue"],
-        lifocost: json["lifocost"] == null ? null : json["lifocost"],
+        lifovalue: json["lifovalue"],
+        lifocost: json["lifocost"],
         average: json["average"],
+        // ignore: prefer_null_aware_operators
         averageValue: json["averageValue"] == null
             ? null
             : json["averageValue"].toDouble(),
         averageCost:
+            // ignore: prefer_null_aware_operators
             json["averageCost"] == null ? null : json["averageCost"].toDouble(),
         fifo: json["fifo"],
-        fifovalue: json["fifovalue"] == null ? null : json["fifovalue"],
-        fifocost: json["fifocost"] == null ? null : json["fifocost"],
+        fifovalue: json["fifovalue"],
+        fifocost: json["fifocost"],
         expected: json["expected"],
         expectedValue: json["expectedValue"],
         expectedCost: json["expectedCost"],
@@ -358,7 +363,7 @@ class Datum {
         approved: json["approved"],
         approvedBy: json["approvedBy"],
         approvedDate: json["approvedDate"],
-        enteredBy: json["enteredBy"] == null ? null : json["enteredBy"],
+        enteredBy: json["enteredBy"],
         taxGroupId: json["taxGroupId"],
         taxPercent: json["taxPercent"],
         lockedBy: json["lockedBy"],
@@ -377,8 +382,8 @@ class Datum {
         toleranceLevel: json["toleranceLevel"],
         branchCode: json["branchCode"],
         enforceQualityAssuranceOnPo: json["enforceQualityAssuranceOnPo"],
-        isPack: json["isPack"] == null ? null : json["isPack"],
-        allowPack: json["allowPack"] == null ? null : json["allowPack"],
+        isPack: json["isPack"],
+        allowPack: json["allowPack"],
         minimumQtyForPacking: json["minimumQtyForPacking"],
         projectId: json["projectId"],
       );
@@ -402,7 +407,7 @@ class Datum {
         "ItemModelWeight": ItemWeight,
         "ItemModelWeightMetric": ItemWeightMetric,
         "ItemModelShipWeight": ItemShipWeight,
-        "ItemModelUpccode": ItemUpccode == null ? null : ItemUpccode,
+        "ItemModelUpccode": ItemUpccode,
         "ItemModelEpccode": ItemEpccode,
         "ItemModelRfid": ItemRfid,
         "ItemModelSize": ItemSize,
@@ -425,13 +430,13 @@ class Datum {
         "glItemModelSalesAccount": glItemSalesAccount,
         "glItemModelCogsaccount": glItemCogsaccount,
         "glItemModelInventoryAccount":
-            glItemInventoryAccount == null ? null : glItemInventoryAccount,
+            glItemInventoryAccount,
         "packId": packId,
         "currencyId": currencyId,
         "currencyExchangeRate": currencyExchangeRate,
         "price": price,
         "ItemModelPricingCode":
-            ItemPricingCode == null ? null : ItemPricingCode,
+            ItemPricingCode,
         "pricingMethods": pricingMethods,
         "taxable": taxable,
         "vendorId": vendorId,

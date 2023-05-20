@@ -1,8 +1,6 @@
-// To parse this JSON data, do
-//
-//     final changePassword = changePasswordFromJson(jsonString);
 
-// ignore_for_file: camel_case_types
+
+// ignore_for_file: camel_case_types, file_names
 
 import 'dart:convert';
 

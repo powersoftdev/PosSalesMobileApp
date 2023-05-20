@@ -1,18 +1,22 @@
-import 'dart:convert';
+// ignore_for_file: unused_import
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:sales_order/Model/addOrder.dart';
 import 'package:sales_order/Screens/basketPage.dart';
 import 'package:sales_order/screens/rmePage.dart';
+import '../Model/addQuote.dart';
+import '../Store/MyStore.dart';
 import 'checkout.dart';
 import 'dashboard.dart';
 import 'order_listing.dart';
-import 'passwordReset.dart';
 import 'profileScreen.dart';
 import 'quote_listing.dart';
 import 'select_item.dart';
 
 class Orders extends StatefulWidget {
-  const Orders({super.key});
+  final Order? orderCrt;
+  const Orders({super.key, this.orderCrt});
 
   @override
   State<Orders> createState() => _OrdersState();
@@ -21,77 +25,18 @@ class Orders extends StatefulWidget {
 late final String? orderNumber;
 
 class _OrdersState extends State<Orders> {
-  // Future<List<Datum?>?> custormerListAPIResult =
-  //     Future.value(List<Datum>.from([Datum()]));
-
-  // @override
-  // void initState() {
-  //   custormerListAPIResult = callApi();
-  //   super.initState();
-  // }
-
-  // Future<String?> getToken() async {
-  //   final SharedPreferences prefs = await SharedPreferences.getInstance();
-  //   token = prefs.getString('token');
-  //   return null;
-  // }
-
-  // Future<List<Datum?>?> callApi() async {
-  //   await getToken();
-  //   final response = await http.get(
-  //       Uri.parse(
-  //           'https://powersoftrd.com/PEMApi/api/GetOrderByCustomer/741258?CustomerId=COMMPRINT 036'),
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //         'Accept': 'application/json',
-  //         'Authorization': 'Bearer $token',
-  //       });
-  //   print('Response status: ${response.statusCode}');
-  //   print('Response body: ${response.body}');
-  //   print('token : ${token}');
-  //   print('orderNumber : $orderNumber');
-
-  //   if (response.statusCode == 200) {
-  //     final result = json.decode(response.body);
-  //     // final itemModels = result["data"];
-  //     var custormerOrder = CustormerOrder.fromJson(result);
-  //     return custormerOrder.data;
-  //     // return ItemModels.map((e) => ItemModelFromJson(e)).toList();
-
-  //   } else {
-  //     throw Exception('Failed to load data');
-  //   }
-  // }
-
-  // String? orderNumber = '';
-  // String? token;
-
-  // late final SharedPreferences _prefs;
-
-  // getStringValues() async {
-  //   _prefs = await SharedPreferences.getInstance();
-  //   setState(() {
-  //     orderNumber = (_prefs.getString('orderNumber') ?? "") ;
-  //   });
-  //   return;
-  // }
-
   @override
   Widget build(BuildContext context) {
+    var store = Provider.of<MyStore>(context);
     return DefaultTabController(
       length: 2,
       child: Scaffold(
         appBar: AppBar(
-          // leading: IconButton(
-          //   onPressed: () {
-          //     Navigator.pop(context);
-          //   },
-          //   icon: const Icon(Icons.arrow_back, size: 25),
-          // ),
+          automaticallyImplyLeading: false,
           title: const Center(
             child: Center(
               child: Padding(
-                padding: EdgeInsets.only(right: 20.0),
+                padding: EdgeInsets.only(left: 35.0),
                 child: Text(
                   'Order Management',
                   style: TextStyle(
@@ -112,114 +57,101 @@ class _OrdersState extends State<Orders> {
               },
               iconSize: 40,
             ),
+            Text(
+              store.getBasketQty().toString(),
+              style: const TextStyle(
+                color: Colors.white,
+              ),
+            ),
           ],
           bottom: const TabBar(tabs: [
             Tab(text: 'Orders'),
             Tab(text: 'Quotes'),
           ]),
         ),
-        body: const TabBarView(
+        body: TabBarView(
           children: [
-            Orderdetails(),
-            Quotes(),
+            Orderdetails(
+              orderCrt: Order(),
+            ),
+            const Quotes(qtyCrt: <QuotesOrders>[]),
           ],
         ),
-        drawer: Drawer(
-          child: ListView(
-            padding: EdgeInsets.zero,
-            children: [
-              const DrawerHeader(
-                decoration: BoxDecoration(color: Colors.blue),
-                child: Center(
-                  child: Text(
-                    'Sales Mobile',
-                    style: TextStyle(fontSize: 30),
-                  ),
-                ),
-              ),
-              ListTile(
-                title: const Text('DashBoard'),
-                onTap: () {
-                  Navigator.pop(context);
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const DashBoard()),
-                  );
-                },
-              ),
-              const Divider(
-                color: Colors.black54,
-              ),
-              ListTile(
-                title: const Text('Catlog'),
-                onTap: () {
-                  Navigator.pop(context);
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const SelectItemScreen()),
-                  );
-                },
-              ),
-              const Divider(
-                color: Colors.black54,
-              ),
-              ListTile(
-                title: const Text('Profile'),
-                onTap: () {
-                  Navigator.pop(context);
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const profileScreen()),
-                  );
-                },
-              ),
-              const Divider(
-                color: Colors.black54,
-              ),
-              ListTile(
-                title: const Text('Cart'),
-                onTap: () {
-                  Navigator.pop(context);
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const BasketPage()),
-                  );
-                },
-              ),
-              const Divider(
-                color: Colors.black54,
-              ),
-              ListTile(
-                title: const Text('Checkout'),
-                onTap: () {
-                  Navigator.pop(context);
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => Checkout()),
-                  );
-                },
-              ),
-              const Divider(
-                color: Colors.black54,
-              ),
-              ListTile(
-                title: const Text('Return Merchandise'),
-                onTap: () {
-                  Navigator.pop(context);
-                  Navigator.push(
+        bottomNavigationBar: BottomNavigationBar(
+          selectedItemColor: Colors.blue[500],
+          unselectedItemColor: Colors.blueGrey,
+          currentIndex: 2,
+          selectedFontSize: 14,
+          unselectedFontSize: 14,
+          iconSize: 23,
+          // currentIndex: 1,
+          items: const <BottomNavigationBarItem>[
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home),
+              label: 'Home',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.local_offer_outlined),
+              label: 'Catalog',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.description),
+              label: 'Order',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.swap_horizontal_circle_outlined),
+              label: "Return",
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.account_circle_sharp),
+              label: 'Profile',
+            ),
+          ],
+          onTap: (int index) {
+            switch (index) {
+              case 0:
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const DashBoard()),
+                );
+                break;
+            }
+            switch (index) {
+              case 1:
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const SelectItemScreen()),
+                );
+                break;
+            }
+            switch (index) {
+              case 2:
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const Orders()),
+                );
+                break;
+            }
+            switch (index) {
+              case 3:
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const ReturnRMA()),
+                );
+                break;
+            }
+            switch (index) {
+              case 4:
+                Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => const ReturnRMA()),
-                  );
-                },
-              ),
-              const Divider(
-                color: Colors.black54,
-              ),
-            ],
-          ),
+                        builder: (context) => const profileScreen()));
+                break;
+              default:
+            }
+          },
+          type: BottomNavigationBarType.fixed,
         ),
       ),
     );

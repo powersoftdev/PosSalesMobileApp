@@ -1,17 +1,17 @@
-// ignore_for_file: prefer_const_constructors
+// ignore_for_file: prefer_const_constructors, must_be_immutable, use_key_in_widget_constructors, non_constant_identifier_names, file_names
+
+import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:sales_order/screens/rmePage.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'basketPage.dart';
-import 'checkout.dart';
-import 'dashboard.dart';
-import 'orders.dart';
-import 'passwordReset.dart';
-import 'profileScreen.dart';
+
+import '../Model/orderReport.dart';
+import '../Model/quoteOrder.dart';
 import 'quotePopup.dart';
-import 'select_item.dart';
+import 'package:http/http.dart' as http;
 
 class QuoteDetails extends StatefulWidget {
   String? orderNumber;
@@ -22,6 +22,13 @@ class QuoteDetails extends StatefulWidget {
   double? subtotal;
   double? taxAmount;
   double? discountAmount;
+  bool? posted;
+  DateTime? postedDate;
+  bool? picked;
+  bool? invoiced;
+  QuoteOrders? orderData;
+  String? statusOrder;
+  String? statusQuote;
 
   QuoteDetails({
     this.orderNumber,
@@ -32,6 +39,13 @@ class QuoteDetails extends StatefulWidget {
     this.subtotal,
     this.taxAmount,
     this.discountAmount,
+    this.posted,
+    this.postedDate,
+    this.picked,
+    this.invoiced,
+    this.orderData,
+    this.statusOrder,
+    this.statusQuote,
   });
 
   @override
@@ -49,11 +63,13 @@ class _QuoteDetailsState extends State<QuoteDetails> {
   dynamic customerState;
   dynamic customerCountry;
   dynamic customerPhone;
+  String? token;
 
   late final SharedPreferences _prefs;
 
   @override
   void initState() {
+    super.initState();
     getStringValuesSF();
   }
 
@@ -68,6 +84,7 @@ class _QuoteDetailsState extends State<QuoteDetails> {
       customerState = _prefs.getString('customerState') ?? "";
       customerCountry = _prefs.getString('customerCountry') ?? "";
       customerPhone = _prefs.getString('customerPhone') ?? "";
+      token = _prefs.getString('token');
     });
     return;
   }
@@ -79,60 +96,6 @@ class _QuoteDetailsState extends State<QuoteDetails> {
       appBar: AppBar(
         title: Center(child: Text('Quote Details')),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        selectedItemColor: Colors.blue[500],
-        unselectedItemColor: Colors.blue[500],
-        selectedFontSize: 18,
-        unselectedFontSize: 18,
-        iconSize: 32,
-        // currentIndex: 1,
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.local_offer_outlined),
-            label: 'Catlog',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.account_circle_sharp),
-            label: 'Profile',
-          ),
-        ],
-        onTap: (int index) {
-          switch (index) {
-            case 0:
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const DashBoard()),
-              );
-              break;
-            default:
-          }
-          switch (index) {
-            case 1:
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => const SelectItemScreen()),
-              );
-              break;
-            default:
-          }
-
-          switch (index) {
-            case 2:
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const profileScreen()),
-              );
-              break;
-            default:
-          }
-        },
-      ),
       body: SingleChildScrollView(
         physics: ScrollPhysics(),
         child: SafeArea(
@@ -142,31 +105,31 @@ class _QuoteDetailsState extends State<QuoteDetails> {
                 leading: Text(
                   'General info',
                   style: TextStyle(
-                    fontSize: 25,
+                    fontSize: 20,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
               ),
               ListTile(
                 leading: Text(
-                  'OrderID ',
+                  'Quote ID ',
                   style: TextStyle(
-                    fontSize: 18,
+                    fontSize: 16,
                   ),
                 ),
                 trailing: Text(
                   '${widget.orderNumber}',
                   style: TextStyle(
-                    fontSize: 18,
+                    fontSize: 16,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
               ),
               ListTile(
                 leading: Text(
-                  'Order date ',
+                  'Quote date ',
                   style: TextStyle(
-                    fontSize: 18,
+                    fontSize: 16,
                   ),
                 ),
                 trailing: Text(
@@ -195,9 +158,9 @@ class _QuoteDetailsState extends State<QuoteDetails> {
                         filled: true,
                         fillColor: Colors.orange[50],
                         border: OutlineInputBorder(),
-                        hintText: 'Order Received',
+                        hintText: '${widget.statusQuote}',
                         hintStyle: TextStyle(
-                          fontSize: 18,
+                          fontSize: 16,
                           fontWeight: FontWeight.bold,
                         ),
                         enabledBorder: OutlineInputBorder(
@@ -212,36 +175,40 @@ class _QuoteDetailsState extends State<QuoteDetails> {
                 height: 30,
               ),
               Container(
+                padding: EdgeInsets.only(left: 10),
                 height: 60,
                 color: Colors.grey[100],
                 child: Row(
                   children: [
                     ElevatedButton(
-                      onPressed: () {},
-                      child: Text('Print Order Details'),
+                      onPressed: () {
+                        final box = context.findRenderObject() as RenderBox?;
+                        QuoteReportApi(box);
+                      },
+                      child: Text('Print Quote Details'),
                     ),
                     SizedBox(
-                      width: 20,
+                      width: 15,
                     ),
-                    InkWell(
-                      child: Text(
-                        'View Status History',
-                        style: TextStyle(
-                          color: Colors.blue[300],
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
+                    SizedBox(
+                      height: 35,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.green),
+                        onPressed: () {
+                          showModalBottomSheet<void>(
+                            context: context,
+                            isScrollControlled: true,
+                            builder: (context) => SizedBox(
+                              height: 400,
+                              child: _popupQuotePopup(widget.orderData!),
+                            ),
+                          );
+                        },
+                        child: Text(
+                          'View Status',
                         ),
                       ),
-                      onTap: () {
-                        showModalBottomSheet<void>(
-                          context: context,
-                          isScrollControlled: true,
-                          builder: (context) => SizedBox(
-                            height: 400,
-                            child: _popupQuotePopup(),
-                          ),
-                        );
-                      },
                     ),
                   ],
                 ),
@@ -250,7 +217,7 @@ class _QuoteDetailsState extends State<QuoteDetails> {
                 leading: Text(
                   'Shipping details',
                   style: TextStyle(
-                    fontSize: 25,
+                    fontSize: 20,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -265,7 +232,7 @@ class _QuoteDetailsState extends State<QuoteDetails> {
                       child: Text(
                         "Name",
                         style: TextStyle(
-                          fontSize: 18,
+                          fontSize: 16,
                         ),
                       ),
                     ),
@@ -275,7 +242,7 @@ class _QuoteDetailsState extends State<QuoteDetails> {
                         child: Text(
                           customerName,
                           style: TextStyle(
-                            fontSize: 18,
+                            fontSize: 16,
                           ),
                           textWidthBasis: TextWidthBasis.longestLine,
                         ),
@@ -288,13 +255,13 @@ class _QuoteDetailsState extends State<QuoteDetails> {
                 leading: Text(
                   'Phone ',
                   style: TextStyle(
-                    fontSize: 18,
+                    fontSize: 16,
                   ),
                 ),
                 trailing: Text(
                   "$customerPhone",
                   style: TextStyle(
-                    fontSize: 18,
+                    fontSize: 16,
                   ),
                 ),
               ),
@@ -308,7 +275,7 @@ class _QuoteDetailsState extends State<QuoteDetails> {
                       child: Text(
                         "Address",
                         style: TextStyle(
-                          fontSize: 18,
+                          fontSize: 16,
                         ),
                       ),
                     ),
@@ -331,7 +298,7 @@ class _QuoteDetailsState extends State<QuoteDetails> {
                           '$customerCountry'
                           '.',
                           style: TextStyle(
-                            fontSize: 18,
+                            fontSize: 16,
                           ),
                           textWidthBasis: TextWidthBasis.longestLine,
                         ),
@@ -340,28 +307,14 @@ class _QuoteDetailsState extends State<QuoteDetails> {
                   ],
                 ),
               ),
-              ListTile(
-                leading: Text(
-                  'Delivery Option',
-                  style: TextStyle(
-                    fontSize: 18,
-                  ),
-                ),
-                trailing: Text(
-                  '',
-                  style: TextStyle(
-                    fontSize: 18,
-                  ),
-                ),
-              ),
               SizedBox(
                 height: 30,
               ),
               ListTile(
                 leading: Text(
-                  'Items In your order',
+                  'Items In your Quote',
                   style: TextStyle(
-                    fontSize: 25,
+                    fontSize: 20,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -371,33 +324,55 @@ class _QuoteDetailsState extends State<QuoteDetails> {
                   shrinkWrap: true,
                   itemCount: widget.orderDetails!.length,
                   itemBuilder: (context, index) {
+                    // ignore: unused_local_variable
+                    String? formattedDate;
                     return Card(
+                      elevation: 2,
                       child: ListTile(
                         leading: CircleAvatar(
                           backgroundColor: Colors.white,
                           child: Image.asset(
-                            'lib/images/newsp.jpg',
+                            'lib/images/cart.jpg',
                           ),
                         ),
-                        title: Text(
-                          widget.orderDetails![index].itemId,
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
+                        title: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(
+                            widget.orderDetails![index].itemId,
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
-                        subtitle: Text(
-                          widget.orderDetails![index].orderQty.toString(),
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
+                        subtitle: Padding(
+                          padding: const EdgeInsets.only(left: 15.0),
+                          child: Text(
+                            widget.orderDetails![index].orderQty.toString(),
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
-                        trailing: Text(
-                          '₦${value.format(widget.orderDetails?[index].total)}',
-                          style: TextStyle(
-                            fontSize: 18,
-                          ),
+                        trailing: Column(
+                          children: [
+                            Text(
+                              formattedDate = DateFormat('yyyy-MM-dd').format(
+                                  widget.orderDetails![index].invoicedDate),
+                              style: TextStyle(
+                                fontSize: 16,
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(
+                                '₦${value.format(widget.orderDetails?[index].total)}',
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     );
@@ -409,7 +384,7 @@ class _QuoteDetailsState extends State<QuoteDetails> {
                 leading: Text(
                   'Payment Info',
                   style: TextStyle(
-                    fontSize: 25,
+                    fontSize: 20,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -418,14 +393,14 @@ class _QuoteDetailsState extends State<QuoteDetails> {
                 leading: Text(
                   'Payment method',
                   style: TextStyle(
-                    fontSize: 18,
+                    fontSize: 16,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 trailing: Text(
                   '${widget.paymentMethodId}',
                   style: TextStyle(
-                    fontSize: 18,
+                    fontSize: 16,
                   ),
                 ),
               ),
@@ -437,28 +412,13 @@ class _QuoteDetailsState extends State<QuoteDetails> {
                 leading: Text(
                   'Subtotal',
                   style: TextStyle(
-                    fontSize: 18,
+                    fontSize: 16,
                   ),
                 ),
                 trailing: Text(
                   '₦${value.format(widget.subtotal)}',
                   style: TextStyle(
-                    fontSize: 18,
-                  ),
-                ),
-              ),
-              ListTile(
-                contentPadding: EdgeInsets.only(left: 30, right: 30),
-                leading: Text(
-                  'Tax',
-                  style: TextStyle(
-                    fontSize: 18,
-                  ),
-                ),
-                trailing: Text(
-                  '₦${value.format(widget.taxAmount)}',
-                  style: TextStyle(
-                    fontSize: 18,
+                    fontSize: 16,
                   ),
                 ),
               ),
@@ -467,11 +427,11 @@ class _QuoteDetailsState extends State<QuoteDetails> {
                 leading: Text(
                   'Discount',
                   style: TextStyle(
-                    fontSize: 18,
+                    fontSize: 16,
                   ),
                 ),
                 trailing: Text(
-                  '₦${value.format(000)}',
+                  '₦${value.format(widget.discountAmount)}',
                   style: TextStyle(
                     fontSize: 18,
                   ),
@@ -482,13 +442,28 @@ class _QuoteDetailsState extends State<QuoteDetails> {
                 leading: Text(
                   'Shipping Fee',
                   style: TextStyle(
-                    fontSize: 18,
+                    fontSize: 16,
                   ),
                 ),
                 trailing: Text(
                   '₦${value.format(000)}',
                   style: TextStyle(
-                    fontSize: 18,
+                    fontSize: 16,
+                  ),
+                ),
+              ),
+              ListTile(
+                contentPadding: EdgeInsets.only(left: 30, right: 30),
+                leading: Text(
+                  'Tax',
+                  style: TextStyle(
+                    fontSize: 16,
+                  ),
+                ),
+                trailing: Text(
+                  '₦${value.format(widget.taxAmount)}',
+                  style: TextStyle(
+                    fontSize: 16,
                   ),
                 ),
               ),
@@ -497,13 +472,13 @@ class _QuoteDetailsState extends State<QuoteDetails> {
                 leading: Text(
                   'Total',
                   style: TextStyle(
-                    fontSize: 18,
+                    fontSize: 16,
                   ),
                 ),
                 trailing: Text(
                   '₦${value.format(widget.total)}',
                   style: TextStyle(
-                    fontSize: 18,
+                    fontSize: 16,
                   ),
                 ),
               ),
@@ -514,117 +489,43 @@ class _QuoteDetailsState extends State<QuoteDetails> {
           ),
         ),
       ),
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: [
-            DrawerHeader(
-              decoration: BoxDecoration(color: Colors.blue),
-              child: Center(
-                child: Text(
-                  'Sales Mobile',
-                  style: TextStyle(fontSize: 30),
-                ),
-              ),
-            ),
-            ListTile(
-              title: Text('DashBoard'),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const DashBoard()),
-                );
-              },
-            ),
-            Divider(
-              color: Colors.black54,
-            ),
-            ListTile(
-              title: Text('Catlog'),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const SelectItemScreen()),
-                );
-              },
-            ),
-            Divider(
-              color: Colors.black54,
-            ),
-            ListTile(
-              title: Text('Profile'),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const profileScreen()),
-                );
-              },
-            ),
-            Divider(
-              color: Colors.black54,
-            ),
-            ListTile(
-              title: Text('Cart'),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const BasketPage()),
-                );
-              },
-            ),
-            Divider(
-              color: Colors.black54,
-            ),
-            ListTile(
-              title: Text('Checkout'),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) =>  Checkout()),
-                );
-              },
-            ),
-            Divider(
-              color: Colors.black54,
-            ),
-            ListTile(
-              title: Text('Order Management'),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const Orders()),
-                );
-              },
-            ),
-            Divider(
-              color: Colors.black54,
-            ),
-            ListTile(
-              title: Text('Return Merchandise'),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const ReturnRMA()),
-                );
-              },
-            ),
-            Divider(
-              color: Colors.black54,
-            ),
-          ],
-        ),
-      ),
     );
   }
 
-  QuotePopup _popupQuotePopup() => QuotePopup();
+  QuotePopup _popupQuotePopup(QuoteOrders orderData) => QuotePopup(
+        orderData: orderData,
+      );
+
+  void QuoteReportApi(RenderBox? box) async {
+    final response = await http.get(
+        Uri.parse(
+            'https://powersoftrd.com/PEMAPI/api/GetOrderReportById/741258?Id=${widget.orderNumber}'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $token',
+        });
+
+    if (response.statusCode == 200) {
+      final result = json.decode(response.body);
+      var orderReport = OrderReport.fromJson(result);
+      orderReport.data!.fileContents;
+      // ignore: unused_local_variable
+      final shareResult = await Share.shareXFiles(
+        [
+          XFile.fromData(
+            Uint8List.fromList(
+                base64.decode(orderReport.data!.fileContents ?? '')),
+            name: 'order-${widget.orderNumber}',
+            mimeType: orderReport.data!.contentType ?? 'application/pdf',
+          ),
+        ],
+        sharePositionOrigin: box!.localToGlobal(Offset.zero) & box.size,
+      );
+
+      // scaffoldMessenger.showSnackBar(getResultSnackBar(shareResult));
+    } else {
+      throw Exception('Failed to load data');
+    }
+  }
 }

@@ -1,24 +1,25 @@
 
+
 // To parse this JSON data, do
 //
-//     final welcome = welcomeFromJson(jsonString);
+//     final customer = customerFromJson(jsonString);
+
+// ignore_for_file: file_names
 
 import 'dart:convert';
 
-// ignore: non_constant_identifier_names
-CustomerModel CustomerModelFromJson(String str) => CustomerModel.fromJson(json.decode(str));
+CustomerInfo customerFromJson(String str) => CustomerInfo.fromJson(json.decode(str));
 
-// ignore: non_constant_identifier_names
-String CustomerModelToJson(CustomerModel data) => json.encode(data.toJson());
+String customerToJson(CustomerInfo data) => json.encode(data.toJson());
 
-class CustomerModel {
+class CustomerInfo {
     String? status;
     String? message;
     dynamic metadata;
-    Datum? data;
-    String? authToken;
+    Info? data;
+    dynamic authToken;
 
-    CustomerModel({
+    CustomerInfo({
         this.status,
         this.message,
         this.metadata,
@@ -26,11 +27,11 @@ class CustomerModel {
         this.authToken,
     });
 
-    factory CustomerModel.fromJson(Map<String, dynamic> json) => CustomerModel(
+    factory CustomerInfo.fromJson(Map<String, dynamic> json) => CustomerInfo(
         status: json["status"],
         message: json["message"],
         metadata: json["metadata"],
-        data: json["data"] == null ? null : Datum.fromJson(json["data"]),
+        data: json["data"] == null ? null : Info.fromJson(json["data"]),
         authToken: json["auth_token"],
     );
 
@@ -43,7 +44,7 @@ class CustomerModel {
     };
 }
 
-class Datum {
+class Info {
     String? companyId;
     String? divisionId;
     String? departmentId;
@@ -82,7 +83,7 @@ class Datum {
     String? priceMatrix;
     DateTime? priceMatrixCurrent;
     dynamic creditRating;
-    dynamic creditLimit;
+   dynamic creditLimit;
     dynamic creditComments;
     dynamic paymentDay;
     dynamic approvalDate;
@@ -112,27 +113,27 @@ class Datum {
     dynamic specialShippingInstructions;
     dynamic routingNotes;
     bool? applyRebate;
-    dynamic rebateAmount;
+   dynamic rebateAmount;
     dynamic rebateGlaccount;
     dynamic rebateAmountNotes;
     bool? applyNewStore;
-    dynamic newStoreDiscount;
+   dynamic newStoreDiscount;
     dynamic newStoreGlaccount;
     dynamic newStoreDiscountNotes;
     bool? applyWarehouse;
-    dynamic warehouseAllowance;
+   dynamic warehouseAllowance;
     dynamic warehouseGlaccount;
     dynamic warehouseAllowanceNotes;
     bool? applyAdvertising;
-    dynamic advertisingDiscount;
+   dynamic advertisingDiscount;
     dynamic advertisingGlaccount;
     dynamic advertisingDiscountNotes;
     bool? applyManualAdvert;
-    dynamic manualAdvertising;
+   dynamic manualAdvertising;
     dynamic manualAdvertisingGlaccount;
     dynamic manualAdvertisingNotes;
     bool? applyTrade;
-    dynamic tradeDiscount;
+   dynamic tradeDiscount;
     dynamic tradeDiscountGlaccount;
     dynamic tradeDiscountNotes;
     dynamic specialTerms;
@@ -170,14 +171,14 @@ class Datum {
     dynamic primaryInterest;
     dynamic lockedBy;
     dynamic lockTs;
-    dynamic accountBalance;
+   dynamic accountBalance;
     dynamic branchCode;
     dynamic knowYourCustomer;
     dynamic smsalert;
     dynamic emailAlert;
     CustomerFinancials? customerFinancials;
 
-    Datum({
+    Info({
         this.companyId,
         this.divisionId,
         this.departmentId,
@@ -312,12 +313,12 @@ class Datum {
         this.customerFinancials,
     });
 
-    factory Datum.fromJson(Map<String, dynamic> json) => Datum(
+    factory Info.fromJson(Map<String, dynamic> json) => Info(
         companyId: json["companyId"],
         divisionId: json["divisionId"],
-        departmentId: json["departmentId"] ?? "",
-        customerId: json["customerId"] ?? "",
-        accountStatus: json["accountStatus"] ?? "",
+        departmentId: json["departmentId"],
+        customerId: json["customerId"],
+        accountStatus: json["accountStatus"],
         customerName: json["customerName"] ?? "",
         customerAddress1: json["customerAddress1"] ?? "",
         customerAddress2: json["customerAddress2"] ?? "",
@@ -325,21 +326,21 @@ class Datum {
         customerCity: json["customerCity"] ?? "",
         customerState: json["customerState"] ?? "",
         customerZip: json["customerZip"] ?? "",
-        customerCountry: json["customerCountry"] ?? "",
-        customerPhone: json["customerPhone"]?? "",
-        customerFax: json["customerFax"],
+        customerCountry: json["customerCountry" ] ?? "",
+        customerPhone: json["customerPhone"] ?? "",
+        customerFax: json["customerFax"] ?? "",
         customerEmail: json["customerEmail"] ?? "",
         customerWebPage: json["customerWebPage"],
-        customerLogin: json["customerLogin"] ?? "",
+        customerLogin: json["customerLogin"],
         customerPasswordDate: json["customerPasswordDate"] == null ? null : DateTime.parse(json["customerPasswordDate"]),
         customerPasswordExpires: json["customerPasswordExpires"],
         customerPasswordExpiresDate: json["customerPasswordExpiresDate"],
         customerFirstName: json["customerFirstName"] ?? "",
-        customerLastName: json["customerLastName"] ?? "",
-        customerSalutation: json["customerSalutation"] ?? "",
+        customerLastName: json["customerLastName"],
+        customerSalutation: json["customerSalutation"],
         attention: json["attention"],
-        customerTypeId: json["customerTypeId"] ?? "",
-        taxIdno: json["taxIdno"] ?? "",
+        customerTypeId: json["customerTypeId"],
+        taxIdno: json["taxIdno"],
         vattaxIdnumber: json["vattaxIdnumber"],
         vatTaxOtherNumber: json["vatTaxOtherNumber"],
         currencyId: json["currencyId"],
@@ -439,7 +440,7 @@ class Datum {
         primaryInterest: json["primaryInterest"],
         lockedBy: json["lockedBy"],
         lockTs: json["lockTs"],
-        accountBalance: json["accountBalance"] ?? 0.0,
+        accountBalance: json["accountBalance"] ?? 0,
         branchCode: json["branchCode"],
         knowYourCustomer: json["knowYourCustomer"],
         smsalert: json["smsalert"],
@@ -588,48 +589,48 @@ class CustomerFinancials {
     String? divisionId;
     String? departmentId;
     String? customerId;
-    dynamic availibleCredit;
-    dynamic lateDays;
-    dynamic averageDaytoPay;
+   dynamic availibleCredit;
+   dynamic lateDays;
+   dynamic averageDaytoPay;
     DateTime? lastPaymentDate;
-    dynamic lastPaymentAmount;
-    dynamic highestCredit;
-    dynamic highestBalance;
-    dynamic promptPerc;
-    dynamic bookedOrders;
-    dynamic advertisingDollars;
-    dynamic totalAr;
-    dynamic currentArbalance;
-    dynamic under30;
-    dynamic over30;
-    dynamic over60;
-    dynamic over90;
-    dynamic over120;
-    dynamic over150;
-    dynamic over180;
-    dynamic salesYtd;
+   dynamic lastPaymentAmount;
+   dynamic highestCredit;
+   dynamic highestBalance;
+   dynamic promptPerc;
+   dynamic bookedOrders;
+   dynamic advertisingDollars;
+   dynamic totalAr;
+   dynamic currentArbalance;
+   dynamic under30;
+   dynamic over30;
+   dynamic over60;
+   dynamic over90;
+   dynamic over120;
+   dynamic over150;
+   dynamic over180;
+   dynamic salesYtd;
     dynamic salesLastYear;
-    dynamic salesLifetime;
+   dynamic salesLifetime;
     DateTime? lastSalesDate;
     dynamic paymentsLastYear;
-    dynamic paymentsLifetime;
-    dynamic paymentsYtd;
-    dynamic writeOffsYtd;
-    dynamic writeOffsLastYear;
-    dynamic writeOffsLifetime;
-    dynamic invoicesYtd;
+   dynamic paymentsLifetime;
+   dynamic paymentsYtd;
+   dynamic writeOffsYtd;
+   dynamic writeOffsLastYear;
+   dynamic writeOffsLifetime;
+   dynamic invoicesYtd;
     dynamic invoicesLastYear;
-    dynamic invoicesLifetime;
-    dynamic creditMemos;
+   dynamic invoicesLifetime;
+   dynamic creditMemos;
     dynamic lastCreditMemoDate;
     dynamic creditMemosYtd;
     dynamic creditMemosLastYear;
     dynamic creditMemosLifetime;
-    dynamic rmas;
+   dynamic rmas;
     DateTime? lastRmadate;
-    dynamic rmasYtd;
+   dynamic rmasYtd;
     dynamic rmasLastYear;
-    dynamic rmasLifetime;
+   dynamic rmasLifetime;
     dynamic lockedBy;
     dynamic lockTs;
     dynamic branchCode;
@@ -743,7 +744,7 @@ class CustomerFinancials {
         "divisionId": divisionId,
         "departmentId": departmentId,
         "customerId": customerId,
-        "availibleCredit": availibleCredit ?? 0.0,
+        "availibleCredit": availibleCredit,
         "lateDays": lateDays,
         "averageDaytoPay": averageDaytoPay,
         "lastPaymentDate": lastPaymentDate?.toIso8601String(),

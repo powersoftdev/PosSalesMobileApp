@@ -21,6 +21,7 @@ class _LoginScreenState extends State<LoginScreen> {
   GlobalKey<FormState> formkey = GlobalKey<FormState>();
   bool _obscureText = true;
   double viewHeight = 0;
+ 
 
   void _toggle() {
     setState(() {
@@ -371,6 +372,7 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           ),
         ],
+        
       ),
     );
   }

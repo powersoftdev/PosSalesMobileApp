@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors, camel_case_types, must_call_super, avoid_unnecessary_containers
+// ignore_for_file: prefer_const_constructors, camel_case_types, must_call_super, avoid_unnecessary_containers, file_names
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:sales_order/Screens/basketPage.dart';
@@ -7,10 +7,10 @@ import 'package:sales_order/Screens/select_item.dart';
 import 'package:sales_order/Store/MyStore.dart';
 import 'package:provider/provider.dart';
 import 'package:sales_order/screens/login_screen.dart';
-import 'package:sales_order/screens/orderDetails.dart';
-import 'package:sales_order/screens/order_listing.dart';
 import 'package:sales_order/screens/passwordReset.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'orders.dart';
+import 'rmePage.dart';
 
 class profileScreen extends StatefulWidget {
   const profileScreen({super.key});
@@ -32,11 +32,13 @@ class _profileScreenState extends State<profileScreen> {
   final customerCountrycontroller = TextEditingController();
   final customerPhonecontroller = TextEditingController();
   final customerTypeIdcontroller = TextEditingController();
+  final availableCreditcontroller = TextEditingController();
 
   dynamic customerName;
   dynamic customerId;
   dynamic customerEmail;
-  double accountBalance = 0;
+  dynamic accountBalance = 0;
+  dynamic availiableCredit = 0;
   dynamic customerAddress1;
   dynamic customerAddress2;
   dynamic customerAddress3;
@@ -46,7 +48,7 @@ class _profileScreenState extends State<profileScreen> {
   dynamic customerPhone;
   dynamic customerTypeId;
 
-  late final SharedPreferences _prefs;
+  late final SharedPreferences prefs;
 
   @override
   void initState() {
@@ -54,20 +56,21 @@ class _profileScreenState extends State<profileScreen> {
   }
 
   getStringValuesSF() async {
-    _prefs = await SharedPreferences.getInstance();
+    prefs = await SharedPreferences.getInstance();
     setState(() {
-      customerName = _prefs.getString('customerName') ?? "";
-      customerId = _prefs.getString('customerId') ?? "";
-      customerEmail = _prefs.getString('customerEmail') ?? "";
-      accountBalance = _prefs.getDouble('accountBalance') ?? 0;
-      customerAddress1 = _prefs.getString('customerAddress1') ?? "";
-      customerAddress2 = _prefs.getString('customerAddress2') ?? "";
-      customerAddress3 = _prefs.getString('customerAddress3') ?? "";
-      customerCity = _prefs.getString('customerCity') ?? "";
-      customerState = _prefs.getString('customerState') ?? "";
-      customerCountry = _prefs.getString('customerCountry') ?? "";
-      customerPhone = _prefs.getString('customerPhone') ?? "";
-      customerTypeId = _prefs.getString('customerTypeId') ?? "";
+      customerName = prefs.getString('customerName') ?? "";
+      customerId = prefs.getString('customerId') ?? "";
+      customerEmail = prefs.getString('customerEmail') ?? "";
+      accountBalance = prefs.getDouble('accountBalance') ?? 0;
+      availiableCredit = prefs.getDouble('availiableCredit') ?? 0;
+      customerAddress1 = prefs.getString('customerAddress1') ?? "";
+      customerAddress2 = prefs.getString('customerAddress2') ?? "";
+      customerAddress3 = prefs.getString('customerAddress3') ?? "";
+      customerCity = prefs.getString('customerCity') ?? "";
+      customerState = prefs.getString('customerState') ?? "";
+      customerCountry = prefs.getString('customerCountry') ?? "";
+      customerPhone = prefs.getString('customerPhone') ?? "";
+      customerTypeId = prefs.getString('customerTypeId') ?? "";
     });
     return;
   }
@@ -79,8 +82,12 @@ class _profileScreenState extends State<profileScreen> {
     var store = Provider.of<MyStore>(context);
     return Scaffold(
       appBar: AppBar(
-        title: Center(
-          child: Text('Profile'),
+        automaticallyImplyLeading: false,
+        title: Padding(
+          padding: const EdgeInsets.only(left: 35.0),
+          child: Center(
+            child: Text('Profile'),
+          ),
         ),
         actions: [
           IconButton(
@@ -102,12 +109,12 @@ class _profileScreenState extends State<profileScreen> {
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
         selectedItemColor: Colors.blue[500],
-        unselectedItemColor: Colors.blue[500],
-        selectedFontSize: 18,
-        unselectedFontSize: 18,
-        iconSize: 32,
+        unselectedItemColor: Colors.blueGrey,
+        currentIndex: 4,
+        selectedFontSize: 14,
+        unselectedFontSize: 14,
+        iconSize: 23,
         // currentIndex: 1,
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
@@ -116,15 +123,19 @@ class _profileScreenState extends State<profileScreen> {
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.local_offer_outlined),
-            label: 'Catlog',
+            label: 'Catalog',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.description),
+            label: 'Order',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.swap_horizontal_circle_outlined),
+            label: "Return",
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.account_circle_sharp),
             label: 'Profile',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.history_outlined),
-            label: 'Order',
           ),
         ],
         onTap: (int index) {
@@ -135,7 +146,6 @@ class _profileScreenState extends State<profileScreen> {
                 MaterialPageRoute(builder: (context) => const DashBoard()),
               );
               break;
-            default:
           }
           switch (index) {
             case 1:
@@ -145,29 +155,34 @@ class _profileScreenState extends State<profileScreen> {
                     builder: (context) => const SelectItemScreen()),
               );
               break;
-            default:
           }
-
           switch (index) {
             case 2:
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const profileScreen()),
+                MaterialPageRoute(builder: (context) => const Orders()),
               );
               break;
-            default:
           }
-
           switch (index) {
             case 3:
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const Orderdetails()),
+                MaterialPageRoute(builder: (context) => const ReturnRMA()),
               );
+              break;
+          }
+          switch (index) {
+            case 4:
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const profileScreen()));
               break;
             default:
           }
         },
+        type: BottomNavigationBarType.fixed,
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -207,9 +222,9 @@ class _profileScreenState extends State<profileScreen> {
                         borderRadius: BorderRadius.circular(20.0),
                       ),
                       backgroundColor: Colors.blue[300],
-                      fixedSize: const Size(
-                        148,
-                        30,
+                      minimumSize: const Size(
+                        140,
+                        37,
                       ),
                     ),
                     onPressed: () {
@@ -236,10 +251,18 @@ class _profileScreenState extends State<profileScreen> {
                       ),
                     ),
                     onPressed: () {
-                      Navigator.push(
-                        context,
+                      showDialog(
+                          context: context,
+                          builder: (context) {
+                            return const Center(
+                                child: CircularProgressIndicator());
+                          });
+
+                      Navigator.of(context).pushAndRemoveUntil(
                         MaterialPageRoute(
-                            builder: (context) => const LoginScreen()),
+                          builder: (BuildContext context) => LoginScreen(),
+                        ),
+                        (Route route) => false,
                       );
                     },
                     child: Text('Sign Out'),
@@ -286,6 +309,62 @@ class _profileScreenState extends State<profileScreen> {
                     ),
                     readOnly: true,
                     controller: customerNamecontroller..text = '$customerName',
+                  ),
+                  SizedBox(
+                    height: 30,
+                  ),
+                  TextFormField(
+                      readOnly: true,
+                      decoration: InputDecoration(
+                        contentPadding: EdgeInsets.only(left: 20),
+                        fillColor: Colors.white,
+                        filled: true,
+                        border: const OutlineInputBorder(),
+                        labelText: 'Customer Type',
+                        enabledBorder: OutlineInputBorder(
+                          borderSide:
+                              BorderSide(width: 2, color: Colors.blueAccent),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                      ),
+                      controller: customerTypeIdcontroller
+                        ..text = '$customerTypeId'),
+                  SizedBox(
+                    height: 30,
+                  ),
+                  TextFormField(
+                    maxLines: null,
+                    readOnly: true,
+                    decoration: InputDecoration(
+                      contentPadding: EdgeInsets.only(left: 20),
+                      fillColor: Colors.white,
+                      filled: true,
+                      border: const OutlineInputBorder(),
+                      labelText: 'Address',
+                      enabledBorder: OutlineInputBorder(
+                        borderSide:
+                            BorderSide(width: 2, color: Colors.blueAccent),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                    ),
+                    controller: customerAddress1controller
+                      ..text = '$customerAddress1'
+                          ','
+                          ' '
+                          '$customerAddress2'
+                          ','
+                          ' '
+                          '$customerAddress3'
+                          '.'
+                          ' '
+                          '$customerCity'
+                          ','
+                          ' '
+                          '$customerState'
+                          ','
+                          ' '
+                          '$customerCountry'
+                          '.',
                   ),
                   SizedBox(
                     height: 30,
@@ -345,7 +424,7 @@ class _profileScreenState extends State<profileScreen> {
                         ),
                       ),
                       controller: accountBalancecontroller
-                        ..text = '₦${value.format(accountBalance)}'),
+                        ..text = '₦${value.format(accountBalance! * -1)}'),
                   const SizedBox(
                     height: 30,
                   ),
@@ -356,51 +435,17 @@ class _profileScreenState extends State<profileScreen> {
                         fillColor: Colors.white,
                         filled: true,
                         border: const OutlineInputBorder(),
-                        labelText: 'Customer Type',
+                        labelText: 'Available Credit',
                         enabledBorder: OutlineInputBorder(
-                          borderSide:
-                              BorderSide(width: 2, color: Colors.blueAccent),
+                          borderSide: const BorderSide(
+                              width: 2, color: Colors.blueAccent),
                           borderRadius: BorderRadius.circular(20),
                         ),
                       ),
-                      controller: customerTypeIdcontroller
-                        ..text = '$customerTypeId'),
-                  SizedBox(
+                      controller: availableCreditcontroller
+                        ..text = '₦${value.format(availiableCredit)}'),
+                  const SizedBox(
                     height: 30,
-                  ),
-                  TextFormField(
-                    maxLines: null,
-                    readOnly: true,
-                    decoration: InputDecoration(
-                      contentPadding: EdgeInsets.only(left: 20),
-                      fillColor: Colors.white,
-                      filled: true,
-                      border: const OutlineInputBorder(),
-                      labelText: 'Address',
-                      enabledBorder: OutlineInputBorder(
-                        borderSide:
-                            BorderSide(width: 2, color: Colors.blueAccent),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                    ),
-                    controller: customerAddress1controller
-                      ..text = '$customerAddress1'
-                          ','
-                          ' '
-                          '$customerAddress2'
-                          ','
-                          ' '
-                          '$customerAddress3'
-                          '.'
-                          ' '
-                          '$customerCity'
-                          ','
-                          ' '
-                          '$customerState'
-                          ','
-                          ' '
-                          '$customerCountry'
-                          '.',
                   ),
                   SizedBox(
                     height: 90,

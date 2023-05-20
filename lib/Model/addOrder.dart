@@ -1,6 +1,4 @@
-// // To parse this JSON data, do
-//
-//     final CreateOrder = welcomeFromJson(jsonString);
+// ignore_for_file: file_names
 
 import 'dart:convert';
 
@@ -205,7 +203,7 @@ class Order {
     final String? orderNumber;
     final String? transactionTypeId;
     final String? orderTypeId;
-    final DateTime? orderDate;
+    final String? orderDate;
     final DateTime? orderDueDate;
     final DateTime? orderShipDate;
     final DateTime? orderCancelDate;
@@ -217,22 +215,22 @@ class Order {
     final String? customerId;
     final String? termsId;
     final String? currencyId;
-    final int? currencyExchangeRate;
-    final double? subtotal;
-    final int? discountPers;
-    final int? discountAmount;
-    final int? taxPercent;
-    final int? taxAmount;
-    final int? taxableSubTotal;
-    final int? freight;
+    final dynamic currencyExchangeRate;
+    final dynamic subtotal;
+    final dynamic discountPers;
+    final dynamic discountAmount;
+    final dynamic taxPercent;
+    final dynamic taxAmount;
+    final dynamic taxableSubTotal;
+    final dynamic freight;
     final bool? taxFreight;
-    final int? handling;
-    final int? advertising;
-    final double? total;
+    final dynamic handling;
+    final dynamic advertising;
+    final dynamic total;
     final dynamic employeeId;
-    final int? commission;
-    final int? commissionableSales;
-    final int? comissionalbleCost;
+    final dynamic commission;
+    final dynamic commissionableSales;
+    final dynamic comissionalbleCost;
     final bool? customerDropShipment;
     final dynamic shipMethodId;
     final String? warehouseId;
@@ -254,7 +252,7 @@ class Order {
     final dynamic glsalesAccount;
     final dynamic glcogaccount;
     final dynamic paymentMethodId;
-    final int? amountPaid;
+    final dynamic amountPaid;
     final dynamic balanceDue;
     final dynamic undistributedAmount;
     final dynamic checkNumber;
@@ -291,7 +289,7 @@ class Order {
     final dynamic headerMemo1;
     final dynamic headerMemo2;
     final dynamic headerMemo3;
-    final dynamic headerMemo4;
+    String? headerMemo4;
     final dynamic headerMemo5;
     final dynamic headerMemo6;
     final dynamic headerMemo7;
@@ -362,7 +360,7 @@ class Order {
         orderNumber: json["orderNumber"],
         transactionTypeId: json["transactionTypeId"],
         orderTypeId: json["orderTypeId"],
-        orderDate: json["orderDate"] == null ? null : DateTime.parse(json["orderDate"]),
+        orderDate: json["orderDate"],
         orderDueDate: json["orderDueDate"] == null ? null : DateTime.parse(json["orderDueDate"]),
         orderShipDate: json["orderShipDate"] == null ? null : DateTime.parse(json["orderShipDate"]),
         orderCancelDate: json["orderCancelDate"] == null ? null : DateTime.parse(json["orderCancelDate"]),
@@ -520,11 +518,11 @@ class Order {
         "orderNumber": orderNumber,
         "transactionTypeId": transactionTypeId,
         "orderTypeId": orderTypeId,
-        "orderDate": orderDate?.toIso8601String(),
-        "orderDueDate": orderDueDate?.toIso8601String(),
-        "orderShipDate": orderShipDate?.toIso8601String(),
-        "orderCancelDate": orderCancelDate?.toIso8601String(),
-        "systemDate": systemDate?.toIso8601String(),
+        "orderDate": orderDate?.toString(),
+        "orderDueDate": orderDueDate?.toString(),
+        "orderShipDate": orderShipDate?.toString(),
+        "orderCancelDate": orderCancelDate?.toString(),
+        "systemDate": systemDate?.toString(),
         "memorize": memorize,
         "purchaseOrderNumber": purchaseOrderNumber,
         "taxExemptId": taxExemptId,
@@ -750,30 +748,30 @@ class OrderDetail {
     final String? divisionId;
     final String? departmentId;
     final String? orderNumber;
-    final int? orderLineNumber;
+    final dynamic orderLineNumber;
     final String? itemId;
     final dynamic itemUpccode;
     final String? warehouseId;
     final dynamic warehouseBinId;
     final dynamic serialNumber;
     final dynamic description;
-    final int? orderQty;
+    final dynamic orderQty;
     final bool? backOrdered;
-    final int? backOrderQyyty;
+    final dynamic backOrderQyyty;
     final String? itemUom;
-    final int? itemWeight;
-    final int? discountPerc;
+    final dynamic itemWeight;
+    final dynamic discountPerc;
     final bool? taxable;
     final dynamic currencyId;
     final dynamic currencyExchangeRate;
-    final int? itemCost;
-    final double? itemUnitPrice;
+    final dynamic itemCost;
+    final dynamic itemUnitPrice;
     final dynamic taxGroupId;
     final dynamic taxAmount;
     final dynamic taxPercent;
-    final double? subTotal;
-    final double? total;
-    final int? totalWeight;
+    final dynamic subTotal;
+    final dynamic total;
+    final dynamic totalWeight;
     final dynamic glsalesAccount;
     final dynamic glcogaccount;
     final String? projectId;
@@ -798,7 +796,7 @@ class OrderDetail {
     final dynamic lockTs;
     final bool? invoiced;
     final DateTime? invoicedDate;
-    final int? invoicedQty;
+    final dynamic invoicedQty;
     final dynamic deliveryNumber;
     final dynamic glanalysisType1;
     final dynamic glanalysisType2;

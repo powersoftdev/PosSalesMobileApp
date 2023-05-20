@@ -1,13 +1,19 @@
+// ignore_for_file: file_names
+
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../Model/rme.dart';
-import 'rmeDetails.dart';
+import 'dashboard.dart';
+import 'orders.dart';
+import 'profileScreen.dart';
+import 'returnRequestDetails.dart';
+import 'rmePage.dart';
+import 'select_item.dart';
 
 class ReturnRequest extends StatefulWidget {
   const ReturnRequest({super.key});
@@ -26,25 +32,28 @@ class _ReturnRequestState extends State<ReturnRequest> {
     super.initState();
   }
 
-  Future<String?> getToken() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    token = prefs.getString('token');
-    return null;
-  }
-
   Future<List<ReturnRme>?> callApi() async {
-    await getToken();
+    _prefs = await SharedPreferences.getInstance();
+    token = _prefs.getString('token');
+    customerId = _prefs.getString('customerId') ?? "";
+
     final response = await http.get(
         Uri.parse(
-            'https://powersoftrd.com/PEMApi/api/GetRmaByCustomerId/741258?CustomerId=COMMPRINT 036'),
+            'https://powersoftrd.com/PEMApi/api/GetRmaByCustomerId/741258?CustomerId=$customerId'),
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
           'Authorization': 'Bearer $token',
         });
-    print('Response status: ${response.statusCode}');
-    print('Response body: ${response.body}');
-    print('token : $token');
+    if (kDebugMode) {
+      print('Response status: ${response.statusCode}');
+    }
+    if (kDebugMode) {
+      print('Response body: ${response.body}');
+    }
+    if (kDebugMode) {
+      print('token : $token');
+    }
 
     if (response.statusCode == 200) {
       final result = json.decode(response.body);
@@ -57,6 +66,7 @@ class _ReturnRequestState extends State<ReturnRequest> {
   }
 
   String? invoiceNumber = '';
+  dynamic trackingNumber = '';
   String? orderTypeId = '';
   String? status = '';
   String? orderNumber = '';
@@ -72,19 +82,6 @@ class _ReturnRequestState extends State<ReturnRequest> {
   String? token;
 
   late final SharedPreferences _prefs;
-
-  getStringValues() async {
-    _prefs = await SharedPreferences.getInstance();
-    setState(() {
-      invoiceNumber = (_prefs.getString('invoiceNumber') ?? "");
-      invoiceDate = (_prefs.getString('invoiceDate') ?? "");
-      total = (_prefs.getDouble('total') ?? 0);
-      orderQty = (_prefs.getDouble('orderQty') ?? 0);
-      invoiceDate = (_prefs.getString('invoiceDate') ?? "");
-      orderNumber = (_prefs.getString('orderNumber') ?? "");
-    });
-    return;
-  }
 
   var value = NumberFormat("#,##0.00");
   // var values = DateFormat("M/d/y,h:mm");
@@ -103,44 +100,103 @@ class _ReturnRequestState extends State<ReturnRequest> {
               padding: const EdgeInsets.all(8),
               itemCount: data.length,
               itemBuilder: (BuildContext context, int index) {
+                var invoiceDate = data[index].invoiceDate;
+                // ignore: unused_local_variable
+                var formattedDate =
+                    DateFormat('yyyy-MM-dd').format(invoiceDate!);
+                getQuote() {
+                  if (data[index].posted == null ||
+                      data[index].posted == false) {
+                    status = 'Submitted';
+                  } else if (data[index].posted == true &&
+                      data[index].posted == true) {
+                    status = 'Completed';
+                  } else {
+                    status = 'Flagged';
+                  }
+                  return status;
+                }
+
                 return SingleChildScrollView(
                   child: SizedBox(
                     height: 100,
                     child: GestureDetector(
                       onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => RmeDetail(
-                            orderNumber: data[index].orderNumber.toString(),
-                            invoiceNumber: data[index].invoiceNumber,
-                            invoiceDate: data[index].invoiceDate,
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ReturnRequestDetails(
+                              orderNumber: data[index].orderNumber.toString(),
+                              invoiceNumber: data[index].invoiceNumber,
+                              trackingNumber: data[index].trackingNumber,
+                              quote: getQuote().toString(),
+                              invoiceDate: formattedDate =
+                                  DateFormat('EEE, MMM dd yyyy')
+                                      .format(invoiceDate),
+                              total: data[index].total,
+                              taxAmount: data[index].taxAmount,
+                              discountAmount: data[index].discountAmount,
+                              subtotal: data[index].subtotal,
+                              rmaDetail: data[index].rmaDetail,
+                              rmaData: data[index],
+                            ),
                           ),
-                        ),
-                      );
+                        );
                       },
                       child: Card(
-                        elevation: 1,
+                        elevation: 4,
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(15)),
                         child: ListTile(
                           contentPadding: const EdgeInsets.only(left: 22),
-                          title: Row(
-                            children: [
-                              Text(
-                                  'RMA: ${data[index].invoiceNumber.toString()} '),
-                            ],
-                          ),
+                          title: Stack(children: [
+                            Positioned.fill(
+                              child: Align(
+                                alignment: Alignment.topCenter,
+                                child: Row(
+                                  children: [
+                                    Text(
+                                      '${getQuote()}',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color: status == 'Completed'
+                                            ? Colors.green
+                                            : status == 'Submitted'
+                                                ? Colors.orange
+                                                : status == 'Flagged'
+                                                    ? Colors.red
+                                                    : Colors.blue,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            Row(
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 30.0),
+                                  child: Text(
+                                      'Return: ${data[index].invoiceNumber.toString()}'),
+                                ),
+                              ],
+                            ),
+                          ]),
                           subtitle:
                               Text('${data[index].rmaDetail!.length} item(s)'),
                           trailing: Column(
                             children: [
-                              Text(
-                                data[index].invoiceDate.toString(),
-                                style: const TextStyle(color: Colors.blue),
+                              Padding(
+                                padding: const EdgeInsets.only(right: 4.0),
+                                child: Text(
+                                  formattedDate = DateFormat('EEE, MMM dd yyyy')
+                                      .format(invoiceDate),
+                                  style:
+                                      const TextStyle(color: Colors.blueGrey),
+                                ),
                               ),
                               Padding(
-                                padding: const EdgeInsets.all(11.0),
+                                padding: const EdgeInsets.all(8.0),
                                 child: Text(
                                   '₦${value.format(data[index].total)}',
                                   style: const TextStyle(
@@ -158,6 +214,82 @@ class _ReturnRequestState extends State<ReturnRequest> {
             );
           }
         },
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        selectedItemColor: Colors.blue[500],
+        unselectedItemColor: Colors.blueGrey,
+        currentIndex: 3,
+        selectedFontSize: 14,
+        unselectedFontSize: 14,
+        iconSize: 23,
+        // currentIndex: 1,
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.local_offer_outlined),
+            label: 'Catalog',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.description),
+            label: 'Order',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.swap_horizontal_circle_outlined),
+            label: "Return",
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.account_circle_sharp),
+            label: 'Profile',
+          ),
+        ],
+        onTap: (int index) {
+          switch (index) {
+            case 0:
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const DashBoard()),
+              );
+              break;
+          }
+          switch (index) {
+            case 1:
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const SelectItemScreen()),
+              );
+              break;
+          }
+          switch (index) {
+            case 2:
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const Orders()),
+              );
+              break;
+          }
+          switch (index) {
+            case 3:
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const ReturnRMA()),
+              );
+              break;
+          }
+          switch (index) {
+            case 4:
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const profileScreen()));
+              break;
+            default:
+          }
+        },
+        type: BottomNavigationBarType.fixed,
       ),
     );
   }

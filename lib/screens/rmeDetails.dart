@@ -1,18 +1,24 @@
+// ignore_for_file: file_names
+
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
 
 import 'dashboard.dart';
+import 'orders.dart';
 import 'profileScreen.dart';
+import 'rmePage.dart';
 import 'select_item.dart';
 
 class RmeDetail extends StatefulWidget {
-
- final String? invoiceNumber;
+  final String? invoiceNumber;
   final String? orderNumber;
-   final DateTime? invoiceDate;
+  final DateTime? invoiceDate;
 
-   const RmeDetail({this.invoiceNumber, this.orderNumber, this.invoiceDate,super.key});
+  const RmeDetail(
+      {this.invoiceNumber,
+      this.orderNumber,
+      this.invoiceDate,
+      super.key,
+      required String quote});
 
   @override
   State<RmeDetail> createState() => _RmeDetailState();
@@ -27,12 +33,11 @@ class _RmeDetailState extends State<RmeDetail> {
         title: const Center(child: Text('Return Merchandise')),
       ),
       bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
         selectedItemColor: Colors.blue[500],
         unselectedItemColor: Colors.blue[500],
-        selectedFontSize: 18,
-        unselectedFontSize: 18,
-        iconSize: 32,
+        selectedFontSize: 14,
+        unselectedFontSize: 14,
+        iconSize: 23,
         // currentIndex: 1,
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
@@ -41,7 +46,15 @@ class _RmeDetailState extends State<RmeDetail> {
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.local_offer_outlined),
-            label: 'Catlog',
+            label: 'Catalog',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.description),
+            label: 'Order',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.swap_horizontal_circle_outlined),
+            label: "Return",
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.account_circle_sharp),
@@ -56,7 +69,6 @@ class _RmeDetailState extends State<RmeDetail> {
                 MaterialPageRoute(builder: (context) => const DashBoard()),
               );
               break;
-            default:
           }
           switch (index) {
             case 1:
@@ -66,21 +78,35 @@ class _RmeDetailState extends State<RmeDetail> {
                     builder: (context) => const SelectItemScreen()),
               );
               break;
-            default:
           }
-
           switch (index) {
             case 2:
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const profileScreen()),
+                MaterialPageRoute(builder: (context) => const Orders()),
               );
+              break;
+          }
+          switch (index) {
+            case 3:
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const ReturnRMA()),
+              );
+              break;
+          }
+          switch (index) {
+            case 4:
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const profileScreen()));
               break;
             default:
           }
         },
+        type: BottomNavigationBarType.fixed,
       ),
-      
       body: SingleChildScrollView(
         physics: const ScrollPhysics(),
         child: SafeArea(
@@ -99,13 +125,13 @@ class _RmeDetailState extends State<RmeDetail> {
                 leading: const Text(
                   'RMA ID:',
                   style: TextStyle(
-                    fontSize: 18,
+                    fontSize: 16,
                   ),
                 ),
                 trailing: Text(
                   '${widget.invoiceNumber}',
                   style: const TextStyle(
-                    fontSize: 18,
+                    fontSize: 16,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -114,7 +140,7 @@ class _RmeDetailState extends State<RmeDetail> {
                 leading: const Text(
                   'RMA Date:',
                   style: TextStyle(
-                    fontSize: 18,
+                    fontSize: 16,
                   ),
                 ),
                 trailing: Padding(
@@ -122,38 +148,38 @@ class _RmeDetailState extends State<RmeDetail> {
                   child: Text(
                     '${widget.invoiceDate}',
                     style: const TextStyle(
-                      fontSize: 18,
+                      fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                 ),
               ),
-               const ListTile(
+              const ListTile(
                 leading: Text(
                   'Original Order ID:',
                   style: TextStyle(
-                    fontSize: 18,
+                    fontSize: 16,
                   ),
                 ),
                 // trailing: Text(
                 //   '${widget.orderNumber}',
                 //   style: const TextStyle(
-                //     fontSize: 18,
+                //     fontSize: 16,
                 //     fontWeight: FontWeight.bold,
                 //   ),
                 // ),
               ),
-               ListTile(
+              ListTile(
                 leading: const Text(
                   'Original Order ID:',
                   style: TextStyle(
-                    fontSize: 18,
+                    fontSize: 16,
                   ),
                 ),
                 trailing: Text(
                   '${widget.orderNumber}',
                   style: const TextStyle(
-                    fontSize: 18,
+                    fontSize: 16,
                     fontWeight: FontWeight.bold,
                   ),
                 ),

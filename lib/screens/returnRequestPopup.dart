@@ -1,21 +1,25 @@
-// ignore_for_file: prefer_const_constructors, must_be_immutable, sized_box_for_whitespace, file_names
+// ignore_for_file: sized_box_for_whitespace, prefer_const_constructors, file_names
 
 import 'package:flutter/material.dart';
 import 'package:timeline_tile/timeline_tile.dart';
-import '../Model/quoteOrder.dart';
 
-class QuotePopup extends StatefulWidget {
-  List? orderDetails;
-  QuoteOrders? orderData;
+import '../Model/rme.dart';
+
+// ignore: must_be_immutable
+class ReturnRequestPopup extends StatefulWidget {
+  bool? posted;
   DateTime? postedDate;
+  ReturnRme? rmaData;
 
-  QuotePopup({super.key, this.orderData});
+  // const ReturnRequestPopup({super.key});
+
+  ReturnRequestPopup({super.key, this.rmaData});
 
   @override
-  State<QuotePopup> createState() => _QuotePopupState();
+  State<ReturnRequestPopup> createState() => _ReturnRequestPopupState();
 }
 
-class _QuotePopupState extends State<QuotePopup> {
+class _ReturnRequestPopupState extends State<ReturnRequestPopup> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -28,13 +32,13 @@ class _QuotePopupState extends State<QuotePopup> {
             TimelineTile(
               axis: TimelineAxis.vertical,
               indicatorStyle: IndicatorStyle(
-                color: Colors.amber,
-                height: 50,
-                width: 50,
-                iconStyle: widget.orderData!.posted ?? false
-                    ? IconStyle(color: Colors.white, iconData: Icons.check)
-                    : IconStyle(color: Colors.white, iconData: Icons.circle),
-              ),
+                  color: Colors.amber,
+                  height: 50,
+                  width: 50,
+                  iconStyle:
+                      IconStyle(color: Colors.white, iconData: Icons.check)
+                  //  IconStyle(color: Colors.white, iconData: Icons.circle),
+                  ),
               isFirst: true,
               afterLineStyle: LineStyle(color: Colors.blue),
               alignment: TimelineAlign.manual,
@@ -51,7 +55,7 @@ class _QuotePopupState extends State<QuotePopup> {
                         Padding(
                           padding: EdgeInsets.only(left: 8, top: 8),
                           child: Text(
-                            'Quote Recieved',
+                            'RMA Submitted',
                             style: TextStyle(
                               color: Colors.blue,
                               fontSize: 22,
@@ -62,7 +66,7 @@ class _QuotePopupState extends State<QuotePopup> {
                         Padding(
                           padding: EdgeInsets.only(left: 8, bottom: 5),
                           child: Text(
-                            '${widget.orderData!.postedDate}',
+                            '${widget.rmaData!.postedDate}',
                             style: TextStyle(
                               color: Colors.black,
                               fontSize: 16,
@@ -81,7 +85,7 @@ class _QuotePopupState extends State<QuotePopup> {
                 color: Colors.green,
                 height: 50,
                 width: 50,
-                iconStyle: widget.orderData!.posted ?? false
+                iconStyle: widget.rmaData!.posted ?? false
                     ? IconStyle(color: Colors.white, iconData: Icons.check)
                     : IconStyle(color: Colors.white, iconData: Icons.circle),
               ),
@@ -101,7 +105,7 @@ class _QuotePopupState extends State<QuotePopup> {
                         Padding(
                           padding: EdgeInsets.only(left: 8, top: 20),
                           child: Text(
-                            'Converted',
+                            'RMA Completed',
                             style: TextStyle(
                               color: Colors.green,
                               fontSize: 22,

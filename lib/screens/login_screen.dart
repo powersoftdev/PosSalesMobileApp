@@ -1,11 +1,14 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, avoid_print, prefer_interpolation_to_compose_strings, use_build_context_synchronously, prefer_typing_uninitialized_variables
 
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
-import 'package:sales_order/Screens/dashboard.dart';
 import '../Model/customer.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:form_field_validator/form_field_validator.dart';
+
+import 'dashboard.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -18,6 +21,7 @@ class _LoginScreenState extends State<LoginScreen> {
   GlobalKey<FormState> formkey = GlobalKey<FormState>();
   bool _obscureText = true;
   double viewHeight = 0;
+ 
 
   void _toggle() {
     setState(() {
@@ -29,7 +33,8 @@ class _LoginScreenState extends State<LoginScreen> {
   final passwordcontroller = TextEditingController();
 
   String? token;
-
+  dynamic availableCredit = 0.0;
+  dynamic accountBalance = 0.0;
   String password = '';
 
   Future<void> callApi() async {
@@ -43,7 +48,7 @@ class _LoginScreenState extends State<LoginScreen> {
         });
 
     var url = Uri.parse(
-        'https://powersoftrd.com/PEMAPI/api/CustomerLoginEmail/741258?Email=' +
+        'https://powersoftrd.com/PEMAPI/api/CustomerLoginEmail/741258?Username=' +
             emailcontroller.text +
             '&Password=' +
             passwordcontroller.text);
@@ -57,20 +62,23 @@ class _LoginScreenState extends State<LoginScreen> {
             CustomerModelToJson(CustomerModel(
                 status: "Failed",
                 message: "Cannot Connect to Internet.",
-                data: [],
+                data: Datum(),
                 authToken: "")),
             408);
       },
     );
-    final CustomerModel responseData = CustomerModelFromJson(response.body);
 
-    if (responseData.status == 'Success') {
+    final Map<String, dynamic> dataCheck = json.decode(response.body);
+
+    if (dataCheck['status'].toString() == "Success") {
+      final CustomerModel responseData = CustomerModelFromJson(response.body);
+
       final SharedPreferences prefs = await SharedPreferences.getInstance();
 
       print('Response status: ${response.statusCode}');
       print('Response body: ${response.body}');
 
-      var customerInformation = responseData.data.first;
+      var customerInformation = responseData.data!;
       var customerName = customerInformation.customerName;
       var customerId = customerInformation.customerId;
       var customerEmail = customerInformation.customerEmail;
@@ -86,49 +94,56 @@ class _LoginScreenState extends State<LoginScreen> {
       var companyId = customerInformation.companyId;
       var departmentId = customerInformation.departmentId;
       var divisionId = customerInformation.divisionId;
+      var availiableCrd = customerInformation.customerFinancials!.availibleCredit;
+
+      double dAvaliableCredit =
+          availiableCrd == null || availiableCrd == 0 || availiableCrd == 0.00
+              ? 0.00
+              : double.parse(availiableCrd.toString());
+
+        double accountBal =
+          accountBalance == null || accountBalance == 0 || accountBalance == 0.00
+              ? 0.00
+              : double.parse(accountBalance.toString());
+
 
       await prefs.setString('customerEmail', emailcontroller.text);
-      await prefs.setString('customerName', customerName);
-      await prefs.setString('customerId', customerId);
-      await prefs.setString('customerEmail', customerEmail);
-      await prefs.setString('customerPhone', customerPhone);
-      await prefs.setInt('accountBalance', accountBalance!);
-      await prefs.setString('customerAddress1', customerAddress1);
-      await prefs.setString('customerAddress2', customerAddress2);
-      await prefs.setString('customerAddress3', customerAddress3);
-      await prefs.setString('customerCity', customerCity);
-      await prefs.setString('customerTypeId', customerTypeId);
-      await prefs.setString('companyId', companyId);
-      await prefs.setString('divisionId', divisionId);
-      await prefs.setString('departmentId', departmentId);
-      await prefs.setString('customerCountry', customerCountry);
-      await prefs.setString('customerState', customerState);
-      await prefs.setString('token', responseData.authToken);
+      await prefs.setString('customerName', customerName!);
+      await prefs.setString('customerId', customerId!);
+      await prefs.setDouble('availiableCredit', dAvaliableCredit);
+      await prefs.setString('customerEmail', customerEmail!);
+      await prefs.setString('customerPhone', customerPhone!);
+      await prefs.setDouble('accountBalance', accountBal);
+      await prefs.setString('customerAddress1', customerAddress1!);
+      await prefs.setString('customerAddress2', customerAddress2!);
+      await prefs.setString('customerAddress3', customerAddress3!);
+      await prefs.setString('customerCity', customerCity!);
+      await prefs.setString('customerTypeId', customerTypeId!);
+      await prefs.setString('companyId', companyId!);
+      await prefs.setString('divisionId', divisionId!);
+      await prefs.setString('departmentId', departmentId!);
+      await prefs.setString('customerCountry', customerCountry!);
+      await prefs.setString('customerState', customerState!);
+      await prefs.setString('token', responseData.authToken!);
       String? tokenFromSP = prefs.getString('token');
 
       print(customerTypeId);
       print(customerPhone);
-      print('responseData.authToken: ' + responseData.authToken);
+      print('responseData.authToken: ' + responseData.authToken.toString());
       print('token from sp: ' + tokenFromSP!);
 
       Navigator.of(context)
           .push(MaterialPageRoute(builder: (context) => DashBoard()));
-    } else if (responseData.status == 'Failed') {
+    } else {
       showDialog(
           context: context,
           builder: (context) {
             return AlertDialog(
-              content: Text(responseData.message),
+              content: Text(dataCheck['message'].toString()),
             );
           });
     }
   }
-
-  // @override
-  // void initState() {
-  //   callApi();
-  //   super.initState();
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -159,14 +174,27 @@ class _LoginScreenState extends State<LoginScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         // mainAxisSize: MainAxisSize.min,
         children: [
+           Padding(
+             padding: const EdgeInsets.only(top: 40.0),
+             child: Row(
+                   children: [
+                     Image.asset('lib/images/sales4.gif',
+                     fit: BoxFit.cover,
+                     ),
+                   ],
+                 ),
+           ),
           SizedBox(
+            
             height: 180,
             child: Container(
+              
               height: 180.0,
               width: double.infinity,
               color: Colors.white,
               padding: EdgeInsets.only(top: 5.0, left: 20.0),
               child: Row(
+                
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -177,6 +205,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       color: Colors.blue.shade700,
                     ),
                   ),
+               
                   SizedBox(
                     width: 20,
                   ),
@@ -261,8 +290,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                   ),
                                   validator: MultiValidator(
                                     [
-                                      EmailValidator(
-                                          errorText: 'Not a valid Email'),
+                                      // EmailValidator(
+                                      //     errorText: 'Not a valid Email'),
                                       RequiredValidator(errorText: 'Required'),
                                     ],
                                   ),
@@ -343,6 +372,7 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           ),
         ],
+        
       ),
     );
   }

@@ -1,17 +1,17 @@
 // To parse this JSON data, do
 //
-//     final ItemModel = ItemModelFromJson(jsonString);
+//     final SearchItem = SearchItemFromJson(jsonString);
+
+// ignore_for_file: non_constant_identifier_names, file_names
 
 import 'dart:convert';
 
-class ItemModel {
-    String? status;
-    String? message;
-    dynamic metadata;
-    List<Datum>? data;
-    dynamic authToken;
+SearchItem SearchItemFromJson(String str) => SearchItem.fromJson(json.decode(str));
 
-    ItemModel({
+String SearchItemToJson(SearchItem data) => json.encode(data.toJson());
+
+class SearchItem {
+    SearchItem({
         this.status,
         this.message,
         this.metadata,
@@ -19,11 +19,13 @@ class ItemModel {
         this.authToken,
     });
 
-    factory ItemModel.fromRawJson(String str) => ItemModel.fromJson(json.decode(str));
+    final String? status;
+    final String? message;
+    final dynamic metadata;
+    final List<Datum>? data;
+    final dynamic authToken;
 
-    String toRawJson() => json.encode(toJson());
-
-    factory ItemModel.fromJson(Map<String, dynamic> json) => ItemModel(
+    factory SearchItem.fromJson(Map<String, dynamic> json) => SearchItem(
         status: json["status"],
         message: json["message"],
         metadata: json["metadata"],
@@ -41,117 +43,6 @@ class ItemModel {
 }
 
 class Datum {
-    String? companyId;
-    String? divisionId;
-    String? departmentId;
-    String? itemId;
-    bool? isActive;
-    String? itemTypeId;
-    String? itemName;
-    String? itemDescription;
-    String? itemLongDescription;
-    String? itemCategoryId;
-    String? itemFamilyId;
-    dynamic salesDescription;
-    dynamic purchaseDescription;
-    dynamic pictureUrl;
-    dynamic largePictureUrl;
-    int? itemWeight;
-    int? itemWeightMetric;
-    int? itemShipWeight;
-    String? itemUpccode;
-    dynamic itemEpccode;
-    dynamic itemRfid;
-    dynamic itemSize;
-    dynamic itemSizeCmm;
-    dynamic itemDimentions;
-    dynamic itemDimentionsCmm;
-    dynamic itemColor;
-    dynamic itemNrfcolor;
-    dynamic itemStyle;
-    dynamic itemNrfstyle;
-    dynamic itemCareInstructions;
-    dynamic itemDefaultWarehouse;
-    dynamic itemDefaultWarehouseBin;
-    dynamic itemLocationX;
-    dynamic itemLocationY;
-    dynamic itemLocationZ;
-    dynamic downloadLocation;
-    dynamic downloadPassword;
-    String? itemUom;
-    String? glitemSalesAccount;
-    String? glitemCogsaccount;
-    String? glitemInventoryAccount;
-    dynamic packId;
-    dynamic currencyId;
-    dynamic currencyExchangeRate;
-    double? price;
-    String? itemPricingCode;
-    dynamic pricingMethods;
-    bool? taxable;
-    dynamic vendorId;
-    dynamic leadTime;
-    dynamic leadTimeUnit;
-    int? reOrderLevel;
-    int? reOrderQty;
-    dynamic buildTime;
-    dynamic buildTimeUnit;
-    dynamic useageRate;
-    dynamic useageRateUnit;
-    dynamic salesForecast;
-    dynamic salesForecastUnit;
-    dynamic calculatedCover;
-    dynamic calculatedCoverUnits;
-    bool? isAssembly;
-    dynamic itemAssembly;
-    double? lifo;
-    double? lifovalue;
-    double? lifocost;
-    double? average;
-    double? averageValue;
-    double? averageCost;
-    double? fifo;
-    double? fifovalue;
-    double? fifocost;
-    double? expected;
-    dynamic expectedValue;
-    dynamic expectedCost;
-    dynamic landed;
-    dynamic landedValue;
-    dynamic landedCost;
-    double? other;
-    dynamic otherValue;
-    dynamic otherCost;
-    bool? commissionable;
-    int? commissionType;
-    int? commissionPerc;
-    bool? approved;
-    dynamic approvedBy;
-    dynamic approvedDate;
-    String? enteredBy;
-    String? taxGroupId;
-    dynamic taxPercent;
-    dynamic lockedBy;
-    dynamic lockTs;
-    bool? isSerialLotItem;
-    bool? isWarrantyItem;
-    dynamic warrantyPeriod;
-    dynamic minimumQty;
-    DateTime? lastEditDate;
-    DateTime? creationDate;
-    dynamic glitemFreightAccount;
-    dynamic glitemHandlingAccount;
-    bool? allowPurchaseTrans;
-    bool? allowSalesTrans;
-    bool? allowInventoryTrans;
-    dynamic toleranceLevel;
-    dynamic branchCode;
-    dynamic enforceQualityAssuranceOnPo;
-    bool? isPack;
-    bool? allowPack;
-    dynamic minimumQtyForPacking;
-    dynamic projectId;
-
     Datum({
         this.companyId,
         this.divisionId,
@@ -265,9 +156,116 @@ class Datum {
         this.projectId,
     });
 
-    factory Datum.fromRawJson(String str) => Datum.fromJson(json.decode(str));
-
-    String toRawJson() => json.encode(toJson());
+    final String? companyId;
+    final String? divisionId;
+    final String? departmentId;
+    final String? itemId;
+    final bool? isActive;
+    final String? itemTypeId;
+    final String? itemName;
+    final String? itemDescription;
+    final String? itemLongDescription;
+    final String? itemCategoryId;
+    final String? itemFamilyId;
+    final dynamic salesDescription;
+    final dynamic purchaseDescription;
+    final dynamic pictureUrl;
+    final dynamic largePictureUrl;
+    final int? itemWeight;
+    final int? itemWeightMetric;
+    final int? itemShipWeight;
+    final String? itemUpccode;
+    final dynamic itemEpccode;
+    final dynamic itemRfid;
+    final dynamic itemSize;
+    final dynamic itemSizeCmm;
+    final dynamic itemDimentions;
+    final dynamic itemDimentionsCmm;
+    final dynamic itemColor;
+    final dynamic itemNrfcolor;
+    final dynamic itemStyle;
+    final dynamic itemNrfstyle;
+    final dynamic itemCareInstructions;
+    final dynamic itemDefaultWarehouse;
+    final dynamic itemDefaultWarehouseBin;
+    final dynamic itemLocationX;
+    final dynamic itemLocationY;
+    final dynamic itemLocationZ;
+    final dynamic downloadLocation;
+    final dynamic downloadPassword;
+    final String? itemUom;
+    final String? glitemSalesAccount;
+    final String? glitemCogsaccount;
+    final String? glitemInventoryAccount;
+    final dynamic packId;
+    final dynamic currencyId;
+    final dynamic currencyExchangeRate;
+    final int? price;
+    final String? itemPricingCode;
+    final dynamic pricingMethods;
+    final bool? taxable;
+    final dynamic vendorId;
+    final dynamic leadTime;
+    final dynamic leadTimeUnit;
+    final int? reOrderLevel;
+    final int? reOrderQty;
+    final dynamic buildTime;
+    final dynamic buildTimeUnit;
+    final dynamic useageRate;
+    final dynamic useageRateUnit;
+    final dynamic salesForecast;
+    final dynamic salesForecastUnit;
+    final dynamic calculatedCover;
+    final dynamic calculatedCoverUnits;
+    final bool? isAssembly;
+    final dynamic itemAssembly;
+    final int? lifo;
+    final int? lifovalue;
+    final int? lifocost;
+    final int? average;
+    final double? averageValue;
+    final double? averageCost;
+    final int? fifo;
+    final int? fifovalue;
+    final int? fifocost;
+    final int? expected;
+    final dynamic expectedValue;
+    final dynamic expectedCost;
+    final dynamic landed;
+    final dynamic landedValue;
+    final dynamic landedCost;
+    final int? other;
+    final dynamic otherValue;
+    final dynamic otherCost;
+    final bool? commissionable;
+    final int? commissionType;
+    final int? commissionPerc;
+    final bool? approved;
+    final dynamic approvedBy;
+    final dynamic approvedDate;
+    final String? enteredBy;
+    final String? taxGroupId;
+    final dynamic taxPercent;
+    final dynamic lockedBy;
+    final dynamic lockTs;
+    final bool? isSerialLotItem;
+    final bool? isWarrantyItem;
+    final dynamic warrantyPeriod;
+    final dynamic minimumQty;
+    final DateTime? lastEditDate;
+    final DateTime? creationDate;
+    final dynamic glitemFreightAccount;
+    final dynamic glitemHandlingAccount;
+    final bool? allowPurchaseTrans;
+    final bool? allowSalesTrans;
+    final bool? allowInventoryTrans;
+    final dynamic toleranceLevel;
+    final dynamic branchCode;
+    final dynamic enforceQualityAssuranceOnPo;
+    final bool? isPack;
+    final bool? allowPack;
+    final dynamic minimumQtyForPacking;
+    final dynamic projectId;
 
     factory Datum.fromJson(Map<String, dynamic> json) => Datum(
         companyId: json["companyId"],
@@ -337,8 +335,8 @@ class Datum {
         lifovalue: json["lifovalue"],
         lifocost: json["lifocost"],
         average: json["average"],
-        averageValue: json["averageValue"],
-        averageCost: json["averageCost"],
+        averageValue: json["averageValue"]?.toDouble(),
+        averageCost: json["averageCost"]?.toDouble(),
         fifo: json["fifo"],
         fifovalue: json["fifovalue"],
         fifocost: json["fifocost"],

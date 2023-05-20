@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors, non_constant_identifier_names
+// ignore_for_file: prefer_const_constructors, non_constant_identifier_names, unnecessary_new, prefer_typing_uninitialized_variables, body_might_complete_normally_nullable, use_build_context_synchronously
 
 import 'dart:convert';
 import 'package:flutter/material.dart';
@@ -6,7 +6,6 @@ import 'package:provider/provider.dart';
 import 'package:sales_order/Model/products.dart';
 
 import 'package:sales_order/Screens/ProductDetailPage.dart';
-import 'package:sales_order/Screens/login_screen.dart';
 import 'package:http/http.dart' as http;
 import 'package:sales_order/screens/profileScreen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -16,6 +15,7 @@ import '../Screens/basketPage.dart';
 import '../Screens/dashboard.dart';
 import '../Model/item.dart';
 import 'orders.dart';
+import 'rmePage.dart';
 
 class SelectItemScreen extends StatefulWidget {
   const SelectItemScreen({super.key});
@@ -35,8 +35,9 @@ class _SelectItemScreenState extends State<SelectItemScreen> {
   late String pictureurl;
   late String itemFamilyId;
   String? token;
+  dynamic customerId;
 
-  Future<List<Datum>> productListAPIResult =
+  Future<List<Datum>?> productListAPIResult =
       Future.value(List<Datum>.from([Datum()]));
 
   @override
@@ -49,21 +50,19 @@ class _SelectItemScreenState extends State<SelectItemScreen> {
   Future<String?> getToken() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     token = prefs.getString('token');
+    customerId = prefs.getString('customerId') ?? "";
   }
 
-  Future<List<Datum>> callApi() async {
+  Future<List<Datum>?> callApi() async {
     await getToken();
     final response = await http.get(
         Uri.parse(
-            'https://powersoftrd.com/PEMAPI/api/GetInventoryCatalog/741258'),
+            'https://powersoftrd.com/PEMAPI/api/GetSalesItemsByCustomerId/741258?CustomerId=$customerId'),
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
           'Authorization': 'Bearer $token',
         });
-    print('Response status: ${response.statusCode}');
-    print('Response body: ${response.body}');
-    print('token : ${token}');
 
     if (response.statusCode == 200) {
       final result = json.decode(response.body);
@@ -83,13 +82,17 @@ class _SelectItemScreenState extends State<SelectItemScreen> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: Center(
-          child: Text('Catlog'),
+          child: Padding(
+            padding: const EdgeInsets.only(left: 35),
+            child: Text('Catalog'),
+          ),
         ),
         bottom: PreferredSize(
           preferredSize: Size.fromHeight(50),
           child: Container(
-            padding: EdgeInsets.only(left: 15),
+            padding: EdgeInsets.only(left: 25),
             height: 50,
             decoration: BoxDecoration(
               color: Colors.blue[50],
@@ -115,6 +118,8 @@ class _SelectItemScreenState extends State<SelectItemScreen> {
                   icon: Icon(Icons.clear),
                   onPressed: () {
                     txtQuery.clear();
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => SelectItemScreen()));
                     // search(txtQuery.text);
                   },
                 ),
@@ -143,11 +148,12 @@ class _SelectItemScreenState extends State<SelectItemScreen> {
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
+        currentIndex: 1,
         selectedItemColor: Colors.blue[500],
-        unselectedItemColor: Colors.blue[500],
-        selectedFontSize: 18,
-        unselectedFontSize: 18,
-        iconSize: 32,
+        unselectedItemColor: Colors.blueGrey,
+        selectedFontSize: 14,
+        unselectedFontSize: 14,
+        iconSize: 23,
         // currentIndex: 1,
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
@@ -156,11 +162,15 @@ class _SelectItemScreenState extends State<SelectItemScreen> {
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.local_offer_outlined),
-            label: 'Catlog',
+            label: 'Catalog',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.history_outlined),
+            icon: Icon(Icons.description),
             label: 'Order',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.swap_horizontal_circle_outlined),
+            label: "Return",
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.account_circle_sharp),
@@ -175,7 +185,6 @@ class _SelectItemScreenState extends State<SelectItemScreen> {
                 MaterialPageRoute(builder: (context) => const DashBoard()),
               );
               break;
-            default:
           }
           switch (index) {
             case 1:
@@ -185,9 +194,7 @@ class _SelectItemScreenState extends State<SelectItemScreen> {
                     builder: (context) => const SelectItemScreen()),
               );
               break;
-            default:
           }
-
           switch (index) {
             case 2:
               Navigator.push(
@@ -195,11 +202,17 @@ class _SelectItemScreenState extends State<SelectItemScreen> {
                 MaterialPageRoute(builder: (context) => const Orders()),
               );
               break;
-            default:
           }
-
           switch (index) {
             case 3:
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const ReturnRMA()),
+              );
+              break;
+          }
+          switch (index) {
+            case 4:
               Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -210,7 +223,7 @@ class _SelectItemScreenState extends State<SelectItemScreen> {
         },
         type: BottomNavigationBarType.fixed,
       ),
-      body: FutureBuilder<List<Datum>>(
+      body: FutureBuilder<List<Datum>?>(
         future: productListAPIResult,
         builder: (context, snapshot) {
           var data = snapshot.data;
@@ -223,20 +236,23 @@ class _SelectItemScreenState extends State<SelectItemScreen> {
                     leading: CircleAvatar(
                       backgroundColor: Colors.white,
                       child: Image.asset(
-                        'lib/images/newsp.jpg',
+                        'lib/images/cart.jpg',
                       ),
                     ),
-                    title: Text(data[index].ItemName.toString()),
-                    subtitle: Text(data[index].ItemFamilyId.toString()),
-                    trailing: Text('₦ ${data[index].price.toString()}'),
+                    title: Text(data[index].itemName.toString()),
+                    subtitle: Text(data[index].itemFamilyId.toString()),
+                    trailing: Padding(
+                      padding: const EdgeInsets.only(top: 20.0),
+                      child: Text('₦ ${data[index].price.toString()}'),
+                    ),
                     onTap: () {
                       // set the item as the activeProduct
                       store.setActiveProduct(
                         Product(
-                            id: data[index].ItemId,
-                            name: data[index].ItemName,
+                            id: data[index].itemId,
+                            name: data[index].itemName,
                             price: data[index].price,
-                            qty: _getQty(data[index].ItemId, store).toInt(),
+                            qty: _getQty(data[index].itemId, store).toInt(),
                             // qty: store.activeProduct!.qty ?? 1,
                             totalPrice: 0),
                       );
@@ -246,7 +262,7 @@ class _SelectItemScreenState extends State<SelectItemScreen> {
                         isScrollControlled: true,
                         // ignore: sized_box_for_whitespace
                         builder: (context) => Container(
-                          height: 500,
+                          height: 560,
                           child: _popupProductDetails(),
                         ),
                       );
@@ -278,7 +294,12 @@ class _SelectItemScreenState extends State<SelectItemScreen> {
     return 0; // if basket is empty return 0
   }
 
-  Future<List<Datum>> SearchApi(String searchParam) async {
+  Future<List<Datum>?> SearchApi(String searchParam) async {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return Center(child: CircularProgressIndicator());
+        });
     final response = await http.get(
         Uri.parse(
             'https://powersoftrd.com/PEMAPI/api/GetInventoryItemByName/741258?itemName=$searchParam'),
@@ -286,6 +307,7 @@ class _SelectItemScreenState extends State<SelectItemScreen> {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
         });
+    Navigator.of(context).pop();
 
     if (response.statusCode == 200) {
       final result = json.decode(response.body);

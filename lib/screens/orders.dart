@@ -28,7 +28,9 @@ class _OrdersState extends State<Orders> {
   @override
   Widget build(BuildContext context) {
     var store = Provider.of<MyStore>(context);
+    
     return DefaultTabController(
+      
       length: 2,
       child: Scaffold(
         appBar: AppBar(

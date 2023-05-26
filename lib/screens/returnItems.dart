@@ -34,6 +34,7 @@ class _ReturnItemsState extends State<ReturnItems> {
   final reasoncontroller = TextEditingController();
 
   String reason = '';
+ 
 
   var value = NumberFormat('#,##0.00');
   final List<Product> _itemsToReturn = [];
@@ -317,6 +318,7 @@ class _ReturnItemsState extends State<ReturnItems> {
                                   controller: TextEditingController()
                                     ..text =
                                         _itemsToReturn[index].qty.toString(),
+                                   readOnly: true, 
                                 ),
                               ),
                               IconButton(

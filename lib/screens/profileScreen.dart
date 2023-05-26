@@ -251,6 +251,15 @@ class _profileScreenState extends State<profileScreen> {
                       ),
                     ),
                     onPressed: () {
+                      void clearCat() {
+                        setState(
+                          () {
+                            store.baskets.clear();
+                          },
+                        );
+                      }
+
+                      clearCat();
                       showDialog(
                           context: context,
                           builder: (context) {

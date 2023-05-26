@@ -31,11 +31,12 @@ class _OrderdetailsState extends State<Orderdetails> {
     super.initState();
   }
 
-  late final SharedPreferences _prefs;
+  late final SharedPreferences prefss;
   Future<List<Datum>?> callApi() async {
-    _prefs = await SharedPreferences.getInstance();
-    token = _prefs.getString('token');
-    customerId = _prefs.getString('customerId') ?? "";
+    prefss = await SharedPreferences.getInstance();
+    token = prefss.getString('token');
+    customerId = prefss.getString('customerId') ?? "";
+     
 
     final response = await http.get(
         Uri.parse(

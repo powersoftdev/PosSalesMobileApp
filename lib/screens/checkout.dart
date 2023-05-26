@@ -11,6 +11,7 @@ import 'package:provider/provider.dart';
 import 'package:sales_order/Store/MyStore.dart';
 import 'package:sales_order/screens/basketPage.dart';
 import 'package:sales_order/screens/paystackwebview.dart';
+
 import 'package:sales_order/screens/size_config.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../Model/addOrder.dart';
@@ -103,8 +104,10 @@ class _CheckoutState extends State<Checkout> {
   dynamic subTotal = 0;
   String companyId = '';
   String? transactionTypeId = '';
+  String? paymentMethodId = '';
   String customerName = '';
   String divisionId = '';
+  String? token;
   String departmentId = '';
   dynamic accountBalance = 0;
   dynamic availiableCredit = 0;
@@ -130,9 +133,8 @@ class _CheckoutState extends State<Checkout> {
       taxAmount = prefs.getDouble('taxAmount');
       discountAmount = prefs.getInt('ddiscountAmount') ?? 0;
       total = prefs.getDouble('total');
+      token = prefs.getString('token');
       amountToPay = prefs.getDouble('amountToPay');
-
-      String? tokenFromSP = prefs.getString('token');
     });
     return;
   }
@@ -182,6 +184,7 @@ class _CheckoutState extends State<Checkout> {
       orderDate: truncatedDate,
       total: total,
       subtotal: subTotal,
+      paymentMethodId: paymentMethodId,
       customerId: customerId,
       orderDetail: orderDetails,
     ).toJson();
@@ -229,6 +232,15 @@ class _CheckoutState extends State<Checkout> {
 
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const BasketPage()),
+            );
+          },
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.add_shopping_cart_rounded),
@@ -628,7 +640,11 @@ class _CheckoutState extends State<Checkout> {
                               groupValue: _value,
                               onChanged: (PaymentOption? val) {
                                 setState(() {
-                                  _value = val!;
+                                 if (amountToPay == 0) {
+                                   null;
+                                 } else {
+                                    _value = val!;
+                                 }
                                 });
                               },
                             ),
@@ -661,14 +677,6 @@ class _CheckoutState extends State<Checkout> {
                         color: Colors.white,
                       ),
                       onPress: () {
-                        void clearCat() {
-                          setState(
-                            () {
-                              store.baskets.clear();
-                            },
-                          );
-                        }
-
                         var basket = getBasketItm(store);
                         if (PaymentOption.payOffline == _value) {
                           if (store.baskets.isEmpty) {
@@ -685,8 +693,8 @@ class _CheckoutState extends State<Checkout> {
                           } else {
                             var amount = amountToPay;
                             var quote = getQuoteCreated(store);
-                            createQuote(quote);
-                            clearCat();
+                            createQuote(quote)
+                                .then((value) => {clearCat(store)});
                           }
                         } else if (store.baskets.isEmpty) {
                           var powersoftdemos = const SnackBar(
@@ -699,45 +707,25 @@ class _CheckoutState extends State<Checkout> {
                           );
                           ScaffoldMessenger.of(context)
                               .showSnackBar(powersoftdemos);
-                          // } else if (availiableCredit >
-                          //    subTotal) {
-                          //   var amount = amountToPay;
-                          //   Map<String, dynamic> orderCrd =
-                          //       getOrderCreated(store);
-                          //   createAvailiableCrdOrder(orderCrd);
-                          //   Navigator.push(
-                          //       context,
-                          //       MaterialPageRoute(
-                          //         builder: (context) => const Orders(),
-                          //       ));
-                          //   clearCat();
-                          // } else if (subTotal >
-                          //     availiableCredit) {
-                          //   Map<String, dynamic> order = getOrderCreated(store);
-                          //   var amount = amountToPay;
-                          //   createPaystackData(order).then((value) => {
-                          //         reference = value.reference.toString(),
-                          //         Navigator.push(
-                          //           context,
-                          //           MaterialPageRoute(
-                          //             builder: (context) =>
-                          //                 WebViewPayment(data: value),
-                          //           ),
-                          //         ).then(
-                          //             (value) => {createOrder(reference, order)})
-                          //       });
                         } else {
                           Map<String, dynamic> order = getOrderCreated(store);
                           createPaystackData(order).then((value) => {
                                 reference = value!.reference.toString(),
                                 if (reference == "")
                                   {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => const Orders(),
-                                      ),
-                                    )
+                                    createAvailiableCrdOrder(order)
+                                        .then((value) => {
+                                              clearCat(store),
+                                              callApi().then((value) => {
+                                                    Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            const Orders(),
+                                                      ),
+                                                    )
+                                                  }),
+                                            })   
                                   }
                                 else
                                   {
@@ -747,12 +735,14 @@ class _CheckoutState extends State<Checkout> {
                                         builder: (context) =>
                                             WebViewPayment(data: value),
                                       ),
-                                    ).then((value) =>
-                                        {createOrder(reference, order)})
-                                  }
+                                    ).then((value) => {
+                                          createOrder(reference, order).then(
+                                            (value) => clearCat(store),
+                                          )
+                                        })
+                                  },
                               });
                         }
-                        clearCat();
                       },
                       gradient: const LinearGradient(
                         colors: [Colors.blueGrey, Colors.blue],
@@ -782,29 +772,20 @@ class _CheckoutState extends State<Checkout> {
     //     });
 
     var url = Uri.parse(
-        'http://powersoftrd.com/PemApi/api/GetCustomerById/741258?id=$customerId');
+        'https://powersoftrd.com/PEMApi/api/GetCustomerById/741258?id=$customerId');
     var response = await http.get(url, headers: {
       "Access-Control-Allow-Origin": "*",
-    }).timeout(
-      const Duration(seconds: 15),
-      onTimeout: () {
-        Navigator.of(context).pop();
-        return http.Response(
-            customerToJson(CustomerInfo(
-                status: "Failed",
-                message: "Cannot Connect to Internet.",
-                data: Info(),
-                authToken: "")),
-            408);
-      },
-    );
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'Authorization': 'Bearer $token',
+    });
 
     final Map<String, dynamic> dataCheck = json.decode(response.body);
 
     if (dataCheck['status'].toString() == "Success") {
       final CustomerInfo responseData = customerFromJson(response.body);
 
-      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      final SharedPreferences prefss = await SharedPreferences.getInstance();
 
       var customerInformation = responseData.data!;
       var customerName = customerInformation.customerName;
@@ -830,29 +811,30 @@ class _CheckoutState extends State<Checkout> {
               ? 0.00
               : double.parse(availiableCrd.toString());
 
+      double accountBal = accountBalance == null ||
+              accountBalance == 0 ||
+              accountBalance == 0.00
+          ? 0.00
+          : double.parse(accountBalance.toString());
 
-   double accountBal =
-          accountBalance == null || accountBalance == 0 || accountBalance == 0.00
-              ? 0.00
-              : double.parse(accountBalance.toString());
-
-      await prefs.setString('customerEmail', emailcontroller.text);
-      await prefs.setString('customerName', customerName!);
-      await prefs.setString('customerId', customerId!);
-      await prefs.setDouble('availiableCredit', availiableCrd!);
-      await prefs.setString('customerEmail', customerEmail!);
-      await prefs.setString('customerPhone', customerPhone!);
-      await prefs.setDouble('accountBalance', accountBal);
-      await prefs.setString('customerAddress1', customerAddress1!);
-      await prefs.setString('customerAddress2', customerAddress2!);
-      await prefs.setString('customerAddress3', customerAddress3!);
-      await prefs.setString('customerCity', customerCity!);
-      await prefs.setString('customerTypeId', customerTypeId!);
-      await prefs.setString('companyId', companyId!);
-      await prefs.setString('divisionId', divisionId!);
-      await prefs.setString('departmentId', departmentId!);
-      await prefs.setString('customerCountry', customerCountry!);
-      await prefs.setString('customerState', customerState!);
+      await prefss.setString('customerEmail', emailcontroller.text);
+      await prefss.setString('customerName', customerName!);
+      await prefss.setString('customerId', customerId!);
+      await prefss.setDouble('availiableCredit', availiableCrd!);
+      await prefss.setString('customerEmail', customerEmail!);
+      await prefss.setString('customerPhone', customerPhone!);
+      await prefss.setDouble('accountBalance', accountBal);
+      await prefss.setString('customerAddress1', customerAddress1!);
+      await prefss.setString('customerAddress2', customerAddress2!);
+      await prefss.setString('customerAddress3', customerAddress3!);
+      await prefss.setString('customerCity', customerCity!);
+      await prefss.setString('customerTypeId', customerTypeId!);
+      await prefss.setString('companyId', companyId!);
+      await prefss.setString('divisionId', divisionId!);
+      await prefss.setString('departmentId', departmentId!);
+      await prefss.setString('customerCountry', customerCountry!);
+      await prefss.setString('customerState', customerState!);
+      String? tokenFromSP = prefss.getString('token');
     } else {
       // ignore: use_build_context_synchronously
       showDialog(
@@ -874,6 +856,7 @@ class _CheckoutState extends State<Checkout> {
             'https://powersoftrd.com/PEMApi/api/AddOrders/741258?reference=$reference'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
+          'Authorization': 'Bearer $token',
         },
         body: orderEncode);
     final Map<String, dynamic> orderCheck = json.decode(response.body);
@@ -928,6 +911,7 @@ class _CheckoutState extends State<Checkout> {
             'https://powersoftrd.com/PEMApi/api/AddQuotes/741258?'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
+          'Authorization': 'Bearer $token',
         },
         body: quoteEncode);
     final Map<String, dynamic> quoteCheck = json.decode(response.body);
@@ -981,6 +965,7 @@ class _CheckoutState extends State<Checkout> {
             'https://powersoftrd.com/PEMApi/api/AddOrders/741258?'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
+          'Authorization': 'Bearer $token',
         },
         body: orderEncode);
 
@@ -1013,7 +998,7 @@ class _CheckoutState extends State<Checkout> {
 
       // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(powersoftdeimo);
-      callApi();
+
       var orderCrt = orders.data;
 
       return orderCrt;
@@ -1034,6 +1019,7 @@ class _CheckoutState extends State<Checkout> {
     // Making an HTTP POST request to the specified URL
     SharedPreferences prefs = await SharedPreferences.getInstance();
     customerEmail = prefs.getString('customerEmail') ?? "";
+    token = prefs.getString('token');
 
     // token = prefs.getString('auth_token');
 
@@ -1042,6 +1028,7 @@ class _CheckoutState extends State<Checkout> {
             'https://powersoftrd.com/PEMApi/api/PaymentInitialization/741258?email=$customerEmail&amount=$amountToPay'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
+          'Authorization': 'Bearer $token',
         },
         body: jsonEncode(order));
 
@@ -1056,17 +1043,25 @@ class _CheckoutState extends State<Checkout> {
       var result2 = Payment.fromJson(result);
       // if (result2.data != null) {
       var paystack = result2.data;
-      if (result2.data!.reference == null || result2.data!.reference == "") {
-        createAvailiableCrdOrder(order).then(
-          (value) => Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const Orders()),
-          ),
-        );
-      }
+      // if (result2.data!.reference == null || result2.data!.reference == "") {
+      //   createAvailiableCrdOrder(order).then(
+      //     (value) => Navigator.push(
+      //       context,
+      //       MaterialPageRoute(builder: (context) => const Orders()),
+      //     ),
+      //   );
+      // }
       return paystack;
     } else {
       throw Exception('Payment not Successful.');
     }
+  }
+
+  void clearCat(MyStore store) {
+    setState(
+      () {
+        store.baskets.clear();
+      },
+    );
   }
 }

@@ -29,14 +29,7 @@ class _ProductDetailpageState extends State<ProductDetailpage> {
   String itemName = "";
   //late final SharedPreferences _prefs;
 
-  computeAvCrd(availableCredit) {
-    if (availableCredit == 0) {
-      availableCredit = 0.0;
-    } else {
-      availableCredit = availableCredit;
-    }
-    return availableCredit;
-  }
+  
 
   @override
   void dispose() {
@@ -51,17 +44,9 @@ class _ProductDetailpageState extends State<ProductDetailpage> {
     super.initState();
   }
 
-  // getStringValuesSF() async {
-  //   _prefs = await SharedPreferences.getInstance();
-  //   setState(() {
-  //     itemName = _prefs.getString('itemName') ?? "";
-  //   });
-
-  //   return itemName;
-  // }
-
   String pickeddate = "";
   String? customerId = "";
+  String? token;
   dynamic customerEmail;
   dynamic availableCredit;
 
@@ -73,6 +58,7 @@ class _ProductDetailpageState extends State<ProductDetailpage> {
       customerEmail = prefs.getString('customerEmail') ?? "";
       customerId = prefs.getString('customerId') ?? "";
       availableCredit = prefs.getDouble('availableCredit');
+      token = prefs.getString('token');
     });
     return;
   }
@@ -351,7 +337,7 @@ class _ProductDetailpageState extends State<ProductDetailpage> {
                     ),
                   ),
                   onPressed: () {
-                    if (_qtyCtrl.text == "") {
+                    if (_qtyCtrl.text == "" && qtyStr == "0") {
                       showDialog(
                         context: context,
                         builder: (context) {
@@ -434,6 +420,7 @@ class _ProductDetailpageState extends State<ProductDetailpage> {
               "Access-Control-Allow-Origin": "*",
               'Content-Type': 'application/json',
               'Accept': 'application/json',
+               'Authorization': 'Bearer $token',
             },
             body: orderEncode)
         .timeout(
@@ -490,6 +477,8 @@ class _ProductDetailpageState extends State<ProductDetailpage> {
       await prefs.setInt('subTotal', subTotal!);
       await prefs.setDouble('taxAmount', taxAmount!);
       await prefs.setDouble('total', total!);
+     // ignore: unused_local_variable
+     String? tokenFromSP = prefs.getString('token');
       // ignore: use_build_context_synchronously
       Navigator.push(
         context,

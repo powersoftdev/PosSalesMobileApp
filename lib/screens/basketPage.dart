@@ -32,6 +32,7 @@ class _BasketPageState extends State<BasketPage> {
   var orderDate = DateTime.now();
   var truncatedDate = DateFormat('yyy-MM-dd');
   String pickeddate = "";
+   String? token;
   String? customerId = "";
   dynamic customerEmail;
   dynamic availableCredit;
@@ -53,6 +54,8 @@ class _BasketPageState extends State<BasketPage> {
       customerEmail = prefs.getString('customerEmail') ?? "";
       customerId = prefs.getString('customerId') ?? "";
       availableCredit = prefs.getDouble('availableCredit');
+      token = prefs.getString('token');
+     
     });
     return;
   }
@@ -114,6 +117,15 @@ class _BasketPageState extends State<BasketPage> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const SelectItemScreen()),
+            );
+          },
+        ),
         title: Center(child: Text('Cart')),
         actions: [
           IconButton(
@@ -319,6 +331,7 @@ class _BasketPageState extends State<BasketPage> {
               "Access-Control-Allow-Origin": "*",
               'Content-Type': 'application/json',
               'Accept': 'application/json',
+              'Authorization': 'Bearer $token',
             },
             body: orderEncode)
         .timeout(
@@ -374,6 +387,8 @@ class _BasketPageState extends State<BasketPage> {
       await prefs.setInt('subTotal', subTotal!);
       await prefs.setDouble('taxAmount', taxAmount!);
       await prefs.setDouble('total', total!);
+      // ignore: unused_local_variable
+      String? tokenFromSP = prefs.getString('token');
       // ignore: use_build_context_synchronously
       Navigator.push(
         context,

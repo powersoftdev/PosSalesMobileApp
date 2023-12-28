@@ -29,8 +29,6 @@ class _ProductDetailpageState extends State<ProductDetailpage> {
   String itemName = "";
   //late final SharedPreferences _prefs;
 
-  
-
   @override
   void dispose() {
     _date.dispose();
@@ -320,46 +318,46 @@ class _ProductDetailpageState extends State<ProductDetailpage> {
                               builder: (context) => BasketPage()));
                     }
                   },
-                  child: Text('Go To Cart'),
-                ),
-                SizedBox(
-                  height: 10,
-                ),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20.0),
-                    ),
-                    backgroundColor: Colors.blue[300],
-                    fixedSize: const Size(
-                      350,
-                      45,
-                    ),
-                  ),
-                  onPressed: () {
-                    if (_qtyCtrl.text == "" && qtyStr == "0") {
-                      showDialog(
-                        context: context,
-                        builder: (context) {
-                          return AlertDialog(
-                            title: const Text(
-                                'Add at least 1 item before placing an order'),
-                            actions: <Widget>[
-                              TextButton(
-                                child: const Text('Ok'),
-                                onPressed: () {
-                                  Navigator.pop(context);
-                                },
-                              ),
-                            ],
-                          );
-                        },
-                      );
-                    } else {
-                      Map<String, dynamic> orderCrd = getOrderCreated(store);
-                      computeOrder(orderCrd);
-                    }
-                  },
+                  //   child: Text('Go To Cart'),
+                  // ),
+                  // SizedBox(
+                  //   height: 10,
+                  // ),
+                  // ElevatedButton(
+                  //   style: ElevatedButton.styleFrom(
+                  //     shape: RoundedRectangleBorder(
+                  //       borderRadius: BorderRadius.circular(20.0),
+                  //     ),
+                  //     backgroundColor: Colors.blue[300],
+                  //     fixedSize: const Size(
+                  //       350,
+                  //       45,
+                  //     ),
+                  //   ),
+                  //   onPressed: () {
+                  //     if (_qtyCtrl.text == "" && qtyStr == "0") {
+                  //       showDialog(
+                  //         context: context,
+                  //         builder: (context) {
+                  //           return AlertDialog(
+                  //             title: const Text(
+                  //                 'Add at least 1 item before placing an order'),
+                  //             actions: <Widget>[
+                  //               TextButton(
+                  //                 child: const Text('Ok'),
+                  //                 onPressed: () {
+                  //                   Navigator.pop(context);
+                  //                 },
+                  //               ),
+                  //             ],
+                  //           );
+                  //         },
+                  //       );
+                  //     } else {
+                  //       Map<String, dynamic> orderCrd = getOrderCreated(store);
+                  //       computeOrder(orderCrd);
+                  //     }
+                  //   },
                   child: Text('Place Order'),
                 ),
                 SizedBox(
@@ -370,7 +368,7 @@ class _ProductDetailpageState extends State<ProductDetailpage> {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20.0),
                     ),
-                    backgroundColor: Colors.red[300],
+                    backgroundColor: Colors.green[300],
                     fixedSize: const Size(
                       350,
                       45,
@@ -420,7 +418,7 @@ class _ProductDetailpageState extends State<ProductDetailpage> {
               "Access-Control-Allow-Origin": "*",
               'Content-Type': 'application/json',
               'Accept': 'application/json',
-               'Authorization': 'Bearer $token',
+              'Authorization': 'Bearer $token',
             },
             body: orderEncode)
         .timeout(
@@ -463,9 +461,6 @@ class _ProductDetailpageState extends State<ProductDetailpage> {
               ? 0.00
               : double.parse(availiableCrd.toString());
 
-
-              
-
       await prefs.setString('departmentId', departmentId!);
       await prefs.setString('customerId', customerId!);
       await prefs.setDouble('availiableCredit', dAvaliableCredit);
@@ -477,8 +472,8 @@ class _ProductDetailpageState extends State<ProductDetailpage> {
       await prefs.setInt('subTotal', subTotal!);
       await prefs.setDouble('taxAmount', taxAmount!);
       await prefs.setDouble('total', total!);
-     // ignore: unused_local_variable
-     String? tokenFromSP = prefs.getString('token');
+      // ignore: unused_local_variable
+      String? tokenFromSP = prefs.getString('token');
       // ignore: use_build_context_synchronously
       Navigator.push(
         context,

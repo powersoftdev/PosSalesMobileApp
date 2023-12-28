@@ -2,6 +2,7 @@
 
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:sales_order/Model/products.dart';
 
@@ -10,19 +11,24 @@ import 'package:http/http.dart' as http;
 import 'package:sales_order/screens/profileScreen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../Store/MyStore.dart';
-
-import '../Screens/basketPage.dart';
 import '../Screens/dashboard.dart';
 import '../Model/item.dart';
-import 'orders.dart';
-import 'rmePage.dart';
+// import 'orders.dart';
+// import 'rmePage.dart';
+// import 'package:pdf/pdf.dart';
+// import 'package:pdf/widgets.dart' as pw;
+// import 'package:printing/printing.dart';
 
 class SelectItemScreen extends StatefulWidget {
   const SelectItemScreen({super.key});
 
   @override
   State<SelectItemScreen> createState() => _SelectItemScreenState();
+
+
 }
+
+
 
 class _SelectItemScreenState extends State<SelectItemScreen> {
   // ignore: prefer_final_fields
@@ -36,6 +42,21 @@ class _SelectItemScreenState extends State<SelectItemScreen> {
   late String itemFamilyId;
   String? token;
   dynamic customerId;
+  dynamic total = 0;
+
+  late final SharedPreferences prefs;
+
+  getStringValuesAddress() async {
+    prefs = await SharedPreferences.getInstance();
+    setState(() {
+      customerId = prefs.getString('customerId');
+      total = prefs.getDouble('total');
+      token = prefs.getString('token');
+    });
+    return;
+  }
+
+  var value = NumberFormat('#,##0.00');
 
   Future<List<Datum>?> productListAPIResult =
       Future.value(List<Datum>.from([Datum()]));
@@ -43,9 +64,9 @@ class _SelectItemScreenState extends State<SelectItemScreen> {
   @override
   void initState() {
     productListAPIResult = callApi();
-
     super.initState();
   }
+
 
   Future<String?> getToken() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -129,15 +150,17 @@ class _SelectItemScreenState extends State<SelectItemScreen> {
           ),
         ),
         actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 200),
+            child: Text(
+              'Total: ₦ ${value.format(store.getTotalAmount())}',
+              style: TextStyle(fontSize: 40),
+            ),
+          ),
           IconButton(
-            icon: Icon(Icons.shopping_cart),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => BasketPage()),
-              );
-            },
-            iconSize: 40,
+            icon: Icon(Icons.print),
+            onPressed: () {},
+            iconSize: 50,
           ),
           Text(
             store.getBasketQty().toString(),
@@ -160,18 +183,18 @@ class _SelectItemScreenState extends State<SelectItemScreen> {
             icon: Icon(Icons.home),
             label: 'Home',
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.local_offer_outlined),
-            label: 'Catalog',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.description),
-            label: 'Order',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.swap_horizontal_circle_outlined),
-            label: "Return",
-          ),
+          // BottomNavigationBarItem(
+          //   icon: Icon(Icons.local_offer_outlined),
+          //   label: 'Catalog',
+          // ),
+          // BottomNavigationBarItem(
+          //   icon: Icon(Icons.description),
+          //   label: 'Order',
+          // ),
+          // BottomNavigationBarItem(
+          //   icon: Icon(Icons.swap_horizontal_circle_outlined),
+          //   label: "Return",
+          // ),
           BottomNavigationBarItem(
             icon: Icon(Icons.account_circle_sharp),
             label: 'Profile',
@@ -186,31 +209,31 @@ class _SelectItemScreenState extends State<SelectItemScreen> {
               );
               break;
           }
-          switch (index) {
-            case 1:
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => const SelectItemScreen()),
-              );
-              break;
-          }
-          switch (index) {
-            case 2:
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const Orders()),
-              );
-              break;
-          }
-          switch (index) {
-            case 3:
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const ReturnRMA()),
-              );
-              break;
-          }
+          // switch (index) {
+          //   case 1:
+          //     Navigator.push(
+          //       context,
+          //       MaterialPageRoute(
+          //           builder: (context) => const SelectItemScreen()),
+          //     );
+          //     break;
+          // }
+          // switch (index) {
+          //   case 2:
+          //     Navigator.push(
+          //       context,
+          //       MaterialPageRoute(builder: (context) => const Orders()),
+          //     );
+          //     break;
+          // }
+          // switch (index) {
+          //   case 3:
+          //     Navigator.push(
+          //       context,
+          //       MaterialPageRoute(builder: (context) => const ReturnRMA()),
+          //     );
+          //     break;
+          // }
           switch (index) {
             case 4:
               Navigator.push(
@@ -223,58 +246,183 @@ class _SelectItemScreenState extends State<SelectItemScreen> {
         },
         type: BottomNavigationBarType.fixed,
       ),
-      body: FutureBuilder<List<Datum>?>(
-        future: productListAPIResult,
-        builder: (context, snapshot) {
-          var data = snapshot.data;
-          if (snapshot.hasData) {
-            return ListView.builder(
-              itemCount: data!.length,
-              itemBuilder: (context, index) {
-                return Card(
-                  child: ListTile(
-                    leading: CircleAvatar(
-                      backgroundColor: Colors.white,
-                      child: Image.asset(
-                        'lib/images/cart.jpg',
-                      ),
-                    ),
-                    title: Text(data[index].itemName.toString()),
-                    subtitle: Text(data[index].itemFamilyId.toString()),
-                    trailing: Padding(
-                      padding: const EdgeInsets.only(top: 20.0),
-                      child: Text('₦ ${data[index].price.toString()}'),
-                    ),
-                    onTap: () {
-                      // set the item as the activeProduct
-                      store.setActiveProduct(
-                        Product(
-                            id: data[index].itemId,
-                            name: data[index].itemName,
-                            price: data[index].price,
-                            qty: _getQty(data[index].itemId, store).toInt(),
-                            // qty: store.activeProduct!.qty ?? 1,
-                            totalPrice: 0),
-                      );
-                      //move to productDetail page
-                      showModalBottomSheet<void>(
-                        context: context,
-                        isScrollControlled: true,
-                        // ignore: sized_box_for_whitespace
-                        builder: (context) => Container(
-                          height: 560,
-                          child: _popupProductDetails(),
+      body: Row(
+        children: [
+          Container(
+            width: MediaQuery.of(context).size.width / 2,
+            color: Colors.blue[200],
+            child: FutureBuilder<List<Datum>?>(
+              future: productListAPIResult,
+              builder: (context, snapshot) {
+                var data = snapshot.data;
+                if (snapshot.hasData) {
+                  return ListView.builder(
+                    itemCount: data!.length,
+                    itemBuilder: (context, index) {
+                      return Card(
+                        child: ListTile(
+                          leading: CircleAvatar(
+                            backgroundColor: Colors.white,
+                            child: Image.asset(
+                              'lib/images/cart.jpg',
+                            ),
+                          ),
+                          title: Text(data[index].itemName.toString()),
+                          subtitle: Text(data[index].itemFamilyId.toString()),
+                          trailing: Padding(
+                            padding: const EdgeInsets.only(top: 20.0),
+                            child: Text('₦ ${data[index].price.toString()}'),
+                          ),
+                          onTap: () {
+                            // set the item as the activeProduct
+                            store.setActiveProduct(
+                              Product(
+                                  id: data[index].itemId,
+                                  name: data[index].itemName,
+                                  price: data[index].price,
+                                  qty: _getQty(data[index].itemId, store)
+                                      .toInt(),
+                                  // qty: store.activeProduct!.qty ?? 1,
+                                  totalPrice: 0),
+                            );
+                            //move to productDetail page
+                            showModalBottomSheet<void>(
+                              context: context,
+                              isScrollControlled: true,
+                              // ignore: sized_box_for_whitespace
+                              builder: (context) => Container(
+                                height: 450,
+                                child: _popupProductDetails(),
+                              ),
+                            );
+                          },
                         ),
                       );
                     },
+                  );
+                } else {
+                  return Center(child: CircularProgressIndicator());
+                }
+              },
+            ),
+          ),
+          Container(
+            width: MediaQuery.of(context).size.width / 2,
+            color: Colors.blue[100],
+            child: ListView.builder(
+              itemCount: store.baskets.length,
+              itemBuilder: (context, i) {
+                var shippingDate = store.baskets[i].shipDate ?? DateTime.now();
+                // ignore: unused_local_variable
+                var formattedDate =
+                    DateFormat('yyy-MM-dd').format(shippingDate);
+                return Card(
+                  child: Column(
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(
+                            flex: 2,
+                            child: Image.asset(
+                              'lib/images/cart.jpg',
+                              width: 60,
+                              height: 40,
+                              fit: BoxFit.contain,
+                            ),
+                          ),
+                          Expanded(
+                            flex: 2,
+                            child: Text(
+                              store.baskets[i].name!,
+                              style: TextStyle(
+                                fontSize: 20,
+                              ),
+                            ),
+                          ),
+                          IconButton(
+                            onPressed: () {
+                              setState(
+                                () {
+                                  store.baskets.removeAt(i);
+                                },
+                              );
+                            },
+                            icon: Icon(Icons.close),
+                          ),
+                        ],
+                      ),
+                      // ignore: sized_box_for_whitespace
+                      Container(
+                        height: 30,
+                        child: Text(
+                            "Shipping Date :  ${formattedDate = DateFormat('yyy-MM-dd').format(shippingDate)}"),
+                      ),
+                      Container(
+                        height: 30,
+                        padding: EdgeInsets.only(left: 40),
+                        child: Row(
+                          children: [
+                            IconButton(
+                              onPressed: () {
+                                store.removeOneItemFromBasket(store.baskets[i]);
+                              },
+                              icon: Icon(Icons.remove),
+                              iconSize: 30,
+                              color: Colors.redAccent,
+                            ),
+                            SizedBox(width: 10),
+                            // ignore: sized_box_for_whitespace
+                            Container(
+                              height: 20,
+                              width: 50,
+                              child: TextFormField(
+                                controller: TextEditingController()
+                                  ..text = store.baskets[i].qty.toString()
+                                  ..selection = TextSelection.collapsed(
+                                      offset: store.baskets[i].qty
+                                          .toString()
+                                          .length),
+                                onChanged: (text) {
+                                  store.increaseItemQuantity(
+                                      (int.tryParse(text) ?? 0),
+                                      store.baskets[i]);
+                                },
+                                decoration: InputDecoration(
+                                  border: InputBorder.none,
+                                ),
+                              ),
+                            ),
+
+                            IconButton(
+                              onPressed: () {
+                                store.addOneItemToBasket(store.baskets[i]);
+                              },
+                              icon: Icon(Icons.add),
+                              iconSize: 30,
+                              color: Colors.greenAccent,
+                            ),
+                            SizedBox(
+                              width: 20,
+                            ),
+                            // ignore: avoid_unnecessary_containers
+                            Container(
+                              child: Text(
+                                ('₦${value.format(store.baskets[i].totalPrice)}'),
+                                style: TextStyle(
+                                  fontSize: 20,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
                 );
               },
-            );
-          } else {
-            return Center(child: CircularProgressIndicator());
-          }
-        },
+            ),
+          )
+        ],
       ),
     );
   }
@@ -306,6 +454,7 @@ class _SelectItemScreenState extends State<SelectItemScreen> {
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
+          'Authorization': 'Bearer $token',
         });
     Navigator.of(context).pop();
 

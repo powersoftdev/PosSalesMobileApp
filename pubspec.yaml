@@ -53,6 +53,9 @@ dependencies:
   timeline_tile: ^2.0.0
   share_plus: ^6.3.4
   cross_file: ^0.3.3+4
+  timer_count_down: ^2.2.0
+  printing: ^5.11.1
+  flutter_otp_text_field: ^1.1.1
   
     # git:
     #   url: https://github.com/definitelyme/flutter_paystack.git

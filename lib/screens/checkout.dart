@@ -303,11 +303,11 @@ class _CheckoutState extends State<Checkout> {
                             ),
                           ),
                         ),
-                        Padding(
-                          padding: const EdgeInsets.only(right: 290, top: 20),
+                        const Padding(
+                          padding: EdgeInsets.only(right: 290, top: 20),
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.start,
-                            children: const [
+                            children: [
                               Text('Ship to'),
                             ],
                           ),
@@ -401,9 +401,9 @@ class _CheckoutState extends State<Checkout> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                             ListTile(
-                              title: Column(
+                              title: const Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
-                                children: const [
+                                children: [
                                   Text(
                                     'Subtotal:',
                                     style: TextStyle(
@@ -429,9 +429,9 @@ class _CheckoutState extends State<Checkout> {
                               dense: false,
                             ),
                             ListTile(
-                              title: Column(
+                              title: const Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
-                                children: const [
+                                children: [
                                   Text(
                                     'Discount:',
                                     style: TextStyle(
@@ -456,9 +456,9 @@ class _CheckoutState extends State<Checkout> {
                               dense: false,
                             ),
                             ListTile(
-                              title: Column(
+                              title: const Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
-                                children: const [
+                                children: [
                                   Text(
                                     'Shipping Cost:',
                                     style: TextStyle(
@@ -484,9 +484,9 @@ class _CheckoutState extends State<Checkout> {
                               dense: false,
                             ),
                             ListTile(
-                              title: Column(
+                              title: const Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
-                                children: const [
+                                children: [
                                   Text(
                                     'Tax:',
                                     style: TextStyle(
@@ -514,9 +514,9 @@ class _CheckoutState extends State<Checkout> {
                               dense: false,
                             ),
                             ListTile(
-                              title: Column(
+                              title: const Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
-                                children: const [
+                                children: [
                                   Text(
                                     'Total:',
                                     style: TextStyle(
@@ -541,9 +541,9 @@ class _CheckoutState extends State<Checkout> {
                               dense: false,
                             ),
                             ListTile(
-                              title: Column(
+                              title: const Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
-                                children: const [
+                                children: [
                                   Text(
                                     'Available Credit:',
                                     style: TextStyle(
@@ -570,9 +570,9 @@ class _CheckoutState extends State<Checkout> {
                               dense: false,
                             ),
                             ListTile(
-                              title: Column(
+                              title: const Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
-                                children: const [
+                                children: [
                                   Text(
                                     'Amount To Pay:',
                                     style: TextStyle(
@@ -640,11 +640,11 @@ class _CheckoutState extends State<Checkout> {
                               groupValue: _value,
                               onChanged: (PaymentOption? val) {
                                 setState(() {
-                                 if (amountToPay == 0) {
-                                   null;
-                                 } else {
+                                  if (amountToPay == 0) {
+                                    null;
+                                  } else {
                                     _value = val!;
-                                 }
+                                  }
                                 });
                               },
                             ),
@@ -677,6 +677,12 @@ class _CheckoutState extends State<Checkout> {
                         color: Colors.white,
                       ),
                       onPress: () {
+                        showDialog(
+                            context: context,
+                            builder: (context) {
+                              return const Center(
+                                  child: CircularProgressIndicator());
+                            });
                         var basket = getBasketItm(store);
                         if (PaymentOption.payOffline == _value) {
                           if (store.baskets.isEmpty) {
@@ -725,7 +731,7 @@ class _CheckoutState extends State<Checkout> {
                                                       ),
                                                     )
                                                   }),
-                                            })   
+                                            })
                                   }
                                 else
                                   {
@@ -867,9 +873,9 @@ class _CheckoutState extends State<Checkout> {
       // ignore: use_build_context_synchronously
       Navigator.of(context)
           .push(MaterialPageRoute(builder: (context) => const Orders()));
-      var powersoftdeimo = SnackBar(
+      var powersoftdeimo = const SnackBar(
         content: Row(
-          children: const [
+          children: [
             Icon(
               Icons.check_circle_rounded,
               color: Colors.lightGreenAccent,
@@ -878,9 +884,9 @@ class _CheckoutState extends State<Checkout> {
           ],
         ),
         backgroundColor: Colors.green,
-        duration: const Duration(seconds: 5),
+        duration: Duration(seconds: 5),
         behavior: SnackBarBehavior.floating,
-        margin: const EdgeInsets.all(5),
+        margin: EdgeInsets.all(5),
       );
       // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(powersoftdeimo);
@@ -922,9 +928,9 @@ class _CheckoutState extends State<Checkout> {
       // ignore: use_build_context_synchronously
       Navigator.of(context)
           .push(MaterialPageRoute(builder: (context) => const Orders()));
-      var powersoftdeimo = SnackBar(
+      var powersoftdeimo = const SnackBar(
         content: Row(
-          children: const [
+          children: [
             Icon(
               Icons.check_circle_rounded,
               color: Colors.lightGreenAccent,
@@ -933,9 +939,9 @@ class _CheckoutState extends State<Checkout> {
           ],
         ),
         backgroundColor: Colors.green,
-        duration: const Duration(seconds: 5),
+        duration: Duration(seconds: 5),
         behavior: SnackBarBehavior.floating,
-        margin: const EdgeInsets.all(5),
+        margin: EdgeInsets.all(5),
       );
       // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(powersoftdeimo);
@@ -980,9 +986,9 @@ class _CheckoutState extends State<Checkout> {
 
       var orders = CreateOrder.fromJson(order);
 
-      var powersoftdeimo = SnackBar(
+      var powersoftdeimo = const SnackBar(
         content: Row(
-          children: const [
+          children: [
             Icon(
               Icons.check_circle_rounded,
               color: Colors.lightGreenAccent,
@@ -991,9 +997,9 @@ class _CheckoutState extends State<Checkout> {
           ],
         ),
         backgroundColor: Colors.green,
-        duration: const Duration(seconds: 5),
+        duration: Duration(seconds: 5),
         behavior: SnackBarBehavior.floating,
-        margin: const EdgeInsets.all(5),
+        margin: EdgeInsets.all(5),
       );
 
       // ignore: use_build_context_synchronously

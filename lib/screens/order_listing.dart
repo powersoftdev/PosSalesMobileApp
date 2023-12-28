@@ -36,7 +36,6 @@ class _OrderdetailsState extends State<Orderdetails> {
     prefss = await SharedPreferences.getInstance();
     token = prefss.getString('token');
     customerId = prefss.getString('customerId') ?? "";
-     
 
     final response = await http.get(
         Uri.parse(

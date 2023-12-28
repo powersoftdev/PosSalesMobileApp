@@ -114,8 +114,9 @@ class _DashBoardState extends State<DashBoard> {
                 ),
                 Row(
                   children: [
+                    const SizedBox(width: 480),
                     const Padding(
-                      padding: EdgeInsets.only(left: 20, bottom: 400),
+                      padding: EdgeInsets.only(bottom: 400, left: 70),
                     ),
                     GestureDetector(
                       onTap: () {
@@ -138,8 +139,9 @@ class _DashBoardState extends State<DashBoard> {
                   ],
                 ),
                 Row(children: [
+                  const SizedBox(width: 670),
                   const Padding(
-                    padding: EdgeInsets.only(right: 210, bottom: 400),
+                    padding: EdgeInsets.only(bottom: 400, right: 150),
                   ),
                   GestureDetector(
                     onTap: () {
@@ -162,7 +164,7 @@ class _DashBoardState extends State<DashBoard> {
                 ]),
                 const Center(
                   child: Padding(
-                    padding: EdgeInsets.only(top: 300, left: 25, right: 200),
+                    padding: EdgeInsets.only(top: 300, left: 0, right: 300),
                     child: Text(
                       "View Catalog",
                       style: TextStyle(
@@ -174,7 +176,7 @@ class _DashBoardState extends State<DashBoard> {
                 ),
                 const Center(
                   child: Padding(
-                    padding: EdgeInsets.only(top: 300, left: 225, right: 20),
+                    padding: EdgeInsets.only(top: 300, left: 250, right: 0),
                     child: Text(
                       "Profile",
                       style: TextStyle(
